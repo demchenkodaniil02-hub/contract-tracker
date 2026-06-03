@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const [contracts, objects, counterparties, stages, comments, documents, tasks, payments] = await Promise.all([
+    const [contracts, objects, counterparties, stages, comments, documents, tasks, payments, history] = await Promise.all([
       supabase.from('contracts').select('*'),
       supabase.from('objects').select('*'),
       supabase.from('counterparties').select('*'),
@@ -17,6 +17,7 @@ export async function GET() {
       supabase.from('documents').select('*').order('uploadedAt', { ascending: false }),
       supabase.from('tasks').select('*'),
       supabase.from('payments').select('*').order('paidAt', { ascending: false }),
+      supabase.from('contract_history').select('*').order('createdAt', { ascending: false }),
     ])
     return NextResponse.json({
       contracts: contracts.data ?? [],
@@ -27,6 +28,7 @@ export async function GET() {
       documents: documents.data ?? [],
       tasks: tasks.data ?? [],
       payments: payments.data ?? [],
+      history: history.data ?? [],
     })
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
