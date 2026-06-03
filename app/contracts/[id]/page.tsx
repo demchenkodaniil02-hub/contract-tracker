@@ -92,7 +92,6 @@ export default function ContractDetailPage() {
   }, [initSeed])
 
   const [editOpen, setEditOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview'|'comments'|'tasks'|'documents'|'payments'|'history'>('overview')
 
   async function handleDuplicate() {
     if (!contract) return
@@ -161,108 +160,100 @@ export default function ContractDetailPage() {
     return Math.max(1, Math.ceil((new Date(end).getTime() - new Date(start).getTime()) / 86400000) / totalDays * 100)
   }
 
-  const tabs = [
-    { key: 'overview', label: 'Обзор' },
-    { key: 'comments', label: 'Комментарии' },
-    { key: 'tasks', label: 'Задачи' },
-    { key: 'documents', label: 'Документы' },
-    { key: 'payments', label: 'Оплаты' },
-    { key: 'history', label: 'История' },
-  ]
+  const S = {
+    panel: { background: '#fff', border: '1px solid var(--line)', borderRadius: 14, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 } as React.CSSProperties,
+    panelHead: { padding: '12px 16px', borderBottom: '1px solid var(--line-soft)', fontWeight: 700, fontSize: 13.5, flexShrink: 0 } as React.CSSProperties,
+    panelBody: { flex: 1, overflowY: 'auto', padding: '12px 16px' } as React.CSSProperties,
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }} className="ct-page">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg)' }} className="ct-page">
 
       {/* Шапка */}
-      <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--line)', background: '#fff', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, flexWrap: 'wrap' }}>
-        <button onClick={() => router.push('/contracts')} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
-          <ArrowLeft size={16} />
+      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--line)', background: '#fff', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, flexWrap: 'wrap' }}>
+        <button onClick={() => router.push('/contracts')} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
+          <ArrowLeft size={15} />
         </button>
-        <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.01em' }}>{contract.number}</span>
+        <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.01em' }}>{contract.number}</span>
         <DirectionBadge direction={contract.direction} />
         <StatusBadge status={effectiveStatus} />
         <PaymentBadge status={contract.paymentStatus} />
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <Button size="sm" variant="outline" onClick={handleDuplicate}><Copy className="w-3.5 h-3.5 mr-1" /> Дублировать</Button>
-          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}><Pencil className="w-3.5 h-3.5 mr-1" /> Редактировать</Button>
+          <Button size="sm" variant="outline" onClick={handleDuplicate}><Copy className="w-3.5 h-3.5 mr-1" />Дублировать</Button>
+          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}><Pencil className="w-3.5 h-3.5 mr-1" />Редактировать</Button>
         </div>
       </div>
 
-      {/* Верхняя панель — детали + финансы */}
-      <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--line)', background: '#fff', flexShrink: 0 }}>
-        <div className="grid grid-cols-3 gap-4 items-start">
-          <div className="col-span-2">
-            <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm">
-              <div><span className="text-slate-500">Объект: </span><span className="font-medium">{obj?.name ?? '—'}</span></div>
-              <div><span className="text-slate-500">Заказчик: </span><span className="font-medium">{customer?.name ?? '—'}</span></div>
-              <div><span className="text-slate-500">Исполнитель: </span><span className="font-medium">{contractor?.name ?? '—'}</span></div>
-              <div><span className="text-slate-500">Начало: </span>{formatDate(contract.startDate)}</div>
-              {contract.notes && <div className="col-span-2 text-slate-500 italic text-xs mt-1">{contract.notes}</div>}
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 20, justifyContent: 'flex-end', alignItems: 'center' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'var(--faint)', marginBottom: 2 }}>Сумма</div>
-              <div style={{ fontWeight: 700, fontSize: 15 }}>{formatMoney(contract.amount)}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'var(--faint)', marginBottom: 2 }}>Оплачено</div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--ok)' }}>{formatMoney(contract.amountPaid)}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'var(--faint)', marginBottom: 2 }}>Остаток</div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--danger)' }}>{formatMoney(remaining)}</div>
-            </div>
-            <div style={{ minWidth: 80 }}>
-              <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#eceff3' }}>
-                <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: 'var(--ok)' }} />
+      {/* Основной грид — 3 колонки */}
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '300px 1fr 320px', gridTemplateRows: '1fr 1fr', gap: 12, padding: 12, minHeight: 0 }}>
+
+        {/* Колонка 1, строка 1: Детали + Финансы */}
+        <div style={{ ...S.panel, gridRow: '1', gridColumn: '1' }}>
+          <div style={S.panelHead}>Детали контракта</div>
+          <div style={{ ...S.panelBody, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <Row label="Объект" value={obj?.name ?? '—'} />
+            <Row label="Заказчик" value={customer?.name ?? '—'} />
+            <Row label="Исполнитель" value={contractor?.name ?? '—'} />
+            <Row label="Начало" value={formatDate(contract.startDate)} />
+            <Row label="Окончание" value={formatDate(contract.endDate)} />
+            {contract.notes && <div style={{ fontSize: 12, color: 'var(--muted-ink)', background: 'var(--bg)', borderRadius: 8, padding: '8px 10px', marginTop: 4 }}>{contract.notes}</div>}
+            <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--line-soft)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Сумма</span>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>{formatMoney(contract.amount)}</span>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--faint)', textAlign: 'right', marginTop: 3 }}>{paidPct}%</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Оплачено</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(contract.amountPaid)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Остаток</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(remaining)}</span>
+              </div>
+              <div style={{ height: 6, borderRadius: 999, background: '#eceff3' }}>
+                <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)', transition: 'width .4s' }} />
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--faint)', textAlign: 'right', marginTop: 4 }}>{paidPct}% оплачено</div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Табы */}
-      <div style={{ borderBottom: '1px solid var(--line)', background: '#fff', flexShrink: 0, display: 'flex', padding: '0 24px', gap: 4 }}>
-        {tabs.map(t => (
-          <button key={t.key} onClick={() => setActiveTab(t.key as any)}
-            style={{ padding: '10px 14px', border: 'none', background: 'none', fontFamily: 'inherit', fontSize: 13.5, fontWeight: activeTab === t.key ? 700 : 500, color: activeTab === t.key ? 'var(--maf)' : 'var(--muted-ink)', cursor: 'pointer', borderBottom: activeTab === t.key ? '2px solid var(--maf)' : '2px solid transparent', marginBottom: -1, transition: 'color .15s', whiteSpace: 'nowrap' }}>
-            {t.label}
-          </button>
-        ))}
-      </div>
+        {/* Колонка 1, строка 2: История оплат */}
+        <div style={{ ...S.panel, gridRow: '2', gridColumn: '1' }}>
+          <div style={S.panelHead}>История оплат</div>
+          <div style={S.panelBody}><ContractPayments contractId={id} /></div>
+        </div>
 
-      {/* Контент таба */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
-        {activeTab === 'overview' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {contract.notes && (
-              <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 12, padding: '14px 18px', fontSize: 14, color: 'var(--muted-ink)', lineHeight: 1.6 }}>
-                <span style={{ fontWeight: 600, color: 'var(--ink)' }}>Примечания: </span>{contract.notes}
-              </div>
-            )}
-            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 12, padding: '18px 20px' }}>
-              <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 14 }}>Детали договора</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 40px', fontSize: 14 }}>
-                <div><span style={{ color: 'var(--faint)' }}>Объект</span><div style={{ fontWeight: 600, marginTop: 2 }}>{obj?.name ?? '—'}</div></div>
-                <div><span style={{ color: 'var(--faint)' }}>Заказчик</span><div style={{ fontWeight: 600, marginTop: 2 }}>{customer?.name ?? '—'}</div></div>
-                <div><span style={{ color: 'var(--faint)' }}>Исполнитель</span><div style={{ fontWeight: 600, marginTop: 2 }}>{contractor?.name ?? '—'}</div></div>
-                <div><span style={{ color: 'var(--faint)' }}>Направление</span><div style={{ marginTop: 2 }}><DirectionBadge direction={contract.direction} /></div></div>
-                <div><span style={{ color: 'var(--faint)' }}>Начало</span><div style={{ fontWeight: 600, marginTop: 2 }}>{formatDate(contract.startDate)}</div></div>
-                <div><span style={{ color: 'var(--faint)' }}>Окончание</span><div style={{ fontWeight: 600, marginTop: 2 }}>{formatDate(contract.endDate)}</div></div>
-              </div>
-            </div>
-          </div>
-        )}
-        {activeTab === 'comments' && <ContractComments contractId={id} />}
-        {activeTab === 'tasks' && <ContractTasks contractId={id} />}
-        {activeTab === 'documents' && <ContractDocuments contractId={id} />}
-        {activeTab === 'payments' && <ContractPayments contractId={id} />}
-        {activeTab === 'history' && <ContractHistory contractId={id} />}
+        {/* Колонка 2, обе строки: Комментарии */}
+        <div style={{ ...S.panel, gridRow: '1 / 3', gridColumn: '2' }}>
+          <div style={S.panelHead}>Комментарии</div>
+          <div style={S.panelBody}><ContractComments contractId={id} /></div>
+        </div>
+
+        {/* Колонка 3, строка 1: Задачи */}
+        <div style={{ ...S.panel, gridRow: '1', gridColumn: '3' }}>
+          <div style={S.panelHead}>Задачи</div>
+          <div style={S.panelBody}><ContractTasks contractId={id} /></div>
+        </div>
+
+        {/* Колонка 3, строка 2: Документы */}
+        <div style={{ ...S.panel, gridRow: '2', gridColumn: '3' }}>
+          <div style={S.panelHead}>Документы</div>
+          <div style={S.panelBody}><ContractDocuments contractId={id} /></div>
+        </div>
+
       </div>
 
       <ContractForm open={editOpen} onClose={() => setEditOpen(false)} initial={contract} />
     </div>
   )
+
+  function Row({ label, value }: { label: string; value: string }) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <span style={{ fontSize: 11, color: 'var(--faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
+        <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink)' }}>{value}</span>
+      </div>
+    )
+  }
 }
