@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from '@/lib/store'
 import { Contract } from '@/lib/types'
 import { newId } from '@/lib/utils'
@@ -52,6 +52,18 @@ export function ContractForm({ open, onClose, initial }: Props) {
       notes: '', createdAt: new Date().toISOString().slice(0, 10),
     },
   })
+
+  useEffect(() => {
+    if (open) {
+      reset(initial ?? {
+        id: '', number: '', objectId: '', direction: 'maf',
+        customerId: '', contractorId: '', amount: 0, amountPaid: 0,
+        startDate: '', endDate: '', status: 'planning', paymentStatus: 'not_paid',
+        notes: '', createdAt: new Date().toISOString().slice(0, 10),
+      })
+      setCreating(null)
+    }
+  }, [open, initial])
 
   const onSubmit = (data: Contract) => {
     if (initial) updateContract({ ...data, id: initial.id })
