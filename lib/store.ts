@@ -88,7 +88,7 @@ export const useStore = create<AppState>()((set, get) => ({
         safe(supabase.from('stages').select('*')),
         safe(supabase.from('comments').select('*').order('createdAt', { ascending: false })),
         safe(supabase.from('documents').select('*').order('uploadedAt', { ascending: false })),
-        safe(supabase.from('tasks').select('*').order('dueDate', { ascending: true })),
+        safe(supabase.from('tasks').select('*')),
       ])
       set({ contracts, objects, counterparties, stages, comments, documents, tasks })
     } catch (err) {
