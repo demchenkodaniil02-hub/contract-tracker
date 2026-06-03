@@ -89,7 +89,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
       </div>
 
       <input ref={fileInputRef} type="file" multiple onChange={handleFileSelect} className="hidden"
-        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style={{ display: 'none' }} />
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.dwg" style={{ display: 'none' }} />
 
       {contractDocs.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 8, marginBottom: 12 }}>

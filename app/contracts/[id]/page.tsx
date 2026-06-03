@@ -217,12 +217,13 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
-      <ContractPayments contractId={id} />
+      <ContractComments contractId={id} />
 
       <ContractTasks contractId={id} />
 
-      <ContractComments contractId={id} />
       <ContractDocuments contractId={id} />
+
+      <ContractPayments contractId={id} />
 
       <ContractHistory contractId={id} />
 

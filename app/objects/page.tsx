@@ -28,6 +28,10 @@ function ObjectFormModal({ open, onClose, initial }: { open: boolean; onClose: (
     defaultValues: initial ?? { id: '', name: '', address: '', direction: 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) },
   })
 
+  useEffect(() => {
+    if (open) reset(initial ?? { id: '', name: '', address: '', direction: 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) })
+  }, [open, initial])
+
   const onSubmit = (data: WorkObject) => {
     if (initial) updateObject({ ...data, id: initial.id })
     else addObject({ ...data, id: newId() })

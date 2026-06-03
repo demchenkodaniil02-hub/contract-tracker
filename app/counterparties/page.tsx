@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useStore } from '@/lib/store'
 import { Contract, Counterparty } from '@/lib/types'
 import { formatMoney, newId } from '@/lib/utils'
-import { Plus, Pencil, Trash2, Phone, Mail, Building2, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Phone, Mail, Building2, Search, Briefcase, HardHat } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Portal } from '@/components/ui/Portal'
 
@@ -28,6 +28,10 @@ function CounterpartyModal({ open, onClose, initial, defaultType }: { open: bool
   const { register, handleSubmit, setValue, watch, reset } = useForm<Counterparty>({
     defaultValues: initial ?? { id: '', name: '', company: '', phone: '', email: '', type: defaultType ?? 'customer' },
   })
+
+  useEffect(() => {
+    if (open) reset(initial ?? { id: '', name: '', company: '', phone: '', email: '', type: defaultType ?? 'customer' })
+  }, [open, initial])
 
   const onSubmit = (data: Counterparty) => {
     if (initial) updateCounterparty({ ...data, id: initial.id })
@@ -82,15 +86,15 @@ function CounterpartyModal({ open, onClose, initial, defaultType }: { open: bool
 function PartyCard({ cp, contracts, onEdit, onDelete }: { cp: Counterparty; contracts: Contract[]; onEdit: () => void; onDelete: () => void }) {
   const cpContracts = contracts.filter((c) => c.customerId === cp.id || c.contractorId === cp.id)
   const totalAmount = cpContracts.reduce((s, c) => s + c.amount, 0)
-  const bg = avatarColor(cp.name)
+  const isCustomer = cp.type === 'customer'
 
   return (
     <div style={{ ...S.card, padding: 20, display: 'flex', flexDirection: 'column', gap: 12, transition: 'transform .14s, box-shadow .14s' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 8px rgba(20,30,55,.05), 0 18px 40px -22px rgba(20,30,55,.3)' }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--card-shadow)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-        <div style={{ width: 42, height: 42, borderRadius: 12, background: bg, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 15, flexShrink: 0 }}>
-          {initials(cp.name)}
+        <div style={{ width: 42, height: 42, borderRadius: 12, background: isCustomer ? '#2f6bdc' : '#e07a1a', color: '#fff', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          {isCustomer ? <Briefcase size={20} /> : <HardHat size={20} />}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: 15 }}>{cp.name}</div>
