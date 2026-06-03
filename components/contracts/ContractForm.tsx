@@ -1,9 +1,11 @@
 'use client'
+import { useState } from 'react'
 import { useStore } from '@/lib/store'
 import { Contract } from '@/lib/types'
 import { newId } from '@/lib/utils'
 import { useForm } from 'react-hook-form'
 import { Portal } from '@/components/ui/Portal'
+import { Plus, X } from 'lucide-react'
 
 interface Props {
   open: boolean
@@ -17,10 +19,30 @@ const S = {
   field: { display: 'flex', flexDirection: 'column' } as React.CSSProperties,
 }
 
+function QuickCreate({ placeholder, onSave, onCancel }: { placeholder: string; onSave: (name: string) => void; onCancel: () => void }) {
+  const [val, setVal] = useState('')
+  return (
+    <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+      <input
+        autoFocus
+        value={val}
+        onChange={e => setVal(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (val.trim()) onSave(val.trim()) } if (e.key === 'Escape') onCancel() }}
+        placeholder={placeholder}
+        style={{ ...S.input, flex: 1, borderColor: 'var(--maf)', outline: 'none', boxShadow: '0 0 0 2px rgba(47,107,220,.15)' }}
+      />
+      <button type="button" onClick={() => val.trim() && onSave(val.trim())} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'var(--maf)', color: '#fff', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Создать</button>
+      <button type="button" onClick={onCancel} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--faint)', flexShrink: 0 }}><X size={13} /></button>
+    </div>
+  )
+}
+
 export function ContractForm({ open, onClose, initial }: Props) {
-  const { addContract, updateContract, counterparties, objects } = useStore()
+  const { addContract, updateContract, addCounterparty, addObject, counterparties, objects } = useStore()
   const customers   = counterparties.filter((c) => c.type === 'customer')
   const contractors = counterparties.filter((c) => c.type === 'contractor')
+
+  const [creating, setCreating] = useState<'object' | 'customer' | 'contractor' | null>(null)
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<Contract>({
     defaultValues: initial ?? {
@@ -37,6 +59,34 @@ export function ContractForm({ open, onClose, initial }: Props) {
     reset(); onClose()
   }
 
+  const handleCreateObject = async (name: string) => {
+    const id = newId()
+    await addObject({ id, name, address: '', direction: watch('direction') || 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) })
+    setValue('objectId', id)
+    setCreating(null)
+  }
+
+  const handleCreateCustomer = async (name: string) => {
+    const id = newId()
+    await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'customer' })
+    setValue('customerId', id)
+    setCreating(null)
+  }
+
+  const handleCreateContractor = async (name: string) => {
+    const id = newId()
+    await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'contractor' })
+    setValue('contractorId', id)
+    setCreating(null)
+  }
+
+  const addBtn = (type: 'object' | 'customer' | 'contractor') => (
+    <button type="button" onClick={() => setCreating(creating === type ? null : type)}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, border: '1px solid var(--line)', background: 'none', color: 'var(--maf)', fontFamily: 'inherit', fontSize: 11, fontWeight: 600, cursor: 'pointer', marginLeft: 'auto' }}>
+      <Plus size={11} /> Создать
+    </button>
+  )
+
   if (!open) return null
 
   return (
@@ -50,6 +100,7 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
         <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', flex: 1 }}>
+
           {/* Номер + Направление */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div style={S.field}>
@@ -67,28 +118,46 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
           {/* Объект */}
           <div style={S.field}>
-            <label style={S.label}>Объект</label>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+              <label style={{ ...S.label, marginBottom: 0 }}>Объект</label>
+              {addBtn('object')}
+            </div>
             <select style={S.input} value={watch('objectId')} onChange={e => setValue('objectId', e.target.value)}>
               <option value="">Выберите объект</option>
               {objects.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
             </select>
+            {creating === 'object' && (
+              <QuickCreate placeholder='Название объекта (напр. "Парк Победы")' onSave={handleCreateObject} onCancel={() => setCreating(null)} />
+            )}
           </div>
 
           {/* Заказчик + Исполнитель */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div style={S.field}>
-              <label style={S.label}>Заказчик *</label>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                <label style={{ ...S.label, marginBottom: 0 }}>Заказчик *</label>
+                {addBtn('customer')}
+              </div>
               <select style={S.input} value={watch('customerId')} onChange={e => setValue('customerId', e.target.value)}>
                 <option value="">Выберите заказчика</option>
-                {customers.map(c => <option key={c.id} value={c.id}>{c.name} — {c.company}</option>)}
+                {customers.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` — ${c.company}` : ''}</option>)}
               </select>
+              {creating === 'customer' && (
+                <QuickCreate placeholder="Имя заказчика" onSave={handleCreateCustomer} onCancel={() => setCreating(null)} />
+              )}
             </div>
             <div style={S.field}>
-              <label style={S.label}>Исполнитель *</label>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                <label style={{ ...S.label, marginBottom: 0 }}>Исполнитель *</label>
+                {addBtn('contractor')}
+              </div>
               <select style={S.input} value={watch('contractorId')} onChange={e => setValue('contractorId', e.target.value)}>
                 <option value="">Выберите исполнителя</option>
-                {contractors.map(c => <option key={c.id} value={c.id}>{c.name} — {c.company}</option>)}
+                {contractors.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` — ${c.company}` : ''}</option>)}
               </select>
+              {creating === 'contractor' && (
+                <QuickCreate placeholder="Имя исполнителя" onSave={handleCreateContractor} onCancel={() => setCreating(null)} />
+              )}
             </div>
           </div>
 
