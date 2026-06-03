@@ -11,6 +11,7 @@ const ibmPlexMono = IBM_Plex_Mono({ variable: '--font-ibm-plex-mono', subsets: [
 export const metadata: Metadata = {
   title: 'КонтрактТрекер',
   description: 'Управление заказами и контрактами',
+  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <FirstLoginModal />
           <div style={{ display: 'flex', minHeight: '100vh' }}>
             <Sidebar />
-            <main style={{ flex: 1, minWidth: 0, overflowY: 'auto', height: '100vh' }}>{children}</main>
+            <main className="ct-main" style={{ flex: 1, minWidth: 0, overflowY: 'auto', height: '100vh' }}>{children}</main>
           </div>
         </AuthGuard>
       </body>

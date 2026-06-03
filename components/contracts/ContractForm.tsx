@@ -119,8 +119,8 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
   return (
     <Portal>
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,41,.42)', backdropFilter: 'blur(2px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 580, boxShadow: '0 24px 70px -20px rgba(15,23,41,.5)', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 40px)' }}>
+    <div className="ct-modal-wrap" style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,41,.42)', backdropFilter: 'blur(2px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <div className="ct-modal" style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 580, boxShadow: '0 24px 70px -20px rgba(15,23,41,.5)', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 40px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
           <span style={{ fontSize: 17, fontWeight: 700 }}>{initial ? 'Редактировать контракт' : 'Новый контракт'}</span>
           <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'var(--bg)', color: 'var(--muted-ink)', cursor: 'pointer', fontSize: 18, display: 'grid', placeItems: 'center' }}>✕</button>

@@ -174,7 +174,7 @@ export default function CounterpartiesPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+      <div className="ct-parties-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
         {tab === 'customers' && (
           customers.length === 0
             ? <div style={{ color: 'var(--faint)', fontSize: 13 }}>Заказчиков не найдено</div>

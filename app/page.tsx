@@ -98,7 +98,7 @@ export default function DashboardPage() {
   }, [payments, contracts])
 
   return (
-    <div className="fade-in" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Дашборд</h1>
         <span style={{ fontSize: 13, color: 'var(--faint)' }}>Обновлено: сегодня</span>
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
         <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
         <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`Оплачено: ${formatMoney(totalPaid)}`} />
         <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
@@ -192,7 +192,7 @@ export default function DashboardPage() {
           Ожидается получить за 3 месяца: <b className="tnum" style={{ color: 'var(--ink)' }}>{formatMoney(totalExpected)}</b>
           {totalDebt > 0 && <> · Дебиторка: <b className="tnum" style={{ color: 'var(--danger)' }}>{formatMoney(totalDebt)}</b></>}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+        <div className="ct-grid-forecast" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
           {forecastData.map((m, i) => (
             <div key={i} style={{ background: 'var(--bg)', borderRadius: 12, padding: '14px 18px', borderLeft: `4px solid ${i === 0 ? 'var(--maf)' : i === 1 ? 'var(--ok)' : 'var(--warn)'}` }}>
               <div style={{ fontSize: 12, color: 'var(--muted-ink)', textTransform: 'capitalize', marginBottom: 6 }}>{m.month}</div>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Panels */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="ct-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {/* Overdue */}
         <div className="ct-card" style={{ padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, fontSize: 14.5, color: 'var(--danger)', marginBottom: 8 }}>

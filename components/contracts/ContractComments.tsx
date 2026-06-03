@@ -40,9 +40,9 @@ export function ContractComments({ contractId }: { contractId: string }) {
     <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 20 }}>
       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>💬 Комментарии ({contractComments.length})</div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20 }}>
+      <div className="ct-comments-grid" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20 }}>
         {/* Форма ввода */}
-        <div style={{ borderRight: '1px solid var(--line-soft)', paddingRight: 20 }}>
+        <div className="ct-comments-divider" style={{ borderRight: '1px solid var(--line-soft)', paddingRight: 20 }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <div style={{ width: 34, height: 34, borderRadius: '50%', background: bg, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
               {initials(authorName)}
