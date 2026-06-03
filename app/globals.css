@@ -255,31 +255,41 @@ body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", s
   .ct-grid-forecast { grid-template-columns: 1fr !important; }
   .ct-grid-3 { grid-template-columns: 1fr !important; }
   .ct-grid-2 { grid-template-columns: 1fr !important; }
+  .ct-objects-grid { grid-template-columns: 1fr !important; }
+  .ct-parties-grid { grid-template-columns: 1fr !important; }
+
+  /* Tailwind grid overrides for contract page */
+  .grid-cols-3 { grid-template-columns: 1fr !important; }
+  .col-span-2 { grid-column: span 1 !important; }
+  .grid-cols-2 { grid-template-columns: 1fr !important; }
 
   /* Comments layout */
   .ct-comments-grid { grid-template-columns: 1fr !important; }
   .ct-comments-divider { border-right: none !important; padding-right: 0 !important; border-bottom: 1px solid var(--line-soft); padding-bottom: 16px; margin-bottom: 16px; }
 
-  /* Contract details grid */
-  .ct-contract-grid { grid-template-columns: 1fr !important; }
-
-  /* Contract form grid */
+  /* Form grids (inline) — covered by ct-form-grid class */
   .ct-form-grid { grid-template-columns: 1fr !important; }
-
-  /* Objects grid */
-  .ct-objects-grid { grid-template-columns: 1fr !important; }
-
-  /* Counterparties grid */
-  .ct-parties-grid { grid-template-columns: 1fr !important; }
-
-  /* Payment/history form grids */
-  .ct-payment-grid { grid-template-columns: 1fr !important; }
+  .ct-payment-form { grid-template-columns: 1fr !important; }
+  .ct-task-form { grid-template-columns: 1fr !important; }
 
   /* Table */
   .table-scroll { border-radius: 12px; }
   .table-scroll table { min-width: 800px; }
 
-  /* Modals full height */
-  .ct-modal { max-height: 100vh !important; border-radius: 0 !important; width: 100% !important; }
+  /* Documents grid */
+  .ct-docs-grid { grid-template-columns: 1fr !important; }
+
+  /* Modals full-screen bottom sheet */
+  .ct-modal { max-height: 92vh !important; border-radius: 20px 20px 0 0 !important; width: 100% !important; max-width: 100% !important; }
   .ct-modal-wrap { padding: 0 !important; align-items: flex-end !important; }
+
+  /* Profile */
+  .ct-profile-page { padding: 16px !important; padding-top: 62px !important; }
+
+  /* Login */
+  .ct-login-page { padding: 16px !important; }
+  .ct-login-card { padding: 24px 16px !important; margin: 0 !important; max-width: 100% !important; }
+
+  /* Misc */
+  .gap-x-8 { column-gap: 16px !important; }
 }

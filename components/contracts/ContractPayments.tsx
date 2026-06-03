@@ -54,7 +54,7 @@ export function ContractPayments({ contractId }: { contractId: string }) {
       {/* Форма добавления */}
       {open && (
         <div style={{ background: 'var(--bg)', borderRadius: 12, padding: 16, marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="ct-payment-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
               <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 5 }}>Сумма (руб.) *</label>
               <input

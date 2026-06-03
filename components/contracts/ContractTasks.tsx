@@ -110,7 +110,7 @@ export function ContractTasks({ contractId }: { contractId: string }) {
               <span>Уведомление придёт на <b>{profile.email}</b></span>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto', gap: 10 }}>
+          <div className="ct-task-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto', gap: 10 }}>
             <input
               type="date"
               value={formData.dueDate}
