@@ -157,10 +157,13 @@ export default function ObjectsPage() {
           const customer    = counterparties.find((c) => c.id === obj.customerId)
           const objContracts = contracts.filter((c) => c.objectId === obj.id)
           const totalAmount  = objContracts.reduce((s, c) => s + c.amount, 0)
-          // Направление берём из контрактов (большинство голосов), если контрактов нет — из объекта
-          const dirFromContracts = objContracts.length > 0
-            ? (objContracts.filter(c => c.direction === 'finishing').length >= objContracts.filter(c => c.direction === 'maf').length ? 'finishing' : 'maf') as Direction
-            : obj.direction
+          // Направления из контрактов
+          const hasMaf      = objContracts.some(c => c.direction === 'maf')
+          const hasFinishing = objContracts.some(c => c.direction === 'finishing')
+          const directions: Direction[] = objContracts.length > 0
+            ? ([hasMaf ? 'maf' : null, hasFinishing ? 'finishing' : null].filter(Boolean) as Direction[])
+            : [obj.direction]
+          const dirFromContracts = directions[0] ?? obj.direction
           return (
             <div key={obj.id} style={{ ...S.card, padding: 20, display: 'flex', flexDirection: 'column', gap: 12, transition: 'transform .14s, box-shadow .14s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 8px rgba(20,30,55,.05), 0 18px 40px -22px rgba(20,30,55,.3)' }}
@@ -172,7 +175,7 @@ export default function ObjectsPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em' }}>{obj.name}</div>
                   <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-                    <DirectionBadge direction={dirFromContracts} />
+                    {directions.map(d => <DirectionBadge key={d} direction={d} />)}
                     <span className="ct-badge" style={{ background: obj.status === 'active' ? 'var(--ok-soft)' : 'var(--maf-soft)', color: statusColors[obj.status] }}>
                       {statusLabels[obj.status]}
                     </span>
