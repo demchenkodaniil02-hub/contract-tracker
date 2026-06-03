@@ -29,7 +29,7 @@ function KpiCard({ label, value, sub, valueColor }: { label: string; value: stri
 }
 
 export default function DashboardPage() {
-  const { contracts, objects, counterparties, initSeed } = useStore()
+  const { contracts, objects, counterparties, payments, initSeed } = useStore()
   useEffect(() => { initSeed() }, [])
 
   const enriched = useMemo(() => contracts.map((c) => ({
@@ -71,18 +71,31 @@ export default function DashboardPage() {
   const totalExpected = forecastData.reduce((s, m) => s + m.expected, 0)
   const totalDebt = enriched.filter(c => c.status !== 'cancelled').reduce((s, c) => s + (c.amount - c.amountPaid), 0)
 
-  const chartData = useMemo(() => {
-    const map: Record<string, { month: string; maf: number; finishing: number }> = {}
-    enriched.forEach((c) => {
-      if (!c.startDate) return
-      const key   = format(startOfMonth(parseISO(c.startDate)), 'yyyy-MM')
-      const label = format(startOfMonth(parseISO(c.startDate)), 'MMM yy', { locale: ru })
-      if (!map[key]) map[key] = { month: label, maf: 0, finishing: 0 }
-      if (c.direction === 'maf') map[key].maf += c.amount / 1000000
-      else map[key].finishing += c.amount / 1000000
+  // График истории оплат — стек по контрактам, сгруппированный по месяцам
+  const { paymentChartData, paymentContractKeys } = useMemo(() => {
+    if (!payments.length) return { paymentChartData: [], paymentContractKeys: [] }
+
+    // Собираем все уникальные контракты из платежей
+    const contractIds = [...new Set(payments.map(p => p.contractId))]
+    const contractKeys = contractIds.map(id => {
+      const c = contracts.find(c => c.id === id)
+      return { id, label: c?.number ?? id.slice(0, 8) }
     })
-    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).map(([, v]) => v)
-  }, [enriched])
+
+    // Группируем по месяцам
+    const map: Record<string, Record<string, number> & { month: string }> = {}
+    payments.forEach(p => {
+      if (!p.paidAt) return
+      const key   = format(startOfMonth(parseISO(p.paidAt)), 'yyyy-MM')
+      const label = format(startOfMonth(parseISO(p.paidAt)), 'MMM yyyy', { locale: ru })
+      if (!map[key]) map[key] = { month: label } as any
+      const contractLabel = contractKeys.find(k => k.id === p.contractId)?.label ?? p.contractId
+      map[key][contractLabel] = (map[key][contractLabel] ?? 0) + p.amount / 1000000
+    })
+
+    const data = Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).map(([, v]) => v)
+    return { paymentChartData: data, paymentContractKeys: contractKeys }
+  }, [payments, contracts])
 
   return (
     <div className="fade-in" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
@@ -147,23 +160,30 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* Chart */}
-      {chartData.length > 0 && (
-        <div className="ct-card" style={{ padding: '20px 22px' }}>
-          <div style={{ fontWeight: 600, fontSize: 15 }}>Сумма контрактов по месяцам</div>
-          <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 2 }}>тыс. / млн. ₽ · по дате начала</div>
-          <ResponsiveContainer width="100%" height={220} style={{ marginTop: 16 }}>
-            <BarChart data={chartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
-              <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={formatAmountLabel} />
-              <Tooltip formatter={(v) => [formatAmountLabel(Number(v))]} />
-              <Legend wrapperStyle={{ fontSize: 12.5, color: 'var(--muted-ink)' }} />
-              <Bar dataKey="maf"      name="МАФ / Металл" fill="#2f6bdc" radius={[4,4,0,0]} />
-              <Bar dataKey="finishing" name="Отделка"      fill="#e07a1a" radius={[4,4,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {/* График истории оплат */}
+      <div className="ct-card" style={{ padding: '20px 22px' }}>
+        <div style={{ fontWeight: 600, fontSize: 15 }}>История оплат по договорам</div>
+        <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 2 }}>млн. ₽ · по дате внесения оплаты</div>
+        {paymentChartData.length === 0
+          ? <div style={{ color: 'var(--faint)', fontSize: 13, padding: '32px 0', textAlign: 'center' }}>Оплат пока нет — добавьте их в карточках контрактов</div>
+          : <ResponsiveContainer width="100%" height={240} style={{ marginTop: 16 }}>
+              <BarChart data={paymentChartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
+                <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
+                <Tooltip
+                  formatter={(v: any, name: string) => [formatMoney(Number(v) * 1000000), name]}
+                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                  contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--line)' }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-ink)' }} />
+                {paymentContractKeys.map((k, i) => {
+                  const colors = ['#2f6bdc','#1f8a5b','#e07a1a','#9b5de5','#e0325f','#0891b2','#be123c','#16a34a']
+                  return <Bar key={k.id} dataKey={k.label} name={k.label} stackId="a" fill={colors[i % colors.length]} radius={i === paymentContractKeys.length - 1 ? [4,4,0,0] : [0,0,0,0]} />
+                })}
+              </BarChart>
+            </ResponsiveContainer>
+        }
+      </div>
 
       {/* Прогноз поступлений */}
       <div className="ct-card" style={{ padding: '20px 22px' }}>
