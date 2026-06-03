@@ -2,7 +2,6 @@
 import { create } from 'zustand'
 import { Contract, Counterparty, WorkObject, WorkStage, Comment, Document, ContractHistory, Task } from './types'
 import { supabase } from './supabase'
-import { seedContracts, seedCounterparties, seedObjects, seedStages } from './seed'
 
 interface AppState {
   contracts: Contract[]
