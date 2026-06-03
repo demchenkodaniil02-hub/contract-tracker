@@ -160,21 +160,15 @@ export default function ContractDetailPage() {
     return Math.max(1, Math.ceil((new Date(end).getTime() - new Date(start).getTime()) / 86400000) / totalDays * 100)
   }
 
-  const S = {
-    panel: { background: '#fff', border: '1px solid var(--line)', borderRadius: 14, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 } as React.CSSProperties,
-    panelHead: { padding: '12px 16px', borderBottom: '1px solid var(--line-soft)', fontWeight: 700, fontSize: 13.5, flexShrink: 0 } as React.CSSProperties,
-    panelBody: { flex: 1, overflowY: 'auto', padding: '12px 16px' } as React.CSSProperties,
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg)' }} className="ct-page">
+    <div className="fade-in ct-page" style={{ padding: '20px 24px 32px', display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 1200 }}>
 
       {/* Шапка */}
-      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--line)', background: '#fff', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, flexWrap: 'wrap' }}>
-        <button onClick={() => router.push('/contracts')} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
-          <ArrowLeft size={15} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <button onClick={() => router.push('/contracts')} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
+          <ArrowLeft size={16} />
         </button>
-        <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.01em' }}>{contract.number}</span>
+        <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em' }}>{contract.number}</span>
         <DirectionBadge direction={contract.direction} />
         <StatusBadge status={effectiveStatus} />
         <PaymentBadge status={contract.paymentStatus} />
@@ -184,75 +178,62 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
-      {/* Основной грид — 3 колонки */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '300px 1fr 320px', gridTemplateRows: '1fr 1fr', gap: 12, padding: 12, minHeight: 0 }}>
-
-        {/* Колонка 1, строка 1: Детали + Финансы */}
-        <div style={{ ...S.panel, gridRow: '1', gridColumn: '1' }}>
-          <div style={S.panelHead}>Детали контракта</div>
-          <div style={{ ...S.panelBody, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <Row label="Объект" value={obj?.name ?? '—'} />
-            <Row label="Заказчик" value={customer?.name ?? '—'} />
-            <Row label="Исполнитель" value={contractor?.name ?? '—'} />
-            <Row label="Начало" value={formatDate(contract.startDate)} />
-            <Row label="Окончание" value={formatDate(contract.endDate)} />
-            {contract.notes && <div style={{ fontSize: 12, color: 'var(--muted-ink)', background: 'var(--bg)', borderRadius: 8, padding: '8px 10px', marginTop: 4 }}>{contract.notes}</div>}
-            <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--line-soft)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Сумма</span>
-                <span style={{ fontSize: 13, fontWeight: 700 }}>{formatMoney(contract.amount)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Оплачено</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(contract.amountPaid)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 12, color: 'var(--faint)' }}>Остаток</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(remaining)}</span>
-              </div>
-              <div style={{ height: 6, borderRadius: 999, background: '#eceff3' }}>
-                <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)', transition: 'width .4s' }} />
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--faint)', textAlign: 'right', marginTop: 4 }}>{paidPct}% оплачено</div>
+      {/* Детали + Финансы — в одну строку */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '16px 20px' }}>
+        {/* Детали */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px' }}>
+          <Detail label="Объект" value={obj?.name ?? '—'} />
+          <Detail label="Заказчик" value={customer?.name ?? '—'} />
+          <Detail label="Исполнитель" value={contractor?.name ?? '—'} />
+          <Detail label="Начало" value={formatDate(contract.startDate)} />
+          <Detail label="Окончание" value={formatDate(contract.endDate)} />
+          {contract.notes && <div style={{ gridColumn: '1/-1', fontSize: 12, color: 'var(--muted-ink)', borderTop: '1px solid var(--line-soft)', paddingTop: 8, marginTop: 4 }}>{contract.notes}</div>}
+        </div>
+        {/* Финансы */}
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center', paddingLeft: 24, borderLeft: '1px solid var(--line-soft)' }}>
+          <Fin label="Сумма" value={formatMoney(contract.amount)} />
+          <Fin label="Оплачено" value={formatMoney(contract.amountPaid)} color="var(--ok)" />
+          <Fin label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
+          <div style={{ width: 64 }}>
+            <div style={{ height: 6, borderRadius: 999, background: '#eceff3' }}>
+              <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)' }} />
             </div>
+            <div style={{ fontSize: 11, color: 'var(--faint)', textAlign: 'center', marginTop: 4 }}>{paidPct}%</div>
           </div>
         </div>
-
-        {/* Колонка 1, строка 2: История оплат */}
-        <div style={{ ...S.panel, gridRow: '2', gridColumn: '1' }}>
-          <div style={S.panelHead}>История оплат</div>
-          <div style={S.panelBody}><ContractPayments contractId={id} /></div>
-        </div>
-
-        {/* Колонка 2, обе строки: Комментарии */}
-        <div style={{ ...S.panel, gridRow: '1 / 3', gridColumn: '2' }}>
-          <div style={S.panelHead}>Комментарии</div>
-          <div style={S.panelBody}><ContractComments contractId={id} /></div>
-        </div>
-
-        {/* Колонка 3, строка 1: Задачи */}
-        <div style={{ ...S.panel, gridRow: '1', gridColumn: '3' }}>
-          <div style={S.panelHead}>Задачи</div>
-          <div style={S.panelBody}><ContractTasks contractId={id} /></div>
-        </div>
-
-        {/* Колонка 3, строка 2: Документы */}
-        <div style={{ ...S.panel, gridRow: '2', gridColumn: '3' }}>
-          <div style={S.panelHead}>Документы</div>
-          <div style={S.panelBody}><ContractDocuments contractId={id} /></div>
-        </div>
-
       </div>
+
+      {/* Основной контент — 2 колонки */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <ContractComments contractId={id} />
+        <ContractDocuments contractId={id} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <ContractPayments contractId={id} />
+        <ContractTasks contractId={id} />
+      </div>
+
+      <ContractHistory contractId={id} />
 
       <ContractForm open={editOpen} onClose={() => setEditOpen(false)} initial={contract} />
     </div>
   )
 
-  function Row({ label, value }: { label: string; value: string }) {
+  function Detail({ label, value }: { label: string; value: string }) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={{ fontSize: 11, color: 'var(--faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
-        <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink)' }}>{value}</span>
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--faint)', fontWeight: 600, marginBottom: 2 }}>{label}</div>
+        <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{value}</div>
+      </div>
+    )
+  }
+
+  function Fin({ label, value, color }: { label: string; value: string; color?: string }) {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 11, color: 'var(--faint)', marginBottom: 4 }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: color ?? 'var(--ink)', whiteSpace: 'nowrap' }}>{value}</div>
       </div>
     )
   }
