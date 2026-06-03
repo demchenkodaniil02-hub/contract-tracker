@@ -74,23 +74,19 @@ export const useStore = create<AppState>()((set, get) => ({
 
   loadAll: async () => {
     set({ loading: true })
-    const timeout = <T,>(p: Promise<T>, ms = 8000): Promise<T> =>
-      Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
     try {
-      const safe = async (p: PromiseLike<{ data: any[] | null; error: any }>) => {
-        try { const r = await timeout(Promise.resolve(p)); return r.data ?? [] }
-        catch { return [] }
-      }
-      const [contracts, objects, counterparties, stages, comments, documents, tasks] = await Promise.all([
-        safe(supabase.from('contracts').select('*')),
-        safe(supabase.from('objects').select('*')),
-        safe(supabase.from('counterparties').select('*')),
-        safe(supabase.from('stages').select('*')),
-        safe(supabase.from('comments').select('*').order('createdAt', { ascending: false })),
-        safe(supabase.from('documents').select('*').order('uploadedAt', { ascending: false })),
-        safe(supabase.from('tasks').select('*')),
-      ])
-      set({ contracts, objects, counterparties, stages, comments, documents, tasks })
+      const res = await fetch('/api/load-all')
+      if (!res.ok) throw new Error('load-all failed: ' + res.status)
+      const data = await res.json()
+      set({
+        contracts: data.contracts ?? [],
+        objects: data.objects ?? [],
+        counterparties: data.counterparties ?? [],
+        stages: data.stages ?? [],
+        comments: data.comments ?? [],
+        documents: data.documents ?? [],
+        tasks: data.tasks ?? [],
+      })
     } catch (err) {
       console.error('loadAll failed', err)
     } finally {
