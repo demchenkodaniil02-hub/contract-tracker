@@ -75,30 +75,29 @@ export const useStore = create<AppState>()((set, get) => ({
   loadAll: async () => {
     set({ loading: true })
     try {
-      await fetch('/api/sync-docs')
+      const [contracts, objects, counterparties, stages, comments, documents, tasks] = await Promise.all([
+        supabase.from('contracts').select('*'),
+        supabase.from('objects').select('*'),
+        supabase.from('counterparties').select('*'),
+        supabase.from('stages').select('*'),
+        supabase.from('comments').select('*').order('createdAt', { ascending: false }),
+        supabase.from('documents').select('*').order('uploadedAt', { ascending: false }),
+        supabase.from('tasks').select('*').order('dueDate', { ascending: true }),
+      ])
+      set({
+        contracts: contracts.data ?? [],
+        objects: objects.data ?? [],
+        counterparties: counterparties.data ?? [],
+        stages: stages.data ?? [],
+        comments: comments.data ?? [],
+        documents: documents.data ?? [],
+        tasks: tasks.data ?? [],
+      })
     } catch (err) {
-      console.warn('sync-docs failed', err)
+      console.error('loadAll failed', err)
+    } finally {
+      set({ loading: false })
     }
-
-    const [contracts, objects, counterparties, stages, comments, documents, tasks] = await Promise.all([
-      supabase.from('contracts').select('*'),
-      supabase.from('objects').select('*'),
-      supabase.from('counterparties').select('*'),
-      supabase.from('stages').select('*'),
-      supabase.from('comments').select('*').order('createdAt', { ascending: false }),
-      supabase.from('documents').select('*').order('uploadedAt', { ascending: false }),
-      supabase.from('tasks').select('*').order('dueDate', { ascending: true }),
-    ])
-    set({
-      contracts: contracts.data ?? [],
-      objects: objects.data ?? [],
-      counterparties: counterparties.data ?? [],
-      stages: stages.data ?? [],
-      comments: comments.data ?? [],
-      documents: documents.data ?? [],
-      tasks: tasks.data ?? [],
-      loading: false,
-    })
   },
 
   // History
