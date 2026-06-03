@@ -147,6 +147,7 @@
   --card-shadow: 0 1px 2px rgba(20,30,55,.04), 0 8px 24px -16px rgba(20,30,55,.18);
 }
 
+html, body { max-width: 100vw; overflow-x: hidden; }
 body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 
 .ct-card {
@@ -216,6 +217,20 @@ body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", s
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 @media (max-width: 768px) {
+  /* Base */
+  * { box-sizing: border-box; }
+
+  /* Page */
+  .ct-page { padding: 12px 12px 40px !important; padding-top: 62px !important; }
+  .ct-page > h1, .ct-page h1 { font-size: 20px !important; }
+
+  /* KPI cards — числа не вылезают */
+  .ct-grid-kpi > div { padding: 14px !important; }
+  .ct-grid-kpi .tnum { font-size: 22px !important; word-break: break-all; }
+
+  /* Direction cards — числа компактнее */
+  .ct-grid-direction .tnum { font-size: 18px !important; word-break: break-all; }
+
   /* Sidebar */
   .ct-sidebar {
     transform: translateX(-100%);
@@ -231,8 +246,8 @@ body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", s
   .mobile-hamburger { display: flex; }
 
   /* Main layout */
-  .ct-main { padding-left: 0 !important; }
-  .ct-page { padding: 16px !important; padding-top: 60px !important; }
+  .ct-main { padding-left: 0 !important; width: 100% !important; }
+  .ct-main > * { max-width: 100vw !important; }
 
   /* Grids → single column */
   .ct-grid-kpi { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }

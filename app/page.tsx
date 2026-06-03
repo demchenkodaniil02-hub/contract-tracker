@@ -127,7 +127,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Directions */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="ct-grid-direction" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {[
           { id: 'maf', label: 'МАФ / Металлоконструкции', color: 'var(--maf)', total: mafTotal },
           { id: 'finishing', label: 'Отделочные работы', color: 'var(--otd)', total: finishingTotal },
