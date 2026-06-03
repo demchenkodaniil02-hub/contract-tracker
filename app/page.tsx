@@ -52,13 +52,16 @@ export default function DashboardPage() {
   const forecastData = useMemo(() => {
     const now = new Date()
     return [0, 1, 2].map(offset => {
-      const month = addMonths(now, offset)
-      const label = format(month, 'LLLL yyyy', { locale: ru })
+      const monthStart = startOfMonth(addMonths(now, offset))
+      const label = format(monthStart, 'LLLL yyyy', { locale: ru })
       const active = enriched.filter(c => c.status === 'active' || c.status === 'planning')
       const expected = active.reduce((s, c) => {
         const remaining = c.amount - c.amountPaid
         if (remaining <= 0) return s
-        const monthsLeft = Math.max(1, Math.ceil((parseISO(c.endDate).getTime() - now.getTime()) / (30 * 86400000)))
+        const endDate = parseISO(c.endDate)
+        // Не включаем контракт если он уже закончился до начала этого месяца
+        if (endDate < monthStart) return s
+        const monthsLeft = Math.max(1, Math.ceil((endDate.getTime() - now.getTime()) / (30 * 86400000)))
         return s + remaining / monthsLeft
       }, 0)
       return { month: label, expected: Math.round(expected) }
