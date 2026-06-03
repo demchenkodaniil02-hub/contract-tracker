@@ -71,6 +71,8 @@ export function ContractForm({ open, onClose, initial }: Props) {
   }
 
   const handleCreateCustomer = async (name: string) => {
+    const existing = customers.find(c => c.name.toLowerCase() === name.toLowerCase())
+    if (existing) { setValue('customerId', existing.id); setCreating(null); return }
     const id = newId()
     try {
       await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'customer' })
@@ -82,6 +84,8 @@ export function ContractForm({ open, onClose, initial }: Props) {
   }
 
   const handleCreateContractor = async (name: string) => {
+    const existing = contractors.find(c => c.name.toLowerCase() === name.toLowerCase())
+    if (existing) { setValue('contractorId', existing.id); setCreating(null); return }
     const id = newId()
     try {
       await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'contractor' })

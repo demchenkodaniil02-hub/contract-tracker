@@ -235,8 +235,7 @@ export const useStore = create<AppState>()((set, get) => ({
   },
 
   initSeed: async () => {
-    if (get().seeded) return
-    set({ seeded: true })
+    if (get().loading) return
     await get().loadAll()
   },
 }))
