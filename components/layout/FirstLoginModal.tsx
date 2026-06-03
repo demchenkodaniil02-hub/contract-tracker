@@ -10,8 +10,7 @@ export function FirstLoginModal() {
   const [saving, setSaving] = useState(false)
 
   // Показываем если профиль загружен, но имя не заполнено (только email-prefix)
-  const emailPrefix = profile?.email?.split('@')[0] ?? ''
-  const needsSetup = profile && (!profile.name || profile.name === emailPrefix)
+  const needsSetup = profile && !profile.name
 
   if (!needsSetup) return null
 

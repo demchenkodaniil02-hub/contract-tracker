@@ -61,22 +61,34 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
   const handleCreateObject = async (name: string) => {
     const id = newId()
-    await addObject({ id, name, address: '', direction: watch('direction') || 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) })
-    setValue('objectId', id)
+    try {
+      await addObject({ id, name, address: '', direction: watch('direction') || 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) })
+      setValue('objectId', id)
+    } catch (e) {
+      console.error('Ошибка создания объекта', e)
+    }
     setCreating(null)
   }
 
   const handleCreateCustomer = async (name: string) => {
     const id = newId()
-    await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'customer' })
-    setValue('customerId', id)
+    try {
+      await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'customer' })
+      setValue('customerId', id)
+    } catch (e) {
+      console.error('Ошибка создания заказчика', e)
+    }
     setCreating(null)
   }
 
   const handleCreateContractor = async (name: string) => {
     const id = newId()
-    await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'contractor' })
-    setValue('contractorId', id)
+    try {
+      await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'contractor' })
+      setValue('contractorId', id)
+    } catch (e) {
+      console.error('Ошибка создания исполнителя', e)
+    }
     setCreating(null)
   }
 

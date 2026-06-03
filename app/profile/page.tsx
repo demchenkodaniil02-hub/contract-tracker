@@ -11,8 +11,8 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    if (profile?.name) setName(profile.name)
-  }, [profile?.name])
+    if (profile?.name && !name) setName(profile.name)
+  }, [profile])
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>

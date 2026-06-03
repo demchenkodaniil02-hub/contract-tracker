@@ -24,7 +24,7 @@ export function useProfile() {
         const newProfile: Profile = {
           id: user.id,
           email: user.email ?? '',
-          name: user.email?.split('@')[0] ?? 'Пользователь',
+          name: '',
           role: '',
           avatarColor: color,
           createdAt: new Date().toISOString(),
