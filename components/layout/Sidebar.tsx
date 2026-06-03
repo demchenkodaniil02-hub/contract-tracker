@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { useProfile } from '@/lib/useProfile'
 
 const navItems = [
-  { href: '/', label: 'Дашборд', icon: LayoutDashboard },
+  { href: '/', label: 'Главная', icon: LayoutDashboard },
   { href: '/contracts', label: 'Контракты', icon: FileText },
   { href: '/objects', label: 'Объекты', icon: Building2 },
   { href: '/counterparties', label: 'Контрагенты', icon: Users },

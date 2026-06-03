@@ -100,7 +100,7 @@ export default function DashboardPage() {
   return (
     <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Дашборд</h1>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Главная</h1>
         <span style={{ fontSize: 13, color: 'var(--faint)' }}>Обновлено: сегодня</span>
       </div>
 
