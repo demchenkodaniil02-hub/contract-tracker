@@ -35,18 +35,35 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
     try {
       const contractNumber = contract.number || contractId
       for (const file of files) {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('contractId', contractId)
-        formData.append('contractNumber', contractNumber)
-        const res = await fetch('/api/upload-doc', { method: 'POST', body: formData })
-        const data = await res.json()
-        if (!res.ok) throw new Error(data?.error || 'Upload failed')
-        await addDocument(data.document)
+        // 1. Получаем upload URL от сервера (только метаданные, файл не передаём)
+        const urlRes = await fetch('/api/get-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: file.name, contractNumber, contractId }),
+        })
+        const urlData = await urlRes.json()
+        if (!urlRes.ok) throw new Error(urlData?.error || 'Не удалось получить ссылку')
+
+        // 2. Загружаем файл напрямую на Яндекс.Диск (минуя Vercel — без ограничений по размеру)
+        const uploadRes = await fetch(urlData.uploadUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        })
+        if (!uploadRes.ok) throw new Error(`Ошибка загрузки на Яндекс.Диск: ${uploadRes.status}`)
+
+        // 3. Публикуем и сохраняем метадату через сервер
+        const finalRes = await fetch('/api/finalize-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: urlData.path, contractId, fileName: file.name, fileSize: file.size, fileType: file.type || 'application/octet-stream' }),
+        })
+        const finalData = await finalRes.json()
+        if (!finalRes.ok) throw new Error(finalData?.error || 'Ошибка сохранения')
+        await addDocument(finalData.document)
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      setError(msg)
+      setError(err instanceof Error ? err.message : String(err))
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
