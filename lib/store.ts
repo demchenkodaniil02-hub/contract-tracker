@@ -235,20 +235,9 @@ export const useStore = create<AppState>()((set, get) => ({
     set((s) => ({ tasks: s.tasks.filter((x) => x.id !== id) }))
   },
 
-  // Seed — заполняем БД демо-данными если пусто
   initSeed: async () => {
     if (get().seeded) return
     set({ seeded: true })
     await get().loadAll()
-    const { contracts } = get()
-    if (contracts.length === 0) {
-      await Promise.all([
-        supabase.from('counterparties').insert(seedCounterparties),
-        supabase.from('objects').insert(seedObjects),
-      ])
-      await supabase.from('contracts').insert(seedContracts)
-      await supabase.from('stages').insert(seedStages)
-      await get().loadAll()
-    }
   },
 }))
