@@ -5,8 +5,9 @@ import { Contract, Direction, ContractStatus } from '@/lib/types'
 import { formatMoney, formatDate, isOverdue, exportToCsv, statusLabel, paymentLabel, directionLabel } from '@/lib/utils'
 import { ContractForm } from '@/components/contracts/ContractForm'
 import { StatusBadge, PaymentBadge, DirectionBadge } from '@/components/contracts/StatusBadge'
-import { Plus, Search, Eye, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const S = {
   card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
@@ -25,6 +26,7 @@ const S = {
 
 export default function ContractsPage() {
   const { contracts, objects, counterparties, deleteContract, initSeed, loadAll, loading } = useStore()
+  const router = useRouter()
   useEffect(() => { initSeed() }, [])
 
   const [search, setSearch] = useState('')
@@ -154,6 +156,7 @@ export default function ContractsPage() {
                 const progColor = pct >= 100 ? 'var(--ok)' : pct > 0 ? 'var(--maf)' : 'var(--warn)'
                 return (
                   <tr key={c.id} style={{ cursor: 'pointer', transition: 'background .12s' }}
+                    onClick={() => router.push(`/contracts/${c.id}`)}
                     onMouseEnter={e => (e.currentTarget.style.background = '#fafbfd')}
                     onMouseLeave={e => (e.currentTarget.style.background = '')}>
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
@@ -173,11 +176,8 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, color: 'var(--muted-ink)', whiteSpace: 'nowrap' }}>{formatDate(c.endDate)}</td>
                     <td style={S.td}><StatusBadge status={c.status} /></td>
                     <td style={S.td}><PaymentBadge status={c.paymentStatus} /></td>
-                    <td style={S.td}>
+                    <td style={S.td} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        <Link href={`/contracts/${c.id}`}>
-                          <button style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Открыть"><Eye size={15} /></button>
-                        </Link>
                         <button onClick={() => { setEditing(c); setFormOpen(true) }} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Редактировать"><Pencil size={15} /></button>
                         <button onClick={() => { if (confirm('Удалить контракт?')) deleteContract(c.id) }} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Удалить"
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--danger-soft)'; (e.currentTarget as HTMLElement).style.color = 'var(--danger)' }}
