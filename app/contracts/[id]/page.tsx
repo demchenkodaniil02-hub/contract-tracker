@@ -179,11 +179,8 @@ export default function ContractDetailPage() {
           <h2 className="font-semibold text-slate-700 text-sm">Детали контракта</h2>
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
             <div><span className="text-slate-500">Объект:</span> <span className="font-medium">{obj?.name ?? '—'}</span></div>
-            <div><span className="text-slate-500">Адрес:</span> {obj?.address ?? '—'}</div>
             <div><span className="text-slate-500">Заказчик:</span> <span className="font-medium">{customer?.name ?? '—'}</span></div>
-            <div><span className="text-slate-500">Компания:</span> {customer?.company ?? '—'}</div>
             <div><span className="text-slate-500">Исполнитель:</span> <span className="font-medium">{contractor?.name ?? '—'}</span></div>
-            <div><span className="text-slate-500">Компания:</span> {contractor?.company ?? '—'}</div>
             <div><span className="text-slate-500">Начало:</span> {formatDate(contract.startDate)}</div>
             <div><span className="text-slate-500">Окончание:</span> {formatDate(contract.endDate)}</div>
           </div>
