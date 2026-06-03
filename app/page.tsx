@@ -171,6 +171,7 @@ export default function DashboardPage() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
                 <Tooltip
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                   formatter={(v: unknown, name: unknown) => [formatMoney(Number(v) * 1000000), String(name)]}
                   labelStyle={{ fontWeight: 600, marginBottom: 4 }}
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--line)' }}
