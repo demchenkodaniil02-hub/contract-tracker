@@ -74,25 +74,23 @@ export const useStore = create<AppState>()((set, get) => ({
 
   loadAll: async () => {
     set({ loading: true })
+    const timeout = <T,>(p: Promise<T>, ms = 8000): Promise<T> =>
+      Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
     try {
+      const safe = async (p: PromiseLike<{ data: any[] | null; error: any }>) => {
+        try { const r = await timeout(Promise.resolve(p)); return r.data ?? [] }
+        catch { return [] }
+      }
       const [contracts, objects, counterparties, stages, comments, documents, tasks] = await Promise.all([
-        supabase.from('contracts').select('*'),
-        supabase.from('objects').select('*'),
-        supabase.from('counterparties').select('*'),
-        supabase.from('stages').select('*'),
-        supabase.from('comments').select('*').order('createdAt', { ascending: false }),
-        supabase.from('documents').select('*').order('uploadedAt', { ascending: false }),
-        supabase.from('tasks').select('*').order('dueDate', { ascending: true }),
+        safe(supabase.from('contracts').select('*')),
+        safe(supabase.from('objects').select('*')),
+        safe(supabase.from('counterparties').select('*')),
+        safe(supabase.from('stages').select('*')),
+        safe(supabase.from('comments').select('*').order('createdAt', { ascending: false })),
+        safe(supabase.from('documents').select('*').order('uploadedAt', { ascending: false })),
+        safe(supabase.from('tasks').select('*').order('dueDate', { ascending: true })),
       ])
-      set({
-        contracts: contracts.data ?? [],
-        objects: objects.data ?? [],
-        counterparties: counterparties.data ?? [],
-        stages: stages.data ?? [],
-        comments: comments.data ?? [],
-        documents: documents.data ?? [],
-        tasks: tasks.data ?? [],
-      })
+      set({ contracts, objects, counterparties, stages, comments, documents, tasks })
     } catch (err) {
       console.error('loadAll failed', err)
     } finally {
