@@ -1,0 +1,238 @@
+'use client'
+import { useEffect, useMemo } from 'react'
+import { useStore } from '@/lib/store'
+import { formatMoney, formatDate, isOverdue, isDueSoon, statusLabel } from '@/lib/utils'
+import { DirectionBadge } from '@/components/contracts/StatusBadge'
+import { ContractStatus } from '@/lib/types'
+import Link from 'next/link'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { AlertCircle, Clock, XCircle } from 'lucide-react'
+
+function formatAmountLabel(value: number) {
+  if (value < 1) {
+    return `${Math.round(value * 1000).toLocaleString('ru-RU')} тыс. ₽`
+  }
+  const formatted = Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1).replace(/\.0$/, '')
+  return `${formatted} млн. ₽`
+}
+
+function KpiCard({ label, value, sub, valueColor }: { label: string; value: string | number; sub?: string; valueColor?: string }) {
+  return (
+    <div className="ct-card" style={{ padding: '18px 20px' }}>
+      <div style={{ fontSize: 13, color: 'var(--muted-ink)', fontWeight: 500 }}>{label}</div>
+      <div className="tnum" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', margin: '8px 0 6px', color: valueColor || 'var(--ink)' }}>{value}</div>
+      {sub && <div style={{ fontSize: 12.5, color: 'var(--faint)' }}>{sub}</div>}
+    </div>
+  )
+}
+
+export default function DashboardPage() {
+  const { contracts, objects, counterparties, initSeed } = useStore()
+  useEffect(() => { initSeed() }, [])
+
+  const enriched = useMemo(() => contracts.map((c) => ({
+    ...c,
+    status: isOverdue(c.endDate, c.status) ? 'overdue' as ContractStatus : c.status,
+  })), [contracts])
+
+  const totalAmount = enriched.reduce((s, c) => s + c.amount, 0)
+  const totalPaid   = enriched.reduce((s, c) => s + c.amountPaid, 0)
+  const activeCount    = enriched.filter((c) => c.status === 'active').length
+  const overdueCount   = enriched.filter((c) => c.status === 'overdue').length
+  const completedCount = enriched.filter((c) => c.status === 'completed').length
+
+  const mafTotal      = enriched.filter((c) => c.direction === 'maf').reduce((s, c) => s + c.amount, 0)
+  const finishingTotal = enriched.filter((c) => c.direction === 'finishing').reduce((s, c) => s + c.amount, 0)
+
+  const overdue = enriched.filter((c) => c.status === 'overdue')
+  const dueSoon = enriched.filter((c) => isDueSoon(c.endDate, c.status))
+
+  const forecastData = useMemo(() => {
+    const now = new Date()
+    return [0, 1, 2].map(offset => {
+      const month = addMonths(now, offset)
+      const label = format(month, 'LLLL yyyy', { locale: ru })
+      const active = enriched.filter(c => c.status === 'active' || c.status === 'planning')
+      const expected = active.reduce((s, c) => {
+        const remaining = c.amount - c.amountPaid
+        if (remaining <= 0) return s
+        const monthsLeft = Math.max(1, Math.ceil((parseISO(c.endDate).getTime() - now.getTime()) / (30 * 86400000)))
+        return s + remaining / monthsLeft
+      }, 0)
+      return { month: label, expected: Math.round(expected) }
+    })
+  }, [enriched])
+
+  const totalExpected = forecastData.reduce((s, m) => s + m.expected, 0)
+  const totalDebt = enriched.filter(c => c.status !== 'cancelled').reduce((s, c) => s + (c.amount - c.amountPaid), 0)
+
+  const chartData = useMemo(() => {
+    const map: Record<string, { month: string; maf: number; finishing: number }> = {}
+    enriched.forEach((c) => {
+      if (!c.startDate) return
+      const key   = format(startOfMonth(parseISO(c.startDate)), 'yyyy-MM')
+      const label = format(startOfMonth(parseISO(c.startDate)), 'MMM yy', { locale: ru })
+      if (!map[key]) map[key] = { month: label, maf: 0, finishing: 0 }
+      if (c.direction === 'maf') map[key].maf += c.amount / 1000000
+      else map[key].finishing += c.amount / 1000000
+    })
+    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).map(([, v]) => v)
+  }, [enriched])
+
+  return (
+    <div className="fade-in" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Дашборд</h1>
+        <span style={{ fontSize: 13, color: 'var(--faint)' }}>Обновлено: сегодня</span>
+      </div>
+
+      {overdueCount > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          background: 'var(--danger-soft)', border: '1px solid #f3d3d3',
+          borderRadius: 14, padding: '14px 18px', color: '#b23232', fontSize: 14,
+        }}>
+          <div style={{ width: 30, height: 30, borderRadius: 8, background: '#fff', display: 'grid', placeItems: 'center', color: 'var(--danger)', flexShrink: 0 }}>
+            <AlertCircle size={18} />
+          </div>
+          <span><b>Просрочено {overdueCount} контракт{overdueCount === 1 ? '' : overdueCount < 5 ? 'а' : 'ов'}</b> — требуется внимание</span>
+          <Link href="/contracts" style={{ marginLeft: 'auto', fontWeight: 600, fontSize: 13, color: '#b23232', textDecoration: 'none', opacity: 0.75 }}>Смотреть →</Link>
+        </div>
+      )}
+
+      {/* KPI */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+        <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
+        <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`Оплачено: ${formatMoney(totalPaid)}`} />
+        <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
+        <KpiCard label="Просрочено"       value={overdueCount} sub={overdueCount > 0 ? 'требуют действий' : 'всё в порядке'} valueColor={overdueCount > 0 ? 'var(--danger)' : undefined} />
+      </div>
+
+      {/* Directions */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {[
+          { id: 'maf', label: 'МАФ / Металлоконструкции', color: 'var(--maf)', total: mafTotal },
+          { id: 'finishing', label: 'Отделочные работы', color: 'var(--otd)', total: finishingTotal },
+        ].map(({ id, label, color, total }) => {
+          const dir = id as 'maf' | 'finishing'
+          return (
+            <div key={id} className="ct-card" style={{ padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, fontSize: 15 }}>
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: color, display: 'inline-block' }} />
+                {label}
+              </div>
+              <div className="tnum" style={{ fontSize: 28, fontWeight: 700, color, margin: '12px 0 4px', letterSpacing: '-0.02em' }}>{formatMoney(total)}</div>
+              <div style={{ fontSize: 13, color: 'var(--faint)' }}>
+                {enriched.filter(c => c.direction === dir).length} контрактов · {objects.filter(o => o.direction === dir).length} объектов
+              </div>
+              <div style={{ marginTop: 16, borderTop: '1px solid var(--line-soft)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(['active', 'completed', 'planning', 'overdue'] as ContractStatus[]).map((st) => {
+                  const cnt = enriched.filter(c => c.direction === dir && c.status === st).length
+                  if (!cnt) return null
+                  return (
+                    <div key={st} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                      <span style={{ color: 'var(--muted-ink)' }}>{statusLabel[st]}</span>
+                      <b className="tnum">{cnt}</b>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Chart */}
+      {chartData.length > 0 && (
+        <div className="ct-card" style={{ padding: '20px 22px' }}>
+          <div style={{ fontWeight: 600, fontSize: 15 }}>Сумма контрактов по месяцам</div>
+          <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 2 }}>тыс. / млн. ₽ · по дате начала</div>
+          <ResponsiveContainer width="100%" height={220} style={{ marginTop: 16 }}>
+            <BarChart data={chartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
+              <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={formatAmountLabel} />
+              <Tooltip formatter={(v) => [formatAmountLabel(Number(v))]} />
+              <Legend wrapperStyle={{ fontSize: 12.5, color: 'var(--muted-ink)' }} />
+              <Bar dataKey="maf"      name="МАФ / Металл" fill="#2f6bdc" radius={[4,4,0,0]} />
+              <Bar dataKey="finishing" name="Отделка"      fill="#e07a1a" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Прогноз поступлений */}
+      <div className="ct-card" style={{ padding: '20px 22px' }}>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Прогноз поступлений</div>
+        <div style={{ fontSize: 12, color: 'var(--faint)', marginBottom: 16 }}>
+          Ожидается получить за 3 месяца: <b className="tnum" style={{ color: 'var(--ink)' }}>{formatMoney(totalExpected)}</b>
+          {totalDebt > 0 && <> · Дебиторка: <b className="tnum" style={{ color: 'var(--danger)' }}>{formatMoney(totalDebt)}</b></>}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+          {forecastData.map((m, i) => (
+            <div key={i} style={{ background: 'var(--bg)', borderRadius: 12, padding: '14px 18px', borderLeft: `4px solid ${i === 0 ? 'var(--maf)' : i === 1 ? 'var(--ok)' : 'var(--warn)'}` }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-ink)', textTransform: 'capitalize', marginBottom: 6 }}>{m.month}</div>
+              <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)' }}>{formatMoney(m.expected)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Panels */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {/* Overdue */}
+        <div className="ct-card" style={{ padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, fontSize: 14.5, color: 'var(--danger)', marginBottom: 8 }}>
+            <XCircle size={18} /> Просроченные контракты
+          </div>
+          {overdue.length === 0
+            ? <div style={{ textAlign: 'center', color: 'var(--faint)', fontSize: 13, padding: '28px 0' }}>Просроченных нет</div>
+            : overdue.map((c) => {
+                const obj      = objects.find((o) => o.id === c.objectId)
+                const customer = counterparties.find((x) => x.id === c.customerId)
+                return (
+                  <Link key={c.id} href={`/contracts/${c.id}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '11px 0', borderTop: '1px solid var(--line-soft)', textDecoration: 'none', cursor: 'pointer' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{c.number}</div>
+                      <div style={{ fontSize: 12.5, color: 'var(--faint)', marginTop: 3 }}>{obj?.name} · {customer?.name}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', fontSize: 12.5, color: 'var(--faint)', whiteSpace: 'nowrap' }}>
+                      до {formatDate(c.endDate)}
+                      <div style={{ marginTop: 6 }}><DirectionBadge direction={c.direction} /></div>
+                    </div>
+                  </Link>
+                )
+              })
+          }
+        </div>
+
+        {/* Due soon */}
+        <div className="ct-card" style={{ padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, fontSize: 14.5, color: 'var(--warn)', marginBottom: 8 }}>
+            <Clock size={18} /> Заканчиваются в течение 30 дней
+          </div>
+          {dueSoon.length === 0
+            ? <div style={{ textAlign: 'center', color: 'var(--faint)', fontSize: 13, padding: '28px 0' }}>Дедлайнов нет</div>
+            : dueSoon.map((c) => {
+                const obj      = objects.find((o) => o.id === c.objectId)
+                const customer = counterparties.find((x) => x.id === c.customerId)
+                return (
+                  <Link key={c.id} href={`/contracts/${c.id}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '11px 0', borderTop: '1px solid var(--line-soft)', textDecoration: 'none' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{c.number}</div>
+                      <div style={{ fontSize: 12.5, color: 'var(--faint)', marginTop: 3 }}>{obj?.name} · {customer?.name}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', fontSize: 12.5, color: 'var(--warn)', whiteSpace: 'nowrap' }}>
+                      до {formatDate(c.endDate)}
+                      <div style={{ marginTop: 6 }}><DirectionBadge direction={c.direction} /></div>
+                    </div>
+                  </Link>
+                )
+              })
+          }
+        </div>
+      </div>
+    </div>
+  )
+}

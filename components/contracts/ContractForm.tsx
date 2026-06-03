@@ -1,0 +1,157 @@
+'use client'
+import { useStore } from '@/lib/store'
+import { Contract } from '@/lib/types'
+import { newId } from '@/lib/utils'
+import { useForm } from 'react-hook-form'
+import { Portal } from '@/components/ui/Portal'
+
+interface Props {
+  open: boolean
+  onClose: () => void
+  initial?: Contract
+}
+
+const S = {
+  input: { padding: '7px 10px', border: '1px solid var(--line)', borderRadius: 8, fontFamily: 'inherit', fontSize: 13, background: '#fff', color: 'var(--ink)', width: '100%', boxSizing: 'border-box' } as React.CSSProperties,
+  label: { fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 4 } as React.CSSProperties,
+  field: { display: 'flex', flexDirection: 'column' } as React.CSSProperties,
+}
+
+export function ContractForm({ open, onClose, initial }: Props) {
+  const { addContract, updateContract, counterparties, objects } = useStore()
+  const customers   = counterparties.filter((c) => c.type === 'customer')
+  const contractors = counterparties.filter((c) => c.type === 'contractor')
+
+  const { register, handleSubmit, setValue, watch, reset } = useForm<Contract>({
+    defaultValues: initial ?? {
+      id: '', number: '', objectId: '', direction: 'maf',
+      customerId: '', contractorId: '', amount: 0, amountPaid: 0,
+      startDate: '', endDate: '', status: 'planning', paymentStatus: 'not_paid',
+      notes: '', createdAt: new Date().toISOString().slice(0, 10),
+    },
+  })
+
+  const onSubmit = (data: Contract) => {
+    if (initial) updateContract({ ...data, id: initial.id })
+    else addContract({ ...data, id: newId() })
+    reset(); onClose()
+  }
+
+  if (!open) return null
+
+  return (
+    <Portal>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,41,.42)', backdropFilter: 'blur(2px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <div style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 580, boxShadow: '0 24px 70px -20px rgba(15,23,41,.5)', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 40px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
+          <span style={{ fontSize: 17, fontWeight: 700 }}>{initial ? 'Редактировать контракт' : 'Новый контракт'}</span>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'var(--bg)', color: 'var(--muted-ink)', cursor: 'pointer', fontSize: 18, display: 'grid', placeItems: 'center' }}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', flex: 1 }}>
+          {/* Номер + Направление */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={S.field}>
+              <label style={S.label}>№ Контракта *</label>
+              <input {...register('number', { required: true })} placeholder="МАФ-2024-001" style={S.input} />
+            </div>
+            <div style={S.field}>
+              <label style={S.label}>Направление *</label>
+              <select style={S.input} value={watch('direction')} onChange={e => setValue('direction', e.target.value as 'maf' | 'finishing')}>
+                <option value="maf">МАФ / Металлоконструкции</option>
+                <option value="finishing">Отделочные работы</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Объект */}
+          <div style={S.field}>
+            <label style={S.label}>Объект</label>
+            <select style={S.input} value={watch('objectId')} onChange={e => setValue('objectId', e.target.value)}>
+              <option value="">Выберите объект</option>
+              {objects.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+            </select>
+          </div>
+
+          {/* Заказчик + Исполнитель */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={S.field}>
+              <label style={S.label}>Заказчик *</label>
+              <select style={S.input} value={watch('customerId')} onChange={e => setValue('customerId', e.target.value)}>
+                <option value="">Выберите заказчика</option>
+                {customers.map(c => <option key={c.id} value={c.id}>{c.name} — {c.company}</option>)}
+              </select>
+            </div>
+            <div style={S.field}>
+              <label style={S.label}>Исполнитель *</label>
+              <select style={S.input} value={watch('contractorId')} onChange={e => setValue('contractorId', e.target.value)}>
+                <option value="">Выберите исполнителя</option>
+                {contractors.map(c => <option key={c.id} value={c.id}>{c.name} — {c.company}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* Сумма + Оплачено */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={S.field}>
+              <label style={S.label}>Сумма контракта (руб.) *</label>
+              <input type="number" {...register('amount', { valueAsNumber: true })} style={S.input} />
+            </div>
+            <div style={S.field}>
+              <label style={S.label}>Оплачено (руб.)</label>
+              <input type="number" {...register('amountPaid', { valueAsNumber: true })} style={S.input} />
+            </div>
+          </div>
+
+          {/* Даты */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={S.field}>
+              <label style={S.label}>Начало *</label>
+              <input type="date" {...register('startDate', { required: true })} style={S.input} />
+            </div>
+            <div style={S.field}>
+              <label style={S.label}>Окончание *</label>
+              <input type="date" {...register('endDate', { required: true })} style={S.input} />
+            </div>
+          </div>
+
+          {/* Статус + Оплата */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={S.field}>
+              <label style={S.label}>Статус</label>
+              <select style={S.input} value={watch('status')} onChange={e => setValue('status', e.target.value as Contract['status'])}>
+                <option value="planning">Планируется</option>
+                <option value="active">Активный</option>
+                <option value="paused">Приостановлен</option>
+                <option value="completed">Завершён</option>
+                <option value="cancelled">Отменён</option>
+              </select>
+            </div>
+            <div style={S.field}>
+              <label style={S.label}>Оплата</label>
+              <select style={S.input} value={watch('paymentStatus')} onChange={e => setValue('paymentStatus', e.target.value as Contract['paymentStatus'])}>
+                <option value="not_paid">Не оплачено</option>
+                <option value="partial">Частично оплачено</option>
+                <option value="paid">Оплачено</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Примечания */}
+          <div style={S.field}>
+            <label style={S.label}>Примечания</label>
+            <textarea {...register('notes')} rows={3} placeholder="Дополнительная информация..." style={{ ...S.input, resize: 'vertical' }} />
+          </div>
+
+        </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '16px 22px', borderTop: '1px solid var(--line)', flexShrink: 0 }}>
+            <button type="button" onClick={onClose} style={{ padding: '9px 18px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Отмена</button>
+            <button type="submit" style={{ padding: '9px 18px', borderRadius: 10, border: '1px solid #182033', background: '#182033', color: '#fff', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>{initial ? 'Сохранить' : 'Создать'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    </Portal>
+  )
+}
