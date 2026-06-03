@@ -92,7 +92,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style={{ display: 'none' }} />
 
       {contractDocs.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 8, marginBottom: 12 }}>
           {contractDocs.map((doc) => (
             <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '11px 13px', border: '1px solid var(--line)', borderRadius: 11, transition: 'border-color .14s, background .14s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#d4dae2'; (e.currentTarget as HTMLElement).style.background = '#fafbfc' }}

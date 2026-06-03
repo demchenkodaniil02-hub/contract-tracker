@@ -221,10 +221,8 @@ export default function ContractDetailPage() {
 
       <ContractTasks contractId={id} />
 
-      <div className="grid grid-cols-2 gap-4">
-        <ContractComments contractId={id} />
-        <ContractDocuments contractId={id} />
-      </div>
+      <ContractComments contractId={id} />
+      <ContractDocuments contractId={id} />
 
       <ContractHistory contractId={id} />
 
