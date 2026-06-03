@@ -217,14 +217,14 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
+      <ContractPayments contractId={id} />
+
       <ContractTasks contractId={id} />
 
       <div className="grid grid-cols-2 gap-4">
         <ContractComments contractId={id} />
         <ContractDocuments contractId={id} />
       </div>
-
-      <ContractPayments contractId={id} />
 
       <ContractHistory contractId={id} />
 
