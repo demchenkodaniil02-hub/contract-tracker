@@ -24,7 +24,7 @@ const S = {
 }
 
 export default function ContractsPage() {
-  const { contracts, objects, counterparties, deleteContract, initSeed } = useStore()
+  const { contracts, objects, counterparties, deleteContract, initSeed, loadAll, loading } = useStore()
   useEffect(() => { initSeed() }, [])
 
   const [search, setSearch] = useState('')
@@ -93,7 +93,9 @@ export default function ContractsPage() {
     <div className="fade-in" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Контракты</h1>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {loading && <span style={{ fontSize: 13, color: 'var(--faint)' }}>Загрузка...</span>}
+          <button style={S.btn()} onClick={() => loadAll()} title="Обновить данные">↻</button>
           <button style={S.btn(false, true)} onClick={() => { setEditing(undefined); setFormOpen(true) }}><Plus size={16} /> Новый контракт</button>
         </div>
       </div>
