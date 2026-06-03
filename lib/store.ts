@@ -105,7 +105,10 @@ export const useStore = create<AppState>()((set, get) => ({
   loadAll: async () => {
     set({ loading: true })
     try {
-      const res = await fetch('/api/load-all')
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 15000)
+      const res = await fetch('/api/load-all', { signal: controller.signal })
+      clearTimeout(timer)
       if (!res.ok) throw new Error('load-all failed: ' + res.status)
       const data = await res.json()
       set({
