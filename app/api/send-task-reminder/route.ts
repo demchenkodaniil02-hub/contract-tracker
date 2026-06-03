@@ -5,7 +5,11 @@ function emailHtml(task: Task, contractNumber?: string) {
   const dueLabel = `${task.dueDate.split('-').reverse().join('.')} в ${task.dueTime}`
   return `<!DOCTYPE html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+</head>
 <body style="margin:0;padding:0;background:#f3f4f8;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f8;padding:32px 0;">
     <tr><td align="center">
@@ -88,7 +92,7 @@ export async function POST(req: Request) {
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
         from: 'КонтрактТрекер <onboarding@resend.dev>',
         to: email,
