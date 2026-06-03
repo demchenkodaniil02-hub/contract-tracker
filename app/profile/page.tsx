@@ -1,17 +1,18 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProfile } from '@/lib/useProfile'
-import { User, Save } from 'lucide-react'
-
-const AVATAR_COLORS = ['#2f6bdc', '#1f8a5b', '#e07a1a', '#9b5de5', '#e0325f', '#0891b2', '#be123c']
+import { Save } from 'lucide-react'
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
 export default function ProfilePage() {
   const { profile, loading, updateProfile } = useProfile()
   const [name, setName] = useState('')
-  const [role, setRole] = useState('')
   const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    if (profile?.name) setName(profile.name)
+  }, [profile?.name])
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
@@ -19,7 +20,7 @@ export default function ProfilePage() {
     </div>
   )
 
-  const currentName = name || profile?.name || ''
+  const currentName = name
 
   const inp: React.CSSProperties = { padding: '10px 13px', border: '1px solid var(--line)', borderRadius: 10, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', width: '100%', boxSizing: 'border-box' }
 
@@ -54,7 +55,6 @@ export default function ProfilePage() {
               onChange={e => setName(e.target.value)}
               placeholder="Иванов Иван Иванович"
               style={inp}
-              onFocus={e => { if (!name && profile?.name) setName(profile.name) }}
             />
           </div>
           <div>
