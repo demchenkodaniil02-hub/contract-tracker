@@ -213,7 +213,10 @@ export default function ContractsPage() {
                 <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14 }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amount, 0))}
                 </td>
-                <td colSpan={5} style={{ borderTop: '1px solid var(--line)' }} />
+                <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--ok)' }} className="tnum">
+                  {formatMoney(filtered.reduce((s, c) => s + c.amountPaid, 0))}
+                </td>
+                <td colSpan={4} style={{ borderTop: '1px solid var(--line)' }} />
               </tr>
             </tfoot>
           </table>

@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+
+export const maxDuration = 60
 import { createYandexDiskClient } from '@/lib/yandex-disk'
 import { supabase as anonSupabase } from '@/lib/supabase'
 
