@@ -181,11 +181,11 @@ export function ContractForm({ open, onClose, initial }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div style={S.field}>
               <label style={S.label}>Сумма контракта (руб.) *</label>
-              <input type="number" {...register('amount', { valueAsNumber: true })} style={S.input} />
+              <input type="number" step="0.01" min="0" {...register('amount', { valueAsNumber: true })} style={S.input} />
             </div>
             <div style={S.field}>
               <label style={S.label}>Оплачено (руб.)</label>
-              <input type="number" {...register('amountPaid', { valueAsNumber: true })} style={S.input} />
+              <input type="number" step="0.01" min="0" {...register('amountPaid', { valueAsNumber: true })} style={S.input} />
             </div>
           </div>
 

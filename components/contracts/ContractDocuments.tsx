@@ -26,36 +26,24 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt))
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (!contract) {
-      setError('Контракт не найден')
-      return
-    }
-
-    // POST file to server upload endpoint
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    if (!contract) { setError('Контракт не найден'); return }
 
     setUploading(true)
     setError('')
-
     try {
       const contractNumber = contract.number || contractId
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('contractId', contractId)
-      formData.append('contractNumber', contractNumber)
-
-      const res = await fetch('/api/upload-doc', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data?.error || 'Upload failed')
-
-      const doc = data.document
-      await addDocument(doc)
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('contractId', contractId)
+        formData.append('contractNumber', contractNumber)
+        const res = await fetch('/api/upload-doc', { method: 'POST', body: formData })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data?.error || 'Upload failed')
+        await addDocument(data.document)
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       setError(msg)
@@ -100,7 +88,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
         {syncing && <div style={{ fontSize: 12, color: 'var(--maf)', fontWeight: 600 }}>Синхронизация документов...</div>}
       </div>
 
-      <input ref={fileInputRef} type="file" onChange={handleFileSelect} className="hidden"
+      <input ref={fileInputRef} type="file" multiple onChange={handleFileSelect} className="hidden"
         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style={{ display: 'none' }} />
 
       {contractDocs.length > 0 && (
@@ -142,7 +130,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
         onMouseEnter={e => { if (!uploading && !syncing) { (e.currentTarget as HTMLElement).style.borderColor = '#2f6bdc'; (e.currentTarget as HTMLElement).style.background = 'var(--maf-soft)'; (e.currentTarget as HTMLElement).style.color = 'var(--maf)' } }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#d4dae2'; (e.currentTarget as HTMLElement).style.background = 'none'; (e.currentTarget as HTMLElement).style.color = 'var(--faint)' }}>
         <Upload size={15} />
-        {uploading ? 'Загрузка...' : syncing ? 'Синхронизируется...' : 'Загрузить документ'}
+        {uploading ? 'Загрузка...' : syncing ? 'Синхронизируется...' : 'Загрузить документы (можно несколько)'}
       </button>
     </div>
   )

@@ -100,6 +100,15 @@ export interface Profile {
   createdAt: string
 }
 
+export interface Payment {
+  id: string
+  contractId: string
+  amount: number
+  paidAt: string
+  note: string
+  createdAt: string
+}
+
 export interface Task {
   id: string
   contractId: string

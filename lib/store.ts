@@ -1,6 +1,6 @@
 'use client'
 import { create } from 'zustand'
-import { Contract, Counterparty, WorkObject, WorkStage, Comment, Document, ContractHistory, Task } from './types'
+import { Contract, Counterparty, WorkObject, WorkStage, Comment, Document, ContractHistory, Task, Payment } from './types'
 import { supabase } from './supabase'
 
 interface AppState {
@@ -12,6 +12,7 @@ interface AppState {
   documents: Document[]
   history: ContractHistory[]
   tasks: Task[]
+  payments: Payment[]
   loading: boolean
   seeded: boolean
 
@@ -52,6 +53,10 @@ interface AppState {
   updateTask: (t: Task) => Promise<void>
   deleteTask: (id: string) => Promise<void>
 
+  // Payment actions
+  addPayment: (p: Payment) => Promise<void>
+  deletePayment: (id: string, contractId: string) => Promise<void>
+
   // History actions
   addHistory: (h: ContractHistory) => Promise<void>
   loadHistory: (contractId: string) => Promise<void>
@@ -69,6 +74,7 @@ export const useStore = create<AppState>()((set, get) => ({
   documents: [],
   history: [],
   tasks: [],
+  payments: [],
   loading: false,
   seeded: false,
 
@@ -86,6 +92,7 @@ export const useStore = create<AppState>()((set, get) => ({
         comments: data.comments ?? [],
         documents: data.documents ?? [],
         tasks: data.tasks ?? [],
+        payments: data.payments ?? [],
       })
     } catch (err) {
       console.error('loadAll failed', err)
@@ -225,6 +232,34 @@ export const useStore = create<AppState>()((set, get) => ({
   deleteTask: async (id) => {
     await supabase.from('tasks').delete().eq('id', id)
     set((s) => ({ tasks: s.tasks.filter((x) => x.id !== id) }))
+  },
+
+  addPayment: async (p) => {
+    await supabase.from('payments').insert(p)
+    // Обновляем amountPaid контракта
+    const contract = get().contracts.find(c => c.id === p.contractId)
+    if (contract) {
+      const newPaid = Number((contract.amountPaid + p.amount).toFixed(2))
+      await supabase.from('contracts').update({ amountPaid: newPaid }).eq('id', p.contractId)
+      set((s) => ({
+        payments: [p, ...s.payments],
+        contracts: s.contracts.map(c => c.id === p.contractId ? { ...c, amountPaid: newPaid } : c),
+      }))
+    }
+  },
+  deletePayment: async (id, contractId) => {
+    const payment = get().payments.find(p => p.id === id)
+    if (!payment) return
+    await supabase.from('payments').delete().eq('id', id)
+    const contract = get().contracts.find(c => c.id === contractId)
+    if (contract) {
+      const newPaid = Number(Math.max(0, contract.amountPaid - payment.amount).toFixed(2))
+      await supabase.from('contracts').update({ amountPaid: newPaid }).eq('id', contractId)
+      set((s) => ({
+        payments: s.payments.filter(p => p.id !== id),
+        contracts: s.contracts.map(c => c.id === contractId ? { ...c, amountPaid: newPaid } : c),
+      }))
+    }
   },
 
   initSeed: async () => {

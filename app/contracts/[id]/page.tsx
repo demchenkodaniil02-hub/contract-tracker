@@ -10,6 +10,7 @@ import { ContractComments } from '@/components/contracts/ContractComments'
 import { ContractDocuments } from '@/components/contracts/ContractDocuments'
 import { ContractTasks } from '@/components/contracts/ContractTasks'
 import { ContractHistory } from '@/components/contracts/ContractHistory'
+import { ContractPayments } from '@/components/contracts/ContractPayments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -222,6 +223,8 @@ export default function ContractDetailPage() {
         <ContractComments contractId={id} />
         <ContractDocuments contractId={id} />
       </div>
+
+      <ContractPayments contractId={id} />
 
       <ContractHistory contractId={id} />
 
