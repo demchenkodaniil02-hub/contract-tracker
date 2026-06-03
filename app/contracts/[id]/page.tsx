@@ -190,15 +190,22 @@ export default function ContractDetailPage() {
           {contract.notes && <div style={{ gridColumn: '1/-1', fontSize: 12, color: 'var(--muted-ink)', borderTop: '1px solid var(--line-soft)', paddingTop: 8, marginTop: 4 }}>{contract.notes}</div>}
         </div>
         {/* Финансы */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', paddingLeft: 24, borderLeft: '1px solid var(--line-soft)' }}>
-          <Fin label="Сумма" value={formatMoney(contract.amount)} />
-          <Fin label="Оплачено" value={formatMoney(contract.amountPaid)} color="var(--ok)" />
-          <Fin label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
-          <div style={{ width: 64 }}>
-            <div style={{ height: 6, borderRadius: 999, background: '#eceff3' }}>
-              <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)' }} />
+        <div style={{ paddingLeft: 24, borderLeft: '1px solid var(--line-soft)', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 280 }}>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <Fin label="Сумма" value={formatMoney(contract.amount)} />
+            <Fin label="Оплачено" value={formatMoney(contract.amountPaid)} color="var(--ok)" />
+            <Fin label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
+          </div>
+          {/* Прогресс-бар на всю ширину под цифрами */}
+          <div>
+            <div style={{ height: 8, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${paidPct}%`, borderRadius: 999, background: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)', transition: 'width .5s' }} />
             </div>
-            <div style={{ fontSize: 11, color: 'var(--faint)', textAlign: 'center', marginTop: 4 }}>{paidPct}%</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+              <span style={{ fontSize: 11, color: 'var(--faint)' }}>0%</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: paidPct >= 100 ? 'var(--ok)' : 'var(--maf)' }}>{paidPct}% оплачено</span>
+              <span style={{ fontSize: 11, color: 'var(--faint)' }}>100%</span>
+            </div>
           </div>
         </div>
       </div>
