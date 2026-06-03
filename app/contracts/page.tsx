@@ -7,7 +7,7 @@ import { ContractForm } from '@/components/contracts/ContractForm'
 import { StatusBadge, PaymentBadge, DirectionBadge } from '@/components/contracts/StatusBadge'
 import { Plus, Search, Pencil, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const S = {
   card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
@@ -27,6 +27,8 @@ const S = {
 export default function ContractsPage() {
   const { contracts, objects, counterparties, deleteContract, initSeed, loadAll, loading } = useStore()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const objectParam = searchParams.get('object') ?? 'all'
   useEffect(() => { initSeed() }, [])
 
   const [search, setSearch] = useState('')
@@ -44,6 +46,7 @@ export default function ContractsPage() {
 
   const filtered = useMemo(() => {
     let list = contracts.map((c) => ({ ...c, status: isOverdue(c.endDate, c.status) ? 'overdue' as ContractStatus : c.status }))
+    if (objectParam !== 'all')       list = list.filter((c) => c.objectId === objectParam)
     if (filterDirection !== 'all')   list = list.filter((c) => c.direction === filterDirection)
     if (filterStatus !== 'all')      list = list.filter((c) => c.status === filterStatus)
     if (filterCustomer !== 'all')    list = list.filter((c) => c.customerId === filterCustomer)
@@ -65,7 +68,7 @@ export default function ContractsPage() {
       return sortDir === 'asc' ? String(av).localeCompare(String(bv), 'ru') : String(bv).localeCompare(String(av), 'ru')
     })
     return list
-  }, [contracts, filterDirection, filterStatus, filterCustomer, filterContractor, search, sortField, sortDir, counterparties, objects])
+  }, [contracts, objectParam, filterDirection, filterStatus, filterCustomer, filterContractor, search, sortField, sortDir, counterparties, objects])
 
   function toggleSort(field: keyof Contract) {
     if (sortField === field) setSortDir((d) => d === 'asc' ? 'desc' : 'asc')
@@ -94,7 +97,19 @@ export default function ContractsPage() {
   return (
     <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Контракты</h1>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Контракты</h1>
+          {objectParam !== 'all' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <span style={{ fontSize: 13, color: 'var(--muted-ink)' }}>
+                Объект: <b>{objects.find(o => o.id === objectParam)?.name ?? objectParam}</b>
+              </span>
+              <button onClick={() => router.push('/contracts')} style={{ fontSize: 12, color: 'var(--maf)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
+                Сбросить фильтр
+              </button>
+            </div>
+          )}
+        </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {loading && <span style={{ fontSize: 13, color: 'var(--faint)' }}>Загрузка...</span>}
           <button style={S.btn()} onClick={() => loadAll()} title="Обновить данные">↻</button>
