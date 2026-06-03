@@ -15,6 +15,18 @@ async function mutate(table: string, action: 'insert' | 'update' | 'delete' | 'u
   return json
 }
 
+async function getAuthorName(): Promise<string> {
+  try {
+    const { data: sess } = await supabase.auth.getSession()
+    const user = sess.session?.user
+    if (!user) return 'Система'
+    const { data: profile } = await supabase.from('profiles').select('name,email').eq('id', user.id).single()
+    return profile?.name || profile?.email || user.email || 'Система'
+  } catch {
+    return 'Система'
+  }
+}
+
 interface AppState {
   contracts: Contract[]
   objects: WorkObject[]
@@ -129,17 +141,14 @@ export const useStore = create<AppState>()((set, get) => ({
   addContract: async (c) => {
     await mutate('contracts', 'insert', c)
     set((s) => ({ contracts: [...s.contracts, c] }))
-    const { data: sess } = await supabase.auth.getSession()
-    const user = sess.session?.user
-    const author = user?.email || 'Система'
+    const author = await getAuthorName()
     await mutate('contract_history', 'insert', { id: Math.random().toString(36).slice(2), contractId: c.id, action: 'Создан контракт', author, createdAt: new Date().toISOString() })
   },
   updateContract: async (c) => {
     const old = get().contracts.find(x => x.id === c.id)
     set((s) => ({ contracts: s.contracts.map((x) => (x.id === c.id ? c : x)) }))
     await mutate('contracts', 'update', c, c.id)
-    const { data: sess } = await supabase.auth.getSession()
-    const author = sess.session?.user?.email || 'Система'
+    const author = await getAuthorName()
     if (old) {
       const changes: { field: string; oldValue: string; newValue: string }[] = []
       if (old.status !== c.status) changes.push({ field: 'Статус', oldValue: old.status, newValue: c.status })
