@@ -11,7 +11,6 @@ import { ContractDocuments } from '@/components/contracts/ContractDocuments'
 import { ContractTasks } from '@/components/contracts/ContractTasks'
 import { ContractHistory } from '@/components/contracts/ContractHistory'
 import { ContractPayments } from '@/components/contracts/ContractPayments'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, Pencil, Plus, Trash2, CheckCircle2 } from 'lucide-react'
@@ -155,24 +154,26 @@ export default function ContractDetailPage() {
   }
 
   return (
-    <div className="fade-in ct-page" style={{ padding: '20px 24px 32px', display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 1200 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
 
       {/* Шапка */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <button onClick={() => router.push('/contracts')} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
           <ArrowLeft size={16} />
         </button>
-        <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em' }}>{contract.number}</span>
+        <h1 style={{ margin: 0, fontWeight: 700, fontSize: 24, letterSpacing: '-0.02em' }}>{contract.number}</h1>
         <DirectionBadge direction={contract.direction} />
         <StatusBadge status={effectiveStatus} />
         <PaymentBadge status={contract.paymentStatus} />
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}><Pencil className="w-3.5 h-3.5 mr-1" />Редактировать</Button>
+          <button onClick={() => setEditOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>
+            <Pencil size={14} />Редактировать
+          </button>
         </div>
       </div>
 
       {/* Детали + Финансы — в одну строку */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '16px 20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 16, padding: '16px 20px', boxShadow: 'var(--card-shadow)' }}>
         {/* Детали */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px' }}>
           <Detail label="Объект" value={obj?.name ?? '—'} />
@@ -223,7 +224,7 @@ export default function ContractDetailPage() {
   function Detail({ label, value }: { label: string; value: string }) {
     return (
       <div>
-        <div style={{ fontSize: 11, color: 'var(--faint)', fontWeight: 600, marginBottom: 2 }}>{label}</div>
+        <div style={{ fontSize: 12.5, color: 'var(--faint)', fontWeight: 600, marginBottom: 2 }}>{label}</div>
         <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{value}</div>
       </div>
     )
@@ -232,7 +233,7 @@ export default function ContractDetailPage() {
   function Fin({ label, value, color }: { label: string; value: string; color?: string }) {
     return (
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 11, color: 'var(--faint)', marginBottom: 4 }}>{label}</div>
+        <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>{label}</div>
         <div style={{ fontSize: 14, fontWeight: 700, color: color ?? 'var(--ink)', whiteSpace: 'nowrap' }}>{value}</div>
       </div>
     )
