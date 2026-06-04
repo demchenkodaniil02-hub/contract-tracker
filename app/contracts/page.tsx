@@ -120,7 +120,6 @@ export default function ContractsPage() {
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {loading && <span style={{ fontSize: 13, color: 'var(--faint)' }}>Загрузка...</span>}
-          <button style={S.btn()} onClick={() => loadAll()} title="Обновить данные">↻</button>
           <button style={S.btn(false, true)} onClick={() => { setEditing(undefined); setFormOpen(true) }}><Plus size={16} /> Новый контракт</button>
         </div>
       </div>
