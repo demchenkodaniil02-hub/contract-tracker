@@ -210,15 +210,18 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
-      {/* Основной контент — 2 колонки, блоки не растягиваются по высоте соседа */}
+      {/* Основной контент — 2 явные колонки, каждая стекает блоки без зазоров */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
-        <ContractComments contractId={id} />
-        <ContractDocuments contractId={id} />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
-        <ContractPayments contractId={id} />
-        <ContractTasks contractId={id} />
+        {/* Левая колонка */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <ContractComments contractId={id} />
+          <ContractPayments contractId={id} />
+        </div>
+        {/* Правая колонка */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <ContractDocuments contractId={id} />
+          <ContractTasks contractId={id} />
+        </div>
       </div>
 
       <ContractHistory contractId={id} />
