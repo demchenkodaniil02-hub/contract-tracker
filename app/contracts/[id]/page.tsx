@@ -14,7 +14,7 @@ import { ContractPayments } from '@/components/contracts/ContractPayments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Pencil, Plus, Trash2, CheckCircle2, Copy } from 'lucide-react'
+import { ArrowLeft, Pencil, Plus, Trash2, CheckCircle2 } from 'lucide-react'
 
 function StageRow({ stage, onUpdate, onDelete }: { stage: WorkStage; onUpdate: (s: WorkStage) => Promise<void>; onDelete: (id: string) => Promise<void> }) {
   const [editing, setEditing] = useState(false)
@@ -93,12 +93,6 @@ export default function ContractDetailPage() {
 
   const [editOpen, setEditOpen] = useState(false)
 
-  async function handleDuplicate() {
-    if (!contract) return
-    const newContract = { ...contract, id: Math.random().toString(36).slice(2) + Date.now().toString(36), number: `${contract.number}-копия`, status: 'planning' as const, paymentStatus: 'not_paid' as const, amountPaid: 0, createdAt: new Date().toISOString().slice(0, 10) }
-    await addContract(newContract)
-    router.push(`/contracts/${newContract.id}`)
-  }
 
   const contract = contracts.find((c) => c.id === id)
   const contractStages = stages.filter((s) => s.contractId === id).sort((a, b) => a.plannedStart.localeCompare(b.plannedStart))
@@ -173,7 +167,6 @@ export default function ContractDetailPage() {
         <StatusBadge status={effectiveStatus} />
         <PaymentBadge status={contract.paymentStatus} />
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <Button size="sm" variant="outline" onClick={handleDuplicate}><Copy className="w-3.5 h-3.5 mr-1" />Дублировать</Button>
           <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}><Pencil className="w-3.5 h-3.5 mr-1" />Редактировать</Button>
         </div>
       </div>
