@@ -178,7 +178,7 @@ export default function DashboardPage() {
                 />
                 <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-ink)' }} />
                 {paymentContractKeys.map((k, i) => {
-                  const colors = ['#2f6bdc','#1f8a5b','#e07a1a','#9b5de5','#e0325f','#0891b2','#be123c','#16a34a']
+                  const colors = ['#2f6bdc','#e07a1a','#1f8a5b','#e0325f','#9b5de5','#0891b2','#f59e0b','#10b981','#ec4899','#6366f1','#14b8a6','#f97316','#84cc16','#8b5cf6','#ef4444','#06b6d4','#a855f7','#22c55e','#fb923c','#3b82f6']
                   return <Bar key={k.id} dataKey={k.label} name={k.label} stackId="a" fill={colors[i % colors.length]} radius={i === paymentContractKeys.length - 1 ? [4,4,0,0] : [0,0,0,0]} />
                 })}
               </BarChart>
