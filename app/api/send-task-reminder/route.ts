@@ -24,7 +24,7 @@ function emailHtml(task: Task, contractNumber?: string) {
                   <span style="font-size:20px;">🏗</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">КонтрактТрекер</div>
+                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">Контракт Трекер</div>
                   <div style="color:#93a0bb;font-size:12px;margin-top:2px;">Напоминание о задаче</div>
                 </td>
               </tr>
@@ -54,7 +54,7 @@ function emailHtml(task: Task, contractNumber?: string) {
             ${contractNumber ? `<p style="margin:0 0 24px;color:#8a93a8;font-size:13px;">Договор: <strong style="color:#0f1729;">${contractNumber}</strong></p>` : ''}
 
             <!-- CTA -->
-            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Открыть КонтрактТрекер →</a>
+            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Открыть Контракт Трекер →</a>
           </td>
         </tr>
 
@@ -62,7 +62,7 @@ function emailHtml(task: Task, contractNumber?: string) {
         <tr>
           <td style="background:#f8f9fb;padding:16px 32px;border-top:1px solid #eef0f4;">
             <p style="margin:0;color:#b0b8c8;font-size:12px;text-align:center;">
-              Автоматическое уведомление · КонтрактТрекер<br>
+              Автоматическое уведомление · Контракт Трекер<br>
               Не отвечайте на это письмо
             </p>
           </td>
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
-        from: 'КонтрактТрекер <onboarding@resend.dev>',
+        from: 'Контракт Трекер <onboarding@resend.dev>',
         to: email,
         subject: `⏰ Напоминание: ${task.title}`,
         html: emailHtml(task, contractNumber),

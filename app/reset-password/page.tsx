@@ -44,7 +44,7 @@ export default function ResetPasswordPage() {
             <HardHat size={24} color="#fff" />
           </div>
           <div>
-            <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>КонтрактТрекер</div>
+            <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>Контракт Трекер</div>
             <div style={{ color: '#93a0bb', fontSize: 12, marginTop: 2 }}>Управление заказами</div>
           </div>
         </div>

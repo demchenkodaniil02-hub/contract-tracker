@@ -45,7 +45,7 @@ export function Sidebar() {
             <HardHat size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15 }}>КонтрактТрекер</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15 }}>Контракт Трекер</div>
             <div style={{ fontSize: 11.5, color: '#93a0bb', marginTop: 2 }}>Управление заказами</div>
           </div>
         </div>
