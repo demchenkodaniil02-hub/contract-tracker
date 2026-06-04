@@ -119,11 +119,12 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16 }}>
         <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
         <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
         <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
-        <KpiCard label="Оплачено"         value={formatMoney(totalPaid)} sub={`Остаток: ${formatMoney(totalAmount - totalPaid)}`} valueColor="var(--ok)" />
+        <KpiCard label="Оплачено"         value={formatMoney(totalPaid)} sub={`${Math.round(totalPaid / totalAmount * 100) || 0}% от суммы`} valueColor="var(--ok)" />
+        <KpiCard label="Остаток"          value={formatMoney(totalAmount - totalPaid)} sub="к получению" valueColor="var(--danger)" />
       </div>
 
       {/* Directions */}
