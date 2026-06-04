@@ -43,6 +43,9 @@ export function ContractForm({ open, onClose, initial }: Props) {
   const contractors = counterparties.filter((c) => c.type === 'contractor')
 
   const [creating, setCreating] = useState<'object' | 'customer' | 'contractor' | null>(null)
+  // Локальный список только что созданных объектов — доступны мгновенно до ре-рендера store
+  const [freshObjects, setFreshObjects] = useState<{id: string, name: string}[]>([])
+  const [freshCounterparties, setFreshCounterparties] = useState<{id: string, name: string, type: string}[]>([])
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<Contract>({
     defaultValues: initial ?? {
@@ -62,6 +65,8 @@ export function ContractForm({ open, onClose, initial }: Props) {
         notes: '', createdAt: new Date().toISOString().slice(0, 10),
       })
       setCreating(null)
+      setFreshObjects([])
+      setFreshCounterparties([])
     }
   }, [open, initial])
 
@@ -73,39 +78,51 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
   const handleCreateObject = async (name: string) => {
     const id = newId()
+    const obj = { id, name, address: '', direction: watch('direction') || 'maf', customerId: '', status: 'active' as const, notes: '', createdAt: new Date().toISOString().slice(0, 10) }
+    // Сначала добавляем в локальный список — option появляется в DOM до setValue
+    setFreshObjects(prev => [...prev, { id, name }])
+    setValue('objectId', id)
+    setCreating(null)
+    // Затем сохраняем на сервер в фоне
     try {
-      await addObject({ id, name, address: '', direction: watch('direction') || 'maf', customerId: '', status: 'active', notes: '', createdAt: new Date().toISOString().slice(0, 10) })
-      setValue('objectId', id)
+      await addObject(obj)
     } catch (e) {
       console.error('Ошибка создания объекта', e)
+      setFreshObjects(prev => prev.filter(o => o.id !== id))
+      setValue('objectId', '')
     }
-    setCreating(null)
   }
 
   const handleCreateCustomer = async (name: string) => {
     const existing = customers.find(c => c.name.toLowerCase() === name.toLowerCase())
     if (existing) { setValue('customerId', existing.id); setCreating(null); return }
     const id = newId()
+    setFreshCounterparties(prev => [...prev, { id, name, type: 'customer' }])
+    setValue('customerId', id)
+    setCreating(null)
     try {
       await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'customer' })
-      setValue('customerId', id)
     } catch (e) {
       console.error('Ошибка создания заказчика', e)
+      setFreshCounterparties(prev => prev.filter(c => c.id !== id))
+      setValue('customerId', '')
     }
-    setCreating(null)
   }
 
   const handleCreateContractor = async (name: string) => {
     const existing = contractors.find(c => c.name.toLowerCase() === name.toLowerCase())
     if (existing) { setValue('contractorId', existing.id); setCreating(null); return }
     const id = newId()
+    setFreshCounterparties(prev => [...prev, { id, name, type: 'contractor' }])
+    setValue('contractorId', id)
+    setCreating(null)
     try {
       await addCounterparty({ id, name, company: '', phone: '', email: '', type: 'contractor' })
-      setValue('contractorId', id)
     } catch (e) {
       console.error('Ошибка создания исполнителя', e)
+      setFreshCounterparties(prev => prev.filter(c => c.id !== id))
+      setValue('contractorId', '')
     }
-    setCreating(null)
   }
 
   const addBtn = (type: 'object' | 'customer' | 'contractor') => (
@@ -152,6 +169,7 @@ export function ContractForm({ open, onClose, initial }: Props) {
             </div>
             <select style={S.input} value={watch('objectId')} onChange={e => setValue('objectId', e.target.value)}>
               <option value="">Выберите объект</option>
+              {freshObjects.filter(fo => !objects.find(o => o.id === fo.id)).map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
               {objects.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
             </select>
             {creating === 'object' && (
@@ -168,6 +186,7 @@ export function ContractForm({ open, onClose, initial }: Props) {
               </div>
               <select style={S.input} value={watch('customerId')} onChange={e => setValue('customerId', e.target.value)}>
                 <option value="">Выберите заказчика</option>
+                {freshCounterparties.filter(f => f.type === 'customer' && !customers.find(c => c.id === f.id)).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 {customers.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` — ${c.company}` : ''}</option>)}
               </select>
               {creating === 'customer' && (
@@ -181,6 +200,7 @@ export function ContractForm({ open, onClose, initial }: Props) {
               </div>
               <select style={S.input} value={watch('contractorId')} onChange={e => setValue('contractorId', e.target.value)}>
                 <option value="">Выберите исполнителя</option>
+                {freshCounterparties.filter(f => f.type === 'contractor' && !contractors.find(c => c.id === f.id)).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 {contractors.map(c => <option key={c.id} value={c.id}>{c.name}{c.company ? ` — ${c.company}` : ''}</option>)}
               </select>
               {creating === 'contractor' && (
