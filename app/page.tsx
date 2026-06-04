@@ -120,8 +120,17 @@ export default function DashboardPage() {
 
       {/* KPI */}
       <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
-        <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
-        <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
+        <KpiCard label="Контрактов всего" value={enriched.length} sub={`${enriched.length} контрактов`} />
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--line-soft)' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Активных</div>
+            <div className="tnum" style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}>{activeCount}</div>
+          </div>
+          <div style={{ padding: '14px 20px' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Завершённых</div>
+            <div className="tnum" style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}>{completedCount}</div>
+          </div>
+        </div>
         <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
         {/* Двойная карточка: Оплачено + Остаток */}
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
