@@ -124,15 +124,10 @@ export default function DashboardPage() {
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
           <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
           <div className="tnum" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>{enriched.length}</div>
-          <div style={{ display: 'flex', gap: 16, borderTop: '1px solid var(--line-soft)', paddingTop: 10 }}>
-            <div>
-              <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>Активных</div>
-              <div className="tnum" style={{ fontSize: 16, fontWeight: 700 }}>{activeCount}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>Завершённых</div>
-              <div className="tnum" style={{ fontSize: 16, fontWeight: 700 }}>{completedCount}</div>
-            </div>
+          <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, fontSize: 13, color: 'var(--muted-ink)' }}>
+            <span>Активных <b className="tnum" style={{ color: 'var(--ink)' }}>{activeCount}</b></span>
+            <span style={{ margin: '0 8px', color: 'var(--line)' }}>·</span>
+            <span>Завершённых <b className="tnum" style={{ color: 'var(--ink)' }}>{completedCount}</b></span>
           </div>
         </div>
 
