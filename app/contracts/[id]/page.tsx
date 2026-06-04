@@ -210,14 +210,14 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
-      {/* Тяжёлый контент слева, лёгкий стеком справа */}
+      {/* 2 колонки, блоки с внутренним скроллом */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
-        {/* Левая — только оплаты, всегда много контента */}
-        <ContractPayments contractId={id} />
-        {/* Правая — лёгкие блоки стеком */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <ContractPayments contractId={id} />
+          <ContractComments contractId={id} />
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ContractDocuments contractId={id} />
-          <ContractComments contractId={id} />
           <ContractTasks contractId={id} />
           <ContractHistory contractId={id} />
         </div>

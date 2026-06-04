@@ -19,7 +19,7 @@ export function ContractHistory({ contractId }: { contractId: string }) {
 
       {contractHistory.length === 0
         ? <div style={{ color: 'var(--faint)', fontSize: 13, padding: '8px 0' }}>История пуста</div>
-        : <div style={{ display: 'flex', flexDirection: 'column' }}>
+        : <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 280, overflowY: 'auto' }}>
             {contractHistory.map((h, i) => (
               <div key={h.id} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: i > 0 ? '1px solid var(--line-soft)' : 'none' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--maf)', flexShrink: 0, marginTop: 5 }} />

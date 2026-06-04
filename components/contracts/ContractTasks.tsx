@@ -160,7 +160,7 @@ export function ContractTasks({ contractId }: { contractId: string }) {
           Задач нет. {isAdding ? '' : 'Нажмите кнопку чтобы добавить первую задачу'}
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 320, overflowY: 'auto' }}>
           {contractTasks.map((task) => (
             <div
               key={task.id}
