@@ -215,11 +215,11 @@ export default function ContractDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ContractPayments contractId={id} />
           <ContractComments contractId={id} />
+          <ContractHistory contractId={id} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ContractDocuments contractId={id} />
           <ContractTasks contractId={id} />
-          <ContractHistory contractId={id} />
         </div>
       </div>
 
