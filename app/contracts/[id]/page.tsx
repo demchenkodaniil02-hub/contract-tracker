@@ -40,9 +40,9 @@ function StageRow({ stage, onUpdate, onDelete }: { stage: WorkStage; onUpdate: (
           </span>
         </td>
         <td className="px-4 py-3">
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditing(true)}><Pencil className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => onDelete(stage.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <button onClick={() => setEditing(true)} style={{ width: 28, height: 28, borderRadius: 7, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Pencil size={13} /></button>
+            <button onClick={() => onDelete(stage.id)} style={{ width: 28, height: 28, borderRadius: 7, border: 'none', background: 'none', color: 'var(--danger)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Trash2 size={13} /></button>
           </div>
         </td>
       </tr>
