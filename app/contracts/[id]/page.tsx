@@ -73,9 +73,7 @@ function StageRow({ stage, onUpdate, onDelete }: { stage: WorkStage; onUpdate: (
         </Select>
       </td>
       <td className="px-2 py-2">
-        <Button size="icon" className="h-7 w-7" onClick={() => { onUpdate(local).catch(console.error); setEditing(false) }}>
-          <CheckCircle2 className="w-3.5 h-3.5" />
-        </Button>
+        <button onClick={() => { onUpdate(local).catch(console.error); setEditing(false) }} style={{ width: 28, height: 28, borderRadius: 7, border: 'none', background: '#2f6bdc', color: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><CheckCircle2 size={13} /></button>
       </td>
     </tr>
   )
