@@ -119,12 +119,23 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16 }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
         <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
         <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
         <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
-        <KpiCard label="Оплачено"         value={formatMoney(totalPaid)} sub={`${Math.round(totalPaid / totalAmount * 100) || 0}% от суммы`} valueColor="var(--ok)" />
-        <KpiCard label="Остаток"          value={formatMoney(totalAmount - totalPaid)} sub="к получению" valueColor="var(--danger)" />
+        {/* Двойная карточка: Оплачено + Остаток */}
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', flex: 1, borderBottom: '1px solid var(--line-soft)' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Оплачено</div>
+            <div className="tnum" style={{ fontSize: 22, fontWeight: 700, color: 'var(--ok)', letterSpacing: '-0.02em' }}>{formatMoney(totalPaid)}</div>
+            <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 4 }}>{Math.round(totalPaid / totalAmount * 100) || 0}% от суммы</div>
+          </div>
+          <div style={{ padding: '16px 20px', flex: 1 }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Остаток</div>
+            <div className="tnum" style={{ fontSize: 22, fontWeight: 700, color: 'var(--danger)', letterSpacing: '-0.02em' }}>{formatMoney(totalAmount - totalPaid)}</div>
+            <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 4 }}>к получению</div>
+          </div>
+        </div>
       </div>
 
       {/* Directions */}
