@@ -85,7 +85,7 @@ export function ContractPayments({ contractId }: { contractId: string }) {
       {/* Список платежей */}
       {contractPayments.length === 0
         ? <div style={{ color: 'var(--faint)', fontSize: 13, padding: '8px 0' }}>Оплат пока нет</div>
-        : <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 360, overflowY: 'auto', paddingRight: 4 }}>
+        : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '0 24px' }}>
             {contractPayments.map((p, i) => (
               <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: i > 0 ? '1px solid var(--line-soft)' : 'none' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ok)', flexShrink: 0 }} />

@@ -210,21 +210,20 @@ export default function ContractDetailPage() {
         </div>
       </div>
 
-      {/* Основной контент — 2 явные колонки, каждая стекает блоки без зазоров */}
+      {/* Строка 1: Комментарии + Документы */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
-        {/* Левая колонка */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <ContractComments contractId={id} />
-          <ContractPayments contractId={id} />
-        </div>
-        {/* Правая колонка */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <ContractDocuments contractId={id} />
-          <ContractTasks contractId={id} />
-        </div>
+        <ContractComments contractId={id} />
+        <ContractDocuments contractId={id} />
       </div>
 
-      <ContractHistory contractId={id} />
+      {/* Строка 2: История оплат — полная ширина */}
+      <ContractPayments contractId={id} />
+
+      {/* Строка 3: Задачи + История изменений */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
+        <ContractTasks contractId={id} />
+        <ContractHistory contractId={id} />
+      </div>
 
       <ContractForm open={editOpen} onClose={() => setEditOpen(false)} initial={contract} />
     </div>
