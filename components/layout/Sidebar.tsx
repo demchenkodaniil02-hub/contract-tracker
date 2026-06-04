@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useProfile } from '@/lib/useProfile'
+import { usePresence } from '@/lib/usePresence'
 
 const navItems = [
   { href: '/', label: 'Главная', icon: LayoutDashboard },
@@ -20,6 +21,7 @@ function initials(name: string) { return name.split(' ').map(w => w[0]).join('')
 export function Sidebar() {
   const pathname = usePathname()
   const { profile } = useProfile()
+  const { onlineUsers, currentUserId } = usePresence()
   const [mobileOpen, setMobileOpen] = useState(false)
   const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/login' }
   const close = () => setMobileOpen(false)
@@ -80,6 +82,30 @@ export function Sidebar() {
             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e07a1a', display: 'inline-block' }} />Отделка
           </div>
         </div>
+
+        {/* Онлайн */}
+        {onlineUsers.length > 0 && (
+          <div style={{ margin: '0 16px', padding: '12px', borderRadius: 10, background: 'rgba(255,255,255,.05)' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#6b7a99', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+              Онлайн · {onlineUsers.length}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {onlineUsers.map(u => (
+                <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: u.avatarColor, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 9 }}>
+                      {initials(u.name || u.email)}
+                    </div>
+                    <div style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, borderRadius: '50%', background: '#22c55e', border: '1.5px solid #0f1729' }} />
+                  </div>
+                  <span style={{ fontSize: 12, color: u.id === currentUserId ? '#fff' : '#aeb9cf', fontWeight: u.id === currentUserId ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {u.name || u.email}{u.id === currentUserId ? ' (вы)' : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Профиль */}
         {profile && (
