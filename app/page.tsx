@@ -120,32 +120,33 @@ export default function DashboardPage() {
 
       {/* KPI */}
       <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
-        {/* Контрактов всего */}
-        <KpiCard label="Контрактов всего" value={enriched.length} sub={`Активных ${activeCount} · Завершено ${completedCount}`} />
-
-        {/* Активных | Завершённых — горизонтально */}
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 0', display: 'flex' }}>
-          <div style={{ flex: 1, padding: '0 20px', borderRight: '1px solid var(--line-soft)' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Активных</div>
-            <div className="tnum" style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}>{activeCount}</div>
-          </div>
-          <div style={{ flex: 1, padding: '0 20px' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Завершённых</div>
-            <div className="tnum" style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}>{completedCount}</div>
+        {/* Контрактов всего + Активных + Завершённых в одной карточке */}
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
+          <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
+          <div className="tnum" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>{enriched.length}</div>
+          <div style={{ display: 'flex', gap: 16, borderTop: '1px solid var(--line-soft)', paddingTop: 10 }}>
+            <div>
+              <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>Активных</div>
+              <div className="tnum" style={{ fontSize: 16, fontWeight: 700 }}>{activeCount}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>Завершённых</div>
+              <div className="tnum" style={{ fontSize: 16, fontWeight: 700 }}>{completedCount}</div>
+            </div>
           </div>
         </div>
 
         {/* Общая сумма */}
         <KpiCard label="Общая сумма" value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
 
-        {/* Оплачено | Остаток — горизонтально */}
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 0', display: 'flex' }}>
-          <div style={{ flex: 1, padding: '0 20px', borderRight: '1px solid var(--line-soft)' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Оплачено</div>
+        {/* Оплачено / Остаток — вертикально */}
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--line-soft)' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Оплачено</div>
             <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ok)', letterSpacing: '-0.02em' }}>{formatMoney(totalPaid)}</div>
           </div>
-          <div style={{ flex: 1, padding: '0 20px' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Остаток</div>
+          <div style={{ padding: '14px 20px' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Остаток</div>
             <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: 'var(--danger)', letterSpacing: '-0.02em' }}>{formatMoney(totalAmount - totalPaid)}</div>
           </div>
         </div>
