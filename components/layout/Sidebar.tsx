@@ -2,9 +2,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useProfile } from '@/lib/useProfile'
 import { usePresence } from '@/lib/usePresence'
 
 const navItems = [
@@ -12,6 +11,7 @@ const navItems = [
   { href: '/contracts', label: 'Контракты', icon: FileText },
   { href: '/objects', label: 'Объекты', icon: Building2 },
   { href: '/counterparties', label: 'Контрагенты', icon: Users },
+  { href: '/profile', label: 'Профиль', icon: UserCircle },
 ]
 
 const PUBLIC = ['/login', '/reset-password']
@@ -20,7 +20,6 @@ function initials(name: string) { return name.split(' ').map(w => w[0]).join('')
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { profile } = useProfile()
   const { onlineUsers, currentUserId } = usePresence()
   const [mobileOpen, setMobileOpen] = useState(false)
   const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/login' }
@@ -107,18 +106,6 @@ export function Sidebar() {
           </div>
         )}
 
-        {/* Профиль */}
-        {profile && (
-          <Link href="/profile" onClick={close} style={{ margin: '4px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 9, textDecoration: 'none', background: pathname === '/profile' ? '#2f6bdc' : 'rgba(255,255,255,.05)', transition: 'background .15s' }}>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: profile.avatarColor, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0 }}>
-              {initials(profile.name || profile.email)}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ color: '#fff', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{profile.name || profile.email}</div>
-              <div style={{ color: '#93a0bb', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{profile.email}</div>
-            </div>
-          </Link>
-        )}
         <button onClick={handleLogout} style={{ margin: '6px 16px 16px', display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 9, border: 'none', background: 'rgba(214,69,69,.12)', color: '#f87171', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', width: 'calc(100% - 32px)' }}>
           <LogOut size={16} /> Выйти
         </button>
