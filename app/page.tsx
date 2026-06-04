@@ -119,7 +119,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16 }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
         {/* Контрактов всего + Активных + Завершённых в одной карточке */}
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
           <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
