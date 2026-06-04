@@ -121,9 +121,9 @@ export default function DashboardPage() {
       {/* KPI */}
       <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
         <KpiCard label="Контрактов всего" value={enriched.length} sub={`Завершено: ${completedCount}`} />
-        <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`Оплачено: ${formatMoney(totalPaid)}`} />
+        <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
+        <KpiCard label="Оплачено"         value={formatMoney(totalPaid)} sub={`Остаток: ${formatMoney(totalAmount - totalPaid)}`} valueColor="var(--ok)" />
         <KpiCard label="Активных"         value={activeCount} sub="выполняются сейчас" />
-        <KpiCard label="Просрочено"       value={overdueCount} sub={overdueCount > 0 ? 'требуют действий' : 'всё в порядке'} valueColor={overdueCount > 0 ? 'var(--danger)' : undefined} />
       </div>
 
       {/* Directions */}
