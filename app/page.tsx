@@ -125,15 +125,13 @@ export default function DashboardPage() {
         <KpiCard label="Общая сумма"      value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
         {/* Двойная карточка: Оплачено + Остаток */}
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', flex: 1, borderBottom: '1px solid var(--line-soft)' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Оплачено</div>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--line-soft)' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Оплачено</div>
             <div className="tnum" style={{ fontSize: 22, fontWeight: 700, color: 'var(--ok)', letterSpacing: '-0.02em' }}>{formatMoney(totalPaid)}</div>
-            <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 4 }}>{Math.round(totalPaid / totalAmount * 100) || 0}% от суммы</div>
           </div>
-          <div style={{ padding: '16px 20px', flex: 1 }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Остаток</div>
+          <div style={{ padding: '14px 20px' }}>
+            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Остаток</div>
             <div className="tnum" style={{ fontSize: 22, fontWeight: 700, color: 'var(--danger)', letterSpacing: '-0.02em' }}>{formatMoney(totalAmount - totalPaid)}</div>
-            <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 4 }}>к получению</div>
           </div>
         </div>
       </div>
