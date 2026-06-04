@@ -250,12 +250,13 @@ export const useStore = create<AppState>()((set, get) => ({
     const contract = get().contracts.find(c => c.id === p.contractId)
     if (!contract) return
     const newPaid = Number((contract.amountPaid + p.amount).toFixed(2))
+    const newStatus = newPaid <= 0 ? 'not_paid' : newPaid >= contract.amount ? 'paid' : 'partial'
     set((s) => ({
       payments: [p, ...s.payments],
-      contracts: s.contracts.map(c => c.id === p.contractId ? { ...c, amountPaid: newPaid } : c),
+      contracts: s.contracts.map(c => c.id === p.contractId ? { ...c, amountPaid: newPaid, paymentStatus: newStatus } : c),
     }))
     await mutate('payments', 'insert', p)
-    await mutate('contracts', 'update', { amountPaid: newPaid }, p.contractId)
+    await mutate('contracts', 'update', { amountPaid: newPaid, paymentStatus: newStatus }, p.contractId)
   },
   deletePayment: async (id, contractId) => {
     const payment = get().payments.find(p => p.id === id)
@@ -263,12 +264,13 @@ export const useStore = create<AppState>()((set, get) => ({
     const contract = get().contracts.find(c => c.id === contractId)
     if (!contract) return
     const newPaid = Number(Math.max(0, contract.amountPaid - payment.amount).toFixed(2))
+    const newStatus = newPaid <= 0 ? 'not_paid' : newPaid >= contract.amount ? 'paid' : 'partial'
     set((s) => ({
       payments: s.payments.filter(p => p.id !== id),
-      contracts: s.contracts.map(c => c.id === contractId ? { ...c, amountPaid: newPaid } : c),
+      contracts: s.contracts.map(c => c.id === contractId ? { ...c, amountPaid: newPaid, paymentStatus: newStatus } : c),
     }))
     await mutate('payments', 'delete', undefined, id)
-    await mutate('contracts', 'update', { amountPaid: newPaid }, contractId)
+    await mutate('contracts', 'update', { amountPaid: newPaid, paymentStatus: newStatus }, contractId)
   },
 
   initSeed: async () => {
