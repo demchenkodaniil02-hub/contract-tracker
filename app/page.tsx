@@ -119,7 +119,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16 }}>
         {/* Контрактов всего + Активных + Завершённых в одной карточке */}
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
           <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
@@ -134,17 +134,8 @@ export default function DashboardPage() {
         {/* Общая сумма */}
         <KpiCard label="Общая сумма" value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
 
-        {/* Оплачено / Остаток — вертикально */}
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--line-soft)' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Оплачено</div>
-            <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: 'var(--ok)', letterSpacing: '-0.02em' }}>{formatMoney(totalPaid)}</div>
-          </div>
-          <div style={{ padding: '14px 20px' }}>
-            <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>Остаток</div>
-            <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: 'var(--danger)', letterSpacing: '-0.02em' }}>{formatMoney(totalAmount - totalPaid)}</div>
-          </div>
-        </div>
+        <KpiCard label="Оплачено" value={formatMoney(totalPaid)} valueColor="var(--ok)" />
+        <KpiCard label="Остаток"  value={formatMoney(totalAmount - totalPaid)} valueColor="var(--danger)" />
       </div>
 
       {/* Directions */}
