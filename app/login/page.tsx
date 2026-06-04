@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { HardHat, LogIn, Mail } from 'lucide-react'
+import { Landmark, LogIn, Mail } from 'lucide-react'
 
 type Mode = 'login' | 'forgot'
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
         {/* Шапка */}
         <div style={{ background: '#0f1729', padding: '28px 32px', display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(160deg, #2f6bdc, #1f4ba8)', display: 'grid', placeItems: 'center' }}>
-            <HardHat size={24} color="#fff" />
+            <Landmark size={24} color="#fff" />
           </div>
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 18, letterSpacing: '-0.01em' }}>Контракт Трекер</div>

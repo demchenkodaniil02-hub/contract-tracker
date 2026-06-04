@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { HardHat, KeyRound } from 'lucide-react'
+import { Landmark, KeyRound } from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
       <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 24px 70px -20px rgba(15,23,41,.2)', width: '100%', maxWidth: 400, overflow: 'hidden' }}>
         <div style={{ background: '#0f1729', padding: '28px 32px', display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(160deg, #2f6bdc, #1f4ba8)', display: 'grid', placeItems: 'center' }}>
-            <HardHat size={24} color="#fff" />
+            <Landmark size={24} color="#fff" />
           </div>
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>Контракт Трекер</div>

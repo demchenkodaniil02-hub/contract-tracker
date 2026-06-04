@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Building2, Users, HardHat, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useProfile } from '@/lib/useProfile'
 
@@ -42,7 +42,7 @@ export function Sidebar() {
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '4px 8px' }}>
           <div style={{ width: 38, height: 38, borderRadius: 10, display: 'grid', placeItems: 'center', background: 'linear-gradient(160deg, #2f6bdc, #1f4ba8)', color: '#fff', flexShrink: 0 }}>
-            <HardHat size={22} />
+            <Landmark size={22} />
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15 }}>Контракт Трекер</div>
