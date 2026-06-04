@@ -40,6 +40,8 @@ export default function ContractsPage() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Contract | undefined>()
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 8
 
   const customers    = counterparties.filter((c) => c.type === 'customer')
   const contractors  = counterparties.filter((c) => c.type === 'contractor')
@@ -69,6 +71,12 @@ export default function ContractsPage() {
     })
     return list
   }, [contracts, objectParam, filterDirection, filterStatus, filterCustomer, filterContractor, search, sortField, sortDir, counterparties, objects])
+
+  // Сброс страницы при смене фильтров
+  useEffect(() => { setPage(1) }, [objectParam, filterDirection, filterStatus, filterCustomer, filterContractor, search])
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   function toggleSort(field: keyof Contract) {
     if (sortField === field) setSortDir((d) => d === 'asc' ? 'desc' : 'asc')
@@ -163,7 +171,7 @@ export default function ContractsPage() {
               {filtered.length === 0 && (
                 <tr><td colSpan={11} style={{ textAlign: 'center', padding: '36px 0', color: 'var(--faint)', fontSize: 14 }}>Ничего не найдено</td></tr>
               )}
-              {filtered.map((c) => {
+              {paginated.map((c) => {
                 const obj        = objects.find((o) => o.id === c.objectId)
                 const customer   = counterparties.find((x) => x.id === c.customerId)
                 const contractor = counterparties.find((x) => x.id === c.contractorId)
@@ -216,7 +224,22 @@ export default function ContractsPage() {
                 <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--ok)' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amountPaid, 0))}
                 </td>
-                <td colSpan={4} style={{ borderTop: '1px solid var(--line)' }} />
+                <td colSpan={4} style={{ borderTop: '1px solid var(--line)', padding: '13px 14px' }}>
+                  {totalPages > 1 && (
+                    <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                        style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--line)', background: '#fff', cursor: page === 1 ? 'not-allowed' : 'pointer', color: page === 1 ? 'var(--faint)' : 'var(--ink)', fontFamily: 'inherit', fontSize: 14 }}>‹</button>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                        <button key={p} onClick={() => setPage(p)}
+                          style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--line)', background: p === page ? '#2f6bdc' : '#fff', color: p === page ? '#fff' : 'var(--ink)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: p === page ? 700 : 400 }}>
+                          {p}
+                        </button>
+                      ))}
+                      <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                        style={{ width: 30, height: 30, borderRadius: 7, border: '1px solid var(--line)', background: '#fff', cursor: page === totalPages ? 'not-allowed' : 'pointer', color: page === totalPages ? 'var(--faint)' : 'var(--ink)', fontFamily: 'inherit', fontSize: 14 }}>›</button>
+                    </div>
+                  )}
+                </td>
               </tr>
             </tfoot>
           </table>
