@@ -18,7 +18,15 @@ function canPreview(fileType: string, fileName: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isImage = fileType.startsWith('image/')
   const isPdf = fileType === 'application/pdf' || ext === 'pdf'
-  return { isImage, isPdf, can: isImage || isPdf }
+  const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
+  return { isImage, isPdf, isOffice, can: isImage || isPdf || isOffice }
+}
+
+function getPreviewUrl(fileUrl: string, fileName: string) {
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
+  const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
+  if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`
+  return fileUrl
 }
 
 export function ContractDocuments({ contractId }: { contractId: string }) {
@@ -167,7 +175,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
                 </div>
                 <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
                   {can && (
-                    <button onClick={() => setPreview({ url: doc.fileUrl, name: doc.fileName, type: doc.fileType })} title="Просмотр"
+                    <button onClick={() => setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName), name: doc.fileName, type: doc.fileType })} title="Просмотр"
                       style={{ width: 30, height: 30, borderRadius: 7, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}
                       onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#2f6bdc'}
                       onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--faint)'}>
@@ -236,7 +244,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
               {preview.type.startsWith('image/') ? (
                 <img src={preview.url} alt={preview.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               ) : (
-                <iframe src={preview.url} style={{ width: '100%', height: '100%', border: 'none' }} title={preview.name} />
+                <iframe src={preview.url} style={{ width: '100%', height: '100%', border: 'none' }} title={preview.name} sandbox="allow-scripts allow-same-origin allow-popups" />
               )}
             </div>
           </div>
