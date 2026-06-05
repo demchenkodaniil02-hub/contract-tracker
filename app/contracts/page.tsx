@@ -29,11 +29,13 @@ export default function ContractsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const objectParam = searchParams.get('object') ?? 'all'
+  const statusParam    = searchParams.get('status') ?? 'all'
+  const directionParam = searchParams.get('direction') ?? 'all'
   useEffect(() => { initSeed() }, [])
 
   const [search, setSearch] = useState('')
-  const [filterDirection, setFilterDirection] = useState<Direction | 'all'>('all')
-  const [filterStatus, setFilterStatus] = useState<ContractStatus | 'all'>('all')
+  const [filterDirection, setFilterDirection] = useState<Direction | 'all'>(directionParam as Direction | 'all')
+  const [filterStatus, setFilterStatus] = useState<ContractStatus | 'all'>(statusParam as ContractStatus | 'all')
   const [filterCustomer, setFilterCustomer] = useState('all')
   const [filterContractor, setFilterContractor] = useState('all')
   const [sortField, setSortField] = useState<keyof Contract>('createdAt')

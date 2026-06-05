@@ -124,10 +124,18 @@ export default function DashboardPage() {
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
           <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
           <div className="tnum" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>{enriched.length}</div>
-          <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, fontSize: 13, color: 'var(--muted-ink)' }}>
-            <span>Активных <b className="tnum" style={{ color: 'var(--ink)' }}>{activeCount}</b></span>
-            <span style={{ margin: '0 8px', color: 'var(--line)' }}>·</span>
-            <span>Завершённых <b className="tnum" style={{ color: 'var(--ink)' }}>{completedCount}</b></span>
+          <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, fontSize: 13, color: 'var(--muted-ink)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Link href="/contracts?status=active" style={{ color: 'var(--muted-ink)', textDecoration: 'none', borderRadius: 6, padding: '2px 4px', transition: 'background .15s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
+              Активных <b className="tnum" style={{ color: 'var(--ink)' }}>{activeCount}</b>
+            </Link>
+            <span style={{ color: 'var(--line)' }}>·</span>
+            <Link href="/contracts?status=completed" style={{ color: 'var(--muted-ink)', textDecoration: 'none', borderRadius: 6, padding: '2px 4px', transition: 'background .15s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
+              Завершённых <b className="tnum" style={{ color: 'var(--ink)' }}>{completedCount}</b>
+            </Link>
           </div>
         </div>
 
@@ -160,10 +168,13 @@ export default function DashboardPage() {
                   const cnt = enriched.filter(c => c.direction === dir && c.status === st).length
                   if (!cnt) return null
                   return (
-                    <div key={st} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                    <Link key={st} href={`/contracts?direction=${id}&status=${st}`}
+                      style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, textDecoration: 'none', borderRadius: 6, padding: '2px 4px', margin: '0 -4px', transition: 'background .15s' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.04)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
                       <span style={{ color: 'var(--muted-ink)' }}>{statusLabel[st]}</span>
-                      <b className="tnum">{cnt}</b>
-                    </div>
+                      <b className="tnum" style={{ color: 'var(--ink)' }}>{cnt}</b>
+                    </Link>
                   )
                 })}
               </div>
