@@ -70,6 +70,17 @@ export interface Comment {
   createdAt: string
 }
 
+export type DocumentCategory = 'contract' | 'ks2' | 'ks3' | 'estimate' | 'act' | 'other'
+
+export const DOCUMENT_CATEGORIES: { value: DocumentCategory; label: string }[] = [
+  { value: 'contract', label: 'Договор' },
+  { value: 'ks2',      label: 'КС-2' },
+  { value: 'ks3',      label: 'КС-3' },
+  { value: 'estimate', label: 'Смета' },
+  { value: 'act',      label: 'Акт' },
+  { value: 'other',    label: 'Другое' },
+]
+
 export interface Document {
   id: string
   contractId: string
@@ -78,6 +89,7 @@ export interface Document {
   fileSize: number
   fileUrl: string
   uploadedAt: string
+  category: DocumentCategory
 }
 
 export interface ContractHistory {

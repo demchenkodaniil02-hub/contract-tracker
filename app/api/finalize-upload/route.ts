@@ -11,7 +11,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { path, contractId, fileName, fileSize, fileType } = await req.json()
+    const { path, contractId, fileName, fileSize, fileType, category } = await req.json()
     if (!path || !contractId) return NextResponse.json({ error: 'Missing params' }, { status: 400 })
 
     // Публикуем файл на Яндекс.Диске
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
       fileSize: fileSize || 0,
       fileUrl: publicUrl,
       uploadedAt: new Date().toISOString(),
+      category: category || 'other',
     }
 
     const { error } = await supabase.from('documents').insert(doc)
