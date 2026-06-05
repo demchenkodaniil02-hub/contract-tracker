@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle, BarChart3 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { usePresence } from '@/lib/usePresence'
@@ -15,7 +15,7 @@ const navItems = [
   { href: '/profile', label: 'Профиль', icon: UserCircle },
 ]
 
-const PUBLIC = ['/login', '/reset-password', '/set-password']
+const PUBLIC = ['/login', '/reset-password', '/set-password', '/sea']
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
