@@ -186,8 +186,8 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
                     <td style={S.td}>{obj?.name ?? '—'}</td>
                     <td style={S.td}><DirectionBadge direction={c.direction} /></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{customer?.name ?? '—'}</td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{contractor?.name ?? '—'}</td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150 }}><div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{customer?.name ?? '—'}</div></td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150 }}><div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{contractor?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
                     <td style={{ ...S.td, textAlign: 'right' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', minWidth: 80 }}>
