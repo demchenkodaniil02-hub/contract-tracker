@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useStore } from '@/lib/store'
 import { formatDate } from '@/lib/utils'
-import { Upload, Trash2, Download, FileText, X, Eye, ExternalLink } from 'lucide-react'
+import { Upload, Trash2, Download, FileText, X, ExternalLink } from 'lucide-react'
 import { DOCUMENT_CATEGORIES, DocumentCategory } from '@/lib/types'
 
 const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; color: string }> = {
@@ -160,17 +160,21 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
             const { can } = canPreview(doc.fileType, doc.fileName)
+            const openDoc = () => {
+                if (can) setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })
+                else window.open(doc.fileUrl, '_blank')
+              }
             return (
-              <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, transition: 'background .12s' }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fafbfc'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = '#fff'}>
+              <div key={doc.id} onClick={openDoc}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, transition: 'background .12s, border-color .12s', cursor: 'pointer' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#fafbfc'; (e.currentTarget as HTMLElement).style.borderColor = '#c5ccd6' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)' }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: col.bg, color: col.color, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
                   <FileText size={16} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.fileName}</div>
                   <div style={{ fontSize: 11.5, color: 'var(--faint)', display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-                    {/* Категория — кликабельный select */}
                     <select value={cat} onChange={e => handleCategoryChange(doc.id, e.target.value as DocumentCategory)}
                       onClick={e => e.stopPropagation()}
                       style={{ background: col.bg, color: col.color, border: `1px solid ${col.color}30`, padding: '1px 5px', borderRadius: 4, fontWeight: 600, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer', appearance: 'none', WebkitAppearance: 'none' }}>
@@ -179,15 +183,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
                     <span>{(doc.fileSize / 1024).toFixed(1)} KB · {formatDate(doc.uploadedAt)}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
-                  {can && (
-                    <button onClick={() => setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })} title="Просмотр"
-                      style={{ width: 30, height: 30, borderRadius: 7, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#2f6bdc'}
-                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--faint)'}>
-                      <Eye size={15} />
-                    </button>
-                  )}
+                <div style={{ display: 'flex', gap: 2, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                   <button onClick={() => window.open(doc.fileUrl, '_blank')} title="Скачать"
                     style={{ width: 30, height: 30, borderRadius: 7, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--maf)'}
