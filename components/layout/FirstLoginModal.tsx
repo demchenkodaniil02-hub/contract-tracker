@@ -6,20 +6,24 @@ import { HardHat, Save } from 'lucide-react'
 import { Portal } from '@/components/ui/Portal'
 
 export function FirstLoginModal() {
-  const { profile, updateProfile } = useProfile()
+  const { profile, allProfiles, updateProfile } = useProfile()
   const pathname = usePathname()
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
-  // Показываем если профиль загружен, но имя не заполнено (только email-prefix)
   const needsSetup = profile && !profile.name
 
   if (!needsSetup || pathname === '/set-password') return null
 
   const handleSave = async () => {
-    if (!name.trim()) return
+    const trimmed = name.trim()
+    if (!trimmed) return
+    const duplicate = allProfiles.some(p => p.id !== profile.id && p.name?.toLowerCase() === trimmed.toLowerCase())
+    if (duplicate) { setError('Это имя уже занято — выберите другое'); return }
     setSaving(true)
-    await updateProfile({ name: name.trim() })
+    setError('')
+    await updateProfile({ name: trimmed })
     setSaving(false)
   }
 
@@ -54,11 +58,12 @@ export function FirstLoginModal() {
               <input
                 autoFocus
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e => { setName(e.target.value); setError('') }}
                 onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
                 placeholder=""
-                style={inp}
+                style={{ ...inp, borderColor: error ? 'var(--danger)' : undefined }}
               />
+              {error && <div style={{ marginTop: 8, fontSize: 12.5, color: 'var(--danger)', fontWeight: 500 }}>{error}</div>}
             </div>
             <button
               onClick={handleSave}
