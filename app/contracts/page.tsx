@@ -43,7 +43,7 @@ export default function ContractsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Contract | undefined>()
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 8
+  const PAGE_SIZE = 10
 
   const customers    = counterparties.filter((c) => c.type === 'customer')
   const contractors  = counterparties.filter((c) => c.type === 'contractor')
