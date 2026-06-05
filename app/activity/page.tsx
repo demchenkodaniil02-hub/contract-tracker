@@ -119,11 +119,11 @@ export default function ActivityPage() {
                       )}
                     </div>
 
-                    {h.oldValue !== undefined && h.newValue !== undefined && (
+                    {(h.oldValue || h.newValue) && (
                       <div style={{ marginTop: 4, fontSize: 12.5, color: 'var(--muted-ink)', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ textDecoration: 'line-through', color: 'var(--faint)' }}>{h.oldValue || '—'}</span>
-                        <span style={{ color: 'var(--faint)' }}>→</span>
-                        <span style={{ color: 'var(--ok)', fontWeight: 600 }}>{h.newValue || '—'}</span>
+                        {h.oldValue && <span style={{ textDecoration: 'line-through', color: 'var(--faint)' }}>{h.oldValue}</span>}
+                        {h.oldValue && h.newValue && <span style={{ color: 'var(--faint)' }}>→</span>}
+                        {h.newValue && <span style={{ color: 'var(--ok)', fontWeight: 600 }}>{h.newValue}</span>}
                       </div>
                     )}
 
