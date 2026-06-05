@@ -140,7 +140,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
             return (
               <button key={c.value} onClick={() => setFilterCat(c.value)}
                 style={{ padding: '3px 10px', borderRadius: 6, border: `1px solid ${filterCat === c.value ? col.color : 'var(--line)'}`, background: filterCat === c.value ? col.color : col.bg, color: filterCat === c.value ? '#fff' : col.color, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600 }}>
-                {c.label} {count}
+                {c.label} ({count})
               </button>
             )
           })}
