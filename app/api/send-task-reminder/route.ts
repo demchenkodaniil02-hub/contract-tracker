@@ -10,7 +10,7 @@ function e(str?: string) {
 }
 
 function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'reminder' = 'reminder', assignerName?: string) {
-  const dueLabel = `${task.dueDate.split('-').reverse().join('.')} в ${task.dueTime}`
+  const dueLabel = `${task.dueDate.split('-').reverse().join('.')} · ${task.dueTime}`
   const isAssigned = type === 'assigned'
   const badge = isAssigned ? '&#128100; &#1053;&#1040;&#1047;&#1053;&#1040;&#1063;&#1045;&#1053;&#1040; &#1047;&#1040;&#1044;&#1040;&#1063;&#1040;' : '&#9200; &#1053;&#1040;&#1055;&#1054;&#1052;&#1048;&#1053;&#1040;&#1053;&#1048;&#1045;'
   const badgeColor = isAssigned ? '#1f8a5b' : '#e07a1a'
