@@ -153,7 +153,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           {contractDocs.map(doc => {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
-            const { canPreview } = getDocInfo(doc.fileType, doc.fileName)
+            const { canPreview, isOffice } = getDocInfo(doc.fileType, doc.fileName)
             const openDoc = async () => {
               if (!canPreview) { window.open(doc.fileUrl, '_blank'); return }
               if (isOffice) {
