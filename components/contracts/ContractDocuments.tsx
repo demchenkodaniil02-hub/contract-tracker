@@ -14,23 +14,25 @@ const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; color: string }> =
   other:    { bg: '#f9fafb', color: '#6b7280' },
 }
 
-function getDocInfo(fileType: string, fileName: string, filePath?: string) {
+function getDocInfo(fileType: string, fileName: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isImage = fileType.startsWith('image/')
   const isPdf = fileType === 'application/pdf' || ext === 'pdf'
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
-  // Превью работает только если есть filePath (прокси) или это картинка/PDF с прямой ссылкой
-  const canPreview = (isImage || isPdf || isOffice) && !!filePath
+  const canPreview = isImage || isPdf || isOffice
   return { isImage, isPdf, isOffice, canPreview }
 }
 
-function getPreviewUrl(fileName: string, filePath: string) {
+function getPreviewUrl(fileName: string, fileUrl: string, filePath?: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
-  const proxyUrl = `/api/preview-doc?path=${encodeURIComponent(filePath)}`
-  // Office — через Google Docs Viewer (нужна публично доступная ссылка — наш прокси)
+
+  // Прокси-URL — через filePath (новые) или через публичный URL (старые)
+  const proxyUrl = filePath
+    ? `/api/preview-doc?path=${encodeURIComponent(filePath)}`
+    : `/api/preview-public?url=${encodeURIComponent(fileUrl)}`
+
   if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(`${window.location.origin}${proxyUrl}`)}&embedded=true`
-  // PDF и картинки — напрямую через прокси
   return proxyUrl
 }
 
@@ -158,10 +160,10 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           {contractDocs.map(doc => {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
-            const { canPreview } = getDocInfo(doc.fileType, doc.fileName, doc.filePath)
+            const { canPreview } = getDocInfo(doc.fileType, doc.fileName)
             const openDoc = () => {
-              if (canPreview && doc.filePath)
-                setPreview({ url: getPreviewUrl(doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })
+              if (canPreview)
+                setPreview({ url: getPreviewUrl(doc.fileName, doc.fileUrl, doc.filePath), name: doc.fileName, type: doc.fileType })
               else
                 window.open(doc.fileUrl, '_blank')
             }
