@@ -42,37 +42,71 @@ export function ContractForm({ open, onClose, initial }: Props) {
   const customers   = counterparties.filter((c) => c.type === 'customer')
   const contractors = counterparties.filter((c) => c.type === 'contractor')
 
+  const DRAFT_KEY = 'contract_form_draft'
+
   const [creating, setCreating] = useState<'object' | 'customer' | 'contractor' | null>(null)
-  // Локальный список только что созданных объектов — доступны мгновенно до ре-рендера store
+  const [hasDraft, setHasDraft] = useState(false)
   const [freshObjects, setFreshObjects] = useState<{id: string, name: string}[]>([])
   const [freshCounterparties, setFreshCounterparties] = useState<{id: string, name: string, type: string}[]>([])
 
+  const emptyDefaults = {
+    id: '', number: '', objectId: '', direction: 'maf' as const,
+    customerId: '', contractorId: '', amount: 0, amountPaid: 0,
+    startDate: '', endDate: '', status: 'planning' as const, paymentStatus: 'not_paid' as const,
+    notes: '', createdAt: new Date().toISOString().slice(0, 10),
+  }
+
   const { register, handleSubmit, setValue, watch, reset } = useForm<Contract>({
-    defaultValues: initial ?? {
-      id: '', number: '', objectId: '', direction: 'maf',
-      customerId: '', contractorId: '', amount: 0, amountPaid: 0,
-      startDate: '', endDate: '', status: 'planning', paymentStatus: 'not_paid',
-      notes: '', createdAt: new Date().toISOString().slice(0, 10),
-    },
+    defaultValues: initial ?? emptyDefaults,
   })
 
+  // Проверяем черновик при открытии новой формы
   useEffect(() => {
     if (open) {
-      reset(initial ?? {
-        id: '', number: '', objectId: '', direction: 'maf',
-        customerId: '', contractorId: '', amount: 0, amountPaid: 0,
-        startDate: '', endDate: '', status: 'planning', paymentStatus: 'not_paid',
-        notes: '', createdAt: new Date().toISOString().slice(0, 10),
-      })
+      if (!initial) {
+        const saved = localStorage.getItem(DRAFT_KEY)
+        if (saved) {
+          try {
+            const draft = JSON.parse(saved)
+            // Проверяем что черновик не пустой
+            if (draft.number || draft.objectId || draft.amount) {
+              setHasDraft(true)
+              reset(draft)
+            } else {
+              reset(emptyDefaults)
+            }
+          } catch { reset(emptyDefaults) }
+        } else {
+          reset(emptyDefaults)
+        }
+      } else {
+        reset(initial)
+      }
       setCreating(null)
       setFreshObjects([])
       setFreshCounterparties([])
     }
   }, [open, initial])
 
+  // Автосохранение при изменении полей (только для новых контрактов)
+  const watchedValues = watch()
+  useEffect(() => {
+    if (!open || initial) return
+    const timer = setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(watchedValues))
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [watchedValues, open, initial])
+
+  const clearDraft = () => {
+    localStorage.removeItem(DRAFT_KEY)
+    setHasDraft(false)
+  }
+
   const onSubmit = (data: Contract) => {
     if (initial) updateContract({ ...data, id: initial.id })
     else addContract({ ...data, id: newId() })
+    clearDraft()
     reset(); onClose()
   }
 
@@ -145,6 +179,21 @@ export function ContractForm({ open, onClose, initial }: Props) {
 
         <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', flex: 1 }}>
+
+          {/* Баннер черновика */}
+          {hasDraft && !initial && (
+            <div style={{ background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 18 }}>📝</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>Восстановлен черновик</div>
+                <div style={{ fontSize: 12, color: '#b45309' }}>Данные сохранились с прошлого раза</div>
+              </div>
+              <button type="button" onClick={() => { clearDraft(); reset(emptyDefaults) }}
+                style={{ padding: '4px 10px', borderRadius: 7, border: '1px solid #f59e0b', background: '#fff', color: '#92400e', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                Сбросить
+              </button>
+            </div>
+          )}
 
           {/* Номер + Направление */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
