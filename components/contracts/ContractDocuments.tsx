@@ -81,6 +81,21 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
     }
   }
 
+  const [catOverrides, setCatOverrides] = useState<Record<string, DocumentCategory>>({})
+
+  const handleCategoryChange = async (docId: string, newCategory: DocumentCategory) => {
+    setCatOverrides(prev => ({ ...prev, [docId]: newCategory }))
+    try {
+      await fetch('/api/mutate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'documents', action: 'update', data: { category: newCategory }, id: docId }),
+      })
+    } catch (err) {
+      setCatOverrides(prev => { const n = { ...prev }; delete n[docId]; return n })
+      setError(err instanceof Error ? err.message : String(err))
+    }
+  }
+
   const handleDelete = async (docId: string, fileName: string) => {
     if (!confirm('Удалить документ?') || !contract) return
     try {
@@ -128,10 +143,9 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
       {contractDocs.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12, maxHeight: 300, overflowY: 'auto' }}>
           {contractDocs.map(doc => {
-            const cat = doc.category || 'other'
-            const col = CATEGORY_COLORS[cat as DocumentCategory] ?? CATEGORY_COLORS.other
-            const catLabel = DOCUMENT_CATEGORIES.find(c => c.value === cat)?.label ?? 'Другое'
-            const { can, isPdf, isImage } = canPreview(doc.fileType, doc.fileName)
+            const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
+            const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
+            const { can } = canPreview(doc.fileType, doc.fileName)
             return (
               <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, transition: 'background .12s' }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fafbfc'}
@@ -142,7 +156,12 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.fileName}</div>
                   <div style={{ fontSize: 11.5, color: 'var(--faint)', display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-                    <span style={{ background: col.bg, color: col.color, padding: '1px 7px', borderRadius: 4, fontWeight: 600 }}>{catLabel}</span>
+                    {/* Категория — кликабельный select */}
+                    <select value={cat} onChange={e => handleCategoryChange(doc.id, e.target.value as DocumentCategory)}
+                      onClick={e => e.stopPropagation()}
+                      style={{ background: col.bg, color: col.color, border: `1px solid ${col.color}30`, padding: '1px 5px', borderRadius: 4, fontWeight: 600, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer', appearance: 'none', WebkitAppearance: 'none' }}>
+                      {DOCUMENT_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    </select>
                     <span>{(doc.fileSize / 1024).toFixed(1)} KB · {formatDate(doc.uploadedAt)}</span>
                   </div>
                 </div>
