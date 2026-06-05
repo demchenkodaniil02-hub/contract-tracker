@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'invite',
       email,
-      options: { redirectTo: `${SITE_URL}/login` },
+      options: { redirectTo: `${SITE_URL}/set-password` },
     })
 
     if (linkError) return NextResponse.json({ error: linkError.message }, { status: 500 })
