@@ -110,32 +110,44 @@ export default function ReportsPage() {
       {/* По каждому исполнителю */}
       {contractorReports.length === 0
         ? <div style={{ ...S.card, padding: 40, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Нет данных за {activeYear} год</div>
-        : contractorReports.map(({ contractor, contracts: ctrs, totalAmount, paidInYear, totalPaid, remaining }) => {
+        : (
+          <div style={S.card}>
+            {/* Шапка колонок */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 160px 160px 160px 160px 90px', gap: 0, padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Контрактов</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Сумма</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Оплачено в {activeYear}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Оплачено всего</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Остаток</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>%</div>
+            </div>
+
+            {contractorReports.map(({ contractor, contracts: ctrs, totalAmount, paidInYear, totalPaid, remaining }) => {
             const isOpen = expanded.has(contractor.id)
             const pct = totalAmount > 0 ? Math.round(totalPaid / totalAmount * 100) : 0
 
             return (
-              <div key={contractor.id} style={S.card}>
-                {/* Шапка исполнителя */}
+              <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                {/* Строка исполнителя */}
                 <button onClick={() => toggle(contractor.id)}
-                  style={{ width: '100%', padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'inherit', textAlign: 'left' }}>
-                  {isOpen ? <ChevronDown size={16} color="var(--faint)" /> : <ChevronRight size={16} color="var(--faint)" />}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 16 }}>{contractor.name}</div>
-                    {contractor.company && <div style={{ fontSize: 12.5, color: 'var(--faint)', marginTop: 2 }}>{contractor.company}</div>}
+                  style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 90px 160px 160px 160px 160px 90px', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left', gap: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</div>
+                      {contractor.company && <div style={{ fontSize: 12, color: 'var(--faint)' }}>{contractor.company}</div>}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-                    <Stat label="Контрактов" value={String(ctrs.length)} />
-                    <Stat label="Сумма" value={formatMoney(totalAmount)} />
-                    <Stat label={`Оплачено в ${selectedYear}`} value={formatMoney(paidInYear)} color="var(--ok)" />
-                    <Stat label="Оплачено всего" value={formatMoney(totalPaid)} color="var(--ok)" />
-                    <Stat label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
-                    {/* Прогресс */}
-                    <div style={{ width: 80, textAlign: 'right' }}>
-                      <div style={{ fontSize: 12, color: 'var(--faint)', marginBottom: 4 }}>{pct}%</div>
-                      <div style={{ height: 6, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${pct}%`, background: pct >= 100 ? 'var(--ok)' : 'var(--maf)', borderRadius: 999 }} />
-                      </div>
+                  <div className="tnum" style={{ textAlign: 'right', fontSize: 14, fontWeight: 600 }}>{ctrs.length}</div>
+                  <div className="tnum" style={{ textAlign: 'right', fontSize: 14, fontWeight: 600 }}>{formatMoney(totalAmount)}</div>
+                  <div className="tnum" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(paidInYear)}</div>
+                  <div className="tnum" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalPaid)}</div>
+                  <div className="tnum" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(remaining)}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                    <span style={{ fontSize: 12, color: 'var(--faint)' }}>{pct}%</span>
+                    <div style={{ width: 60, height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: pct >= 100 ? 'var(--ok)' : 'var(--maf)' }} />
                     </div>
                   </div>
                 </button>
@@ -203,7 +215,9 @@ export default function ReportsPage() {
                 )}
               </div>
             )
-          })
+          })}
+          </div>
+        )
       }
     </div>
   )
