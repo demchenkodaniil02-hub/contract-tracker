@@ -73,16 +73,6 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Legend */}
-        <div style={{ marginTop: 'auto', padding: '14px 12px 4px', borderTop: '1px solid rgba(255,255,255,.08)', display: 'flex', flexDirection: 'column', gap: 9, fontSize: 12, color: '#8a96af' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2f6bdc', display: 'inline-block' }} />МАФ / Металл
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e07a1a', display: 'inline-block' }} />Отделка
-          </div>
-        </div>
-
         {/* Онлайн */}
         {onlineUsers.length > 0 && (
           <div style={{ margin: '0 16px', padding: '12px', borderRadius: 10, background: 'rgba(255,255,255,.05)' }}>
