@@ -221,9 +221,9 @@ export default function ContractDetailPage() {
 
   function Detail({ label, value }: { label: string; value: string }) {
     return (
-      <div>
+      <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 12.5, color: 'var(--faint)', fontWeight: 600, marginBottom: 2 }}>{label}</div>
-        <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{value}</div>
+        <div title={value} style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value}</div>
       </div>
     )
   }
