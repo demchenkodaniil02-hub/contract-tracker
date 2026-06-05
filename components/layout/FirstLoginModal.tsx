@@ -19,6 +19,7 @@ export function FirstLoginModal() {
   const handleSave = async () => {
     const trimmed = name.trim()
     if (!trimmed) return
+    if (trimmed.split(' ').filter(Boolean).length < 2) { setError('Введите имя и фамилию через пробел'); return }
     const duplicate = allProfiles.some(p => p.id !== profile.id && p.name?.toLowerCase() === trimmed.toLowerCase())
     if (duplicate) { setError('Это имя уже занято — выберите другое'); return }
     setSaving(true)
@@ -54,13 +55,13 @@ export function FirstLoginModal() {
               Ваше имя будет отображаться в комментариях и истории изменений контрактов.
             </div>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Имя</label>
+              <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Имя и Фамилия</label>
               <input
                 autoFocus
                 value={name}
                 onChange={e => { setName(e.target.value); setError('') }}
                 onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
-                placeholder=""
+                placeholder="Иванов Иван"
                 style={{ ...inp, borderColor: error ? 'var(--danger)' : undefined }}
               />
               {error && <div style={{ marginTop: 8, fontSize: 12.5, color: 'var(--danger)', fontWeight: 500 }}>{error}</div>}
