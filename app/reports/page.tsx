@@ -17,11 +17,8 @@ export default function ReportsPage() {
       if (c.startDate) set.add(new Date(c.startDate).getFullYear())
       if (c.endDate)   set.add(new Date(c.endDate).getFullYear())
     })
-    payments.forEach(p => {
-      if (p.paidAt) set.add(new Date(p.paidAt).getFullYear())
-    })
     return Array.from(set).sort((a, b) => b - a)
-  }, [contracts, payments])
+  }, [contracts])
 
   const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? new Date().getFullYear())
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
