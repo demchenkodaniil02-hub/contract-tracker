@@ -98,10 +98,10 @@ export default function ProfilePage() {
       <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <UserPlus size={18} color="#2f6bdc" />
-          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Пригласить коллегу</span>
+          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Пригласить пользователя</span>
         </div>
         <p style={{ margin: '0 0 18px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
-          Коллега получит письмо со ссылкой для входа. После перехода по ссылке он задаст пароль и получит доступ к системе.
+          Пользователь получит письмо со ссылкой для входа. После перехода по ссылке он задаст пароль и получит доступ к системе.
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1, position: 'relative' }}>
@@ -119,7 +119,7 @@ export default function ProfilePage() {
             onClick={handleInvite}
             disabled={inviteStatus === 'sending' || !inviteEmail.trim()}
             style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: inviteStatus === 'sent' ? '#1f8a5b' : '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: inviteStatus === 'sending' || !inviteEmail.trim() ? 'not-allowed' : 'pointer', opacity: inviteStatus === 'sending' || !inviteEmail.trim() ? 0.7 : 1, whiteSpace: 'nowrap', transition: 'background .2s' }}>
-            {inviteStatus === 'sending' ? 'Отправка...' : inviteStatus === 'sent' ? 'Отправлено!' : 'Пригласить'}
+            {inviteStatus === 'sending' ? 'Отправка...' : inviteStatus === 'sent' ? 'Отправлено!' : 'Пригласить пользователя'}
           </button>
         </div>
         {inviteStatus === 'error' && (
