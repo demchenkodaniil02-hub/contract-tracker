@@ -1,12 +1,13 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useStore } from '@/lib/store'
 import { formatMoney } from '@/lib/utils'
-import { ChevronDown, ChevronRight, FileText } from 'lucide-react'
-import Link from 'next/link'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 
 export default function ReportsPage() {
-  const { contracts, counterparties, objects, payments } = useStore()
+  const { contracts, counterparties, objects, payments, initSeed } = useStore()
+
+  useEffect(() => { initSeed() }, [])
 
   const contractors = counterparties.filter(c => c.type === 'contractor')
 
@@ -17,7 +18,13 @@ export default function ReportsPage() {
     return Array.from(set).sort((a, b) => b - a)
   }, [payments])
 
-  const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? new Date().getFullYear())
+  const [selectedYear, setSelectedYear] = useState<number | null>(null)
+  // Обновляем выбранный год когда загрузятся данные
+  useEffect(() => {
+    if (years.length > 0 && selectedYear === null) setSelectedYear(years[0])
+  }, [years])
+
+  const activeYear = selectedYear ?? years[0] ?? new Date().getFullYear()
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const toggle = (id: string) => setExpanded(prev => {
@@ -28,8 +35,8 @@ export default function ReportsPage() {
 
   // Оплаты за выбранный год
   const yearPayments = useMemo(() =>
-    payments.filter(p => p.paidAt && new Date(p.paidAt).getFullYear() === selectedYear),
-    [payments, selectedYear]
+    payments.filter(p => p.paidAt && new Date(p.paidAt).getFullYear() === activeYear),
+    [payments, activeYear]
   )
 
   // Итоги по исполнителям: только по контрактам у которых были оплаты в этом году
@@ -77,7 +84,7 @@ export default function ReportsPage() {
         <div style={{ display: 'flex', gap: 6 }}>
           {years.map(y => (
             <button key={y} onClick={() => setSelectedYear(y)}
-              style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--line)', background: y === selectedYear ? '#2f6bdc' : '#fff', color: y === selectedYear ? '#fff' : 'var(--ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>
+              style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--line)', background: y === activeYear ? '#2f6bdc' : '#fff', color: y === activeYear ? '#fff' : 'var(--ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>
               {y}
             </button>
           ))}
@@ -89,7 +96,7 @@ export default function ReportsPage() {
         {[
           { label: 'Контрактов', value: String(grandTotal.contracts), color: undefined },
           { label: 'Сумма по контрактам', value: formatMoney(grandTotal.amount), color: undefined },
-          { label: `Оплачено в ${selectedYear}`, value: formatMoney(grandTotal.paidInYear), color: 'var(--ok)' },
+          { label: `Оплачено в ${activeYear}`, value: formatMoney(grandTotal.paidInYear), color: 'var(--ok)' },
           { label: 'Оплачено всего', value: formatMoney(grandTotal.totalPaid), color: 'var(--ok)' },
           { label: 'Остаток', value: formatMoney(grandTotal.remaining), color: 'var(--danger)' },
         ].map(({ label, value, color }) => (
@@ -102,7 +109,7 @@ export default function ReportsPage() {
 
       {/* По каждому исполнителю */}
       {contractorReports.length === 0
-        ? <div style={{ ...S.card, padding: 40, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Нет данных за {selectedYear} год</div>
+        ? <div style={{ ...S.card, padding: 40, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Нет данных за {activeYear} год</div>
         : contractorReports.map(({ contractor, contracts: ctrs, totalAmount, paidInYear, totalPaid, remaining }) => {
             const isOpen = expanded.has(contractor.id)
             const pct = totalAmount > 0 ? Math.round(totalPaid / totalAmount * 100) : 0
