@@ -7,6 +7,7 @@ const COLORS = ['#2f6bdc', '#1f8a5b', '#e07a1a', '#9b5de5', '#e0325f']
 
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -21,6 +22,10 @@ export function useProfile() {
 
         if (json.profile) {
           setProfile(json.profile)
+          // Загружаем всех пользователей для назначения задач
+          fetch('/api/profile?all=true').then(r => r.json()).then(j => {
+            if (Array.isArray(j.profiles)) setAllProfiles(j.profiles)
+          }).catch(() => {})
         } else {
           // Создаём профиль при первом входе
           const newProfile: Profile = {
@@ -63,5 +68,5 @@ export function useProfile() {
     })
   }
 
-  return { profile, loading, updateProfile }
+  return { profile, allProfiles, loading, updateProfile }
 }

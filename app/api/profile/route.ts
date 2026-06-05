@@ -8,9 +8,16 @@ const supabase = createClient(
 
 export async function GET(req: Request) {
   try {
-    const userId = new URL(req.url).searchParams.get('userId')
-    if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
+    const { searchParams } = new URL(req.url)
+    const userId = searchParams.get('userId')
+    const all = searchParams.get('all')
 
+    if (all === 'true') {
+      const { data } = await supabase.from('profiles').select('id,name,email,role,avatarColor')
+      return NextResponse.json({ profiles: data ?? [] })
+    }
+
+    if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
     return NextResponse.json({ profile: data ?? null })
   } catch (err) {

@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { Task } from '@/lib/types'
 
-function emailHtml(task: Task, contractNumber?: string) {
+function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'reminder' = 'reminder', assignerName?: string) {
   const dueLabel = `${task.dueDate.split('-').reverse().join('.')} в ${task.dueTime}`
+  const isAssigned = type === 'assigned'
+  const badge = isAssigned ? '👤 НАЗНАЧЕНА ЗАДАЧА' : '⏰ НАПОМИНАНИЕ'
+  const badgeColor = isAssigned ? '#1f8a5b' : '#e07a1a'
+  const badgeBg = isAssigned ? '#f0fdf4' : '#fff3e0'
+  const heading = isAssigned ? `Вам назначена задача` : task.title
+  const subheading = isAssigned ? task.title : ''
+  const assignerBlock = isAssigned && assignerName ? `<p style="margin:0 0 20px;color:#5a6478;font-size:14px;">Назначил: <strong style="color:#0f1729;">${assignerName}</strong></p>` : ''
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -35,10 +42,11 @@ function emailHtml(task: Task, contractNumber?: string) {
         <!-- Body -->
         <tr>
           <td style="padding:28px 32px;">
-            <div style="display:inline-block;background:#fff3e0;color:#e07a1a;font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.05em;margin-bottom:16px;">⏰ НАПОМИНАНИЕ</div>
+            <div style="display:inline-block;background:${badgeBg};color:${badgeColor};font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.05em;margin-bottom:16px;">${badge}</div>
 
-            <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0f1729;letter-spacing:-0.02em;">${task.title}</h1>
-
+            <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0f1729;letter-spacing:-0.02em;">${heading}</h1>
+            ${subheading ? `<p style="margin:0 0 12px;color:#5a6478;font-size:15px;font-weight:600;">${subheading}</p>` : ''}
+            ${assignerBlock}
             ${task.description ? `<p style="margin:0 0 20px;color:#5a6478;font-size:15px;line-height:1.6;">${task.description}</p>` : ''}
 
             <!-- Due date block -->
@@ -76,8 +84,8 @@ function emailHtml(task: Task, contractNumber?: string) {
 
 export async function POST(req: Request) {
   try {
-    const { taskId, email, task, contractNumber } = await req.json() as {
-      taskId: string; email: string; task: Task; contractNumber?: string
+    const { taskId, email, task, contractNumber, type, assignerName } = await req.json() as {
+      taskId: string; email: string; task: Task; contractNumber?: string; type?: 'assigned' | 'reminder'; assignerName?: string
     }
 
     if (!email || !task) {
@@ -96,8 +104,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         from: 'Контракт Трекер <onboarding@resend.dev>',
         to: email,
-        subject: `⏰ Напоминание: ${task.title}`,
-        html: emailHtml(task, contractNumber),
+        subject: type === 'assigned' ? `👤 Вам назначена задача: ${task.title}` : `⏰ Напоминание: ${task.title}`,
+        html: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
       }),
     })
 

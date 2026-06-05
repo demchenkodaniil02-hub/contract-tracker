@@ -132,6 +132,8 @@ export interface Task {
   status: 'pending' | 'completed' | 'cancelled'
   reminderEmail: string
   reminderSent: boolean
+  assigneeId?: string
+  reminderDate?: string
   createdAt: string
 }
 
