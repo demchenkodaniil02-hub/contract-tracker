@@ -63,7 +63,7 @@ export default function ReportsPage() {
         .reduce((s, p) => s + p.amount, 0)
 
       return { contractor, contracts: ctrs, totalAmount, totalPaid, paidThisYear, remaining: totalAmount - totalPaid }
-    }).filter(Boolean) as NonNullable<ReturnType<typeof contractors['map']>[number]>[],
+    }).filter((r): r is NonNullable<typeof r> => r !== null),
     [contractors, yearContracts, yearPayments]
   )
 
