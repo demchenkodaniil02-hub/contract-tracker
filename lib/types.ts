@@ -88,6 +88,7 @@ export interface Document {
   fileType: string
   fileSize: number
   fileUrl: string
+  filePath?: string
   uploadedAt: string
   category: DocumentCategory
 }

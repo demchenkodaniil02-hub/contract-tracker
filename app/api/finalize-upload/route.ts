@@ -34,6 +34,7 @@ export async function POST(req: Request) {
       fileType: fileType || 'application/octet-stream',
       fileSize: fileSize || 0,
       fileUrl: publicUrl,
+      filePath: path,
       uploadedAt: new Date().toISOString(),
       category: category || 'other',
     }

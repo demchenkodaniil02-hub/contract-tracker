@@ -22,9 +22,15 @@ function canPreview(fileType: string, fileName: string) {
   return { isImage, isPdf, isOffice, can: isImage || isPdf || isOffice }
 }
 
-function getPreviewUrl(fileUrl: string, fileName: string) {
+function getPreviewUrl(fileUrl: string, fileName: string, filePath?: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
+  // Если есть путь на Яндекс.Диске — проксируем через наш сервер (избегаем блокировки iframe)
+  if (filePath) {
+    const proxyUrl = `/api/preview-doc?path=${encodeURIComponent(filePath)}`
+    if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(`${window.location.origin}${proxyUrl}`)}&embedded=true`
+    return proxyUrl
+  }
   if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`
   return fileUrl
 }
@@ -175,7 +181,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
                 </div>
                 <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
                   {can && (
-                    <button onClick={() => setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName), name: doc.fileName, type: doc.fileType })} title="Просмотр"
+                    <button onClick={() => setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })} title="Просмотр"
                       style={{ width: 30, height: 30, borderRadius: 7, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}
                       onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#2f6bdc'}
                       onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--faint)'}>
