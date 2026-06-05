@@ -14,25 +14,24 @@ const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; color: string }> =
   other:    { bg: '#f9fafb', color: '#6b7280' },
 }
 
-function canPreview(fileType: string, fileName: string) {
+function getDocInfo(fileType: string, fileName: string, filePath?: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isImage = fileType.startsWith('image/')
   const isPdf = fileType === 'application/pdf' || ext === 'pdf'
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
-  return { isImage, isPdf, isOffice, can: isImage || isPdf || isOffice }
+  // Превью работает только если есть filePath (прокси) или это картинка/PDF с прямой ссылкой
+  const canPreview = (isImage || isPdf || isOffice) && !!filePath
+  return { isImage, isPdf, isOffice, canPreview }
 }
 
-function getPreviewUrl(fileUrl: string, fileName: string, filePath?: string) {
+function getPreviewUrl(fileName: string, filePath: string) {
   const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
-  // Если есть путь на Яндекс.Диске — проксируем через наш сервер (избегаем блокировки iframe)
-  if (filePath) {
-    const proxyUrl = `/api/preview-doc?path=${encodeURIComponent(filePath)}`
-    if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(`${window.location.origin}${proxyUrl}`)}&embedded=true`
-    return proxyUrl
-  }
-  if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`
-  return fileUrl
+  const proxyUrl = `/api/preview-doc?path=${encodeURIComponent(filePath)}`
+  // Office — через Google Docs Viewer (нужна публично доступная ссылка — наш прокси)
+  if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(`${window.location.origin}${proxyUrl}`)}&embedded=true`
+  // PDF и картинки — напрямую через прокси
+  return proxyUrl
 }
 
 export function ContractDocuments({ contractId }: { contractId: string }) {
@@ -159,11 +158,13 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           {contractDocs.map(doc => {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
-            const { can } = canPreview(doc.fileType, doc.fileName)
+            const { canPreview } = getDocInfo(doc.fileType, doc.fileName, doc.filePath)
             const openDoc = () => {
-                if (can) setPreview({ url: getPreviewUrl(doc.fileUrl, doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })
-                else window.open(doc.fileUrl, '_blank')
-              }
+              if (canPreview && doc.filePath)
+                setPreview({ url: getPreviewUrl(doc.fileName, doc.filePath), name: doc.fileName, type: doc.fileType })
+              else
+                window.open(doc.fileUrl, '_blank')
+            }
             return (
               <div key={doc.id} onClick={openDoc}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, transition: 'background .12s, border-color .12s', cursor: 'pointer' }}
