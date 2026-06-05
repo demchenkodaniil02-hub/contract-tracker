@@ -173,7 +173,7 @@ export default function ContractDetailPage() {
       {/* Детали + Финансы — в одну строку */}
       <div className="ct-contract-info-wrap" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 16, padding: '16px 20px', boxShadow: 'var(--card-shadow)' }}>
         {/* Детали */}
-        <div className="ct-contract-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px' }}>
+        <div className="ct-contract-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px', minWidth: 0, overflow: 'hidden' }}>
           <Detail label="Объект" value={obj?.name ?? '—'} />
           <Detail label="Заказчик" value={customer?.name ?? '—'} />
           <Detail label="Исполнитель" value={contractor?.name ?? '—'} />
