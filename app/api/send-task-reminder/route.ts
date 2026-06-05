@@ -61,7 +61,7 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             <table cellpadding="0" cellspacing="0" width="100%" style="background:#f0f4ff;border-radius:12px;margin-bottom:24px;">
               <tr>
                 <td style="padding:16px 20px;">
-                  <div style="color:#8a93a8;font-size:12px;font-weight:600;margin-bottom:4px;">СРОК ВЫПОЛНЕНИЯ</div>
+                  <div style="color:#8a93a8;font-size:12px;font-weight:600;margin-bottom:4px;">&#1042;&#1067;&#1055;&#1054;&#1051;&#1053;&#1048;&#1058;&#1068; &#1044;&#1054;</div>
                   <div style="color:#2f6bdc;font-size:20px;font-weight:700;">${dueLabel}</div>
                 </td>
               </tr>
