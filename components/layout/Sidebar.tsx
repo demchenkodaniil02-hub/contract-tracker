@@ -21,10 +21,24 @@ function initials(name: string) { return name.split(' ').map(w => w[0]).join('')
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { onlineUsers, currentUserId } = usePresence()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const logoClicks = useRef(0)
+  const logoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/login' }
   const close = () => setMobileOpen(false)
+
+  const handleLogoClick = () => {
+    logoClicks.current += 1
+    if (logoTimer.current) clearTimeout(logoTimer.current)
+    if (logoClicks.current >= 5) {
+      logoClicks.current = 0
+      router.push('/activity')
+    } else {
+      logoTimer.current = setTimeout(() => { logoClicks.current = 0 }, 2000)
+    }
+  }
 
   // Не показываем на публичных страницах
   if (PUBLIC.includes(pathname)) return null
@@ -43,7 +57,7 @@ export function Sidebar() {
       <aside className={`ct-sidebar${mobileOpen ? ' open' : ''}`}>
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '4px 8px' }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10, display: 'grid', placeItems: 'center', background: 'linear-gradient(160deg, #2f6bdc, #1f4ba8)', color: '#fff', flexShrink: 0 }}>
+          <div onClick={handleLogoClick} style={{ width: 38, height: 38, borderRadius: 10, display: 'grid', placeItems: 'center', background: 'linear-gradient(160deg, #2f6bdc, #1f4ba8)', color: '#fff', flexShrink: 0, cursor: 'pointer' }}>
             <Landmark size={22} />
           </div>
           <div>
