@@ -24,15 +24,12 @@ export async function GET(req: Request) {
     if (!fileRes.ok) return NextResponse.json({ error: 'File fetch failed' }, { status: 500 })
 
     const contentType = fileRes.headers.get('content-type') || 'application/octet-stream'
-    const buffer = await fileRes.arrayBuffer()
 
-    return new Response(buffer, {
+    return new Response(fileRes.body, {
       headers: {
         'Content-Type': contentType,
         'Content-Disposition': 'inline',
         'Cache-Control': 'private, max-age=300',
-        // Разрешаем встраивание в iframe с нашего домена
-        'X-Frame-Options': 'SAMEORIGIN',
       },
     })
   } catch (err) {

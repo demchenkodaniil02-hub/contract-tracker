@@ -249,7 +249,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
               {preview.type.startsWith('image/') ? (
                 <img src={preview.url} alt={preview.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               ) : (
-                <iframe src={preview.url} style={{ width: '100%', height: '100%', border: 'none' }} title={preview.name} sandbox="allow-scripts allow-same-origin allow-popups" />
+                <iframe src={preview.url} style={{ width: '100%', height: '100%', border: 'none' }} title={preview.name} />
               )}
             </div>
           </div>
