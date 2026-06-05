@@ -1,18 +1,20 @@
 'use client'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { useProfile } from '@/lib/useProfile'
 import { HardHat, Save } from 'lucide-react'
 import { Portal } from '@/components/ui/Portal'
 
 export function FirstLoginModal() {
   const { profile, updateProfile } = useProfile()
+  const pathname = usePathname()
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
 
   // Показываем если профиль загружен, но имя не заполнено (только email-prefix)
   const needsSetup = profile && !profile.name
 
-  if (!needsSetup) return null
+  if (!needsSetup || pathname === '/set-password') return null
 
   const handleSave = async () => {
     if (!name.trim()) return
