@@ -6,7 +6,7 @@ import { ChevronDown, ChevronRight, FileText } from 'lucide-react'
 import Link from 'next/link'
 
 export default function ReportsPage() {
-  const { contracts, counterparties, objects, payments } = useStore()
+  const { contracts, counterparties, objects } = useStore()
 
   const contractors = counterparties.filter(c => c.type === 'contractor')
 
@@ -32,12 +32,6 @@ export default function ReportsPage() {
     return next
   })
 
-  // Оплаты за выбранный год
-  const yearPayments = useMemo(() =>
-    payments.filter(p => p.paidAt && new Date(p.paidAt).getFullYear() === selectedYear),
-    [payments, selectedYear]
-  )
-
   // Контракты активные в выбранном году (начаты до конца года и не завершены до начала года)
   const yearContracts = useMemo(() =>
     contracts.filter(c => {
@@ -57,20 +51,15 @@ export default function ReportsPage() {
 
       const totalAmount = ctrs.reduce((s, c) => s + c.amount, 0)
       const totalPaid   = ctrs.reduce((s, c) => s + c.amountPaid, 0)
-      // Оплаты именно в этом году по контрактам этого исполнителя
-      const paidThisYear = yearPayments
-        .filter(p => ctrs.some(c => c.id === p.contractId))
-        .reduce((s, p) => s + p.amount, 0)
 
-      return { contractor, contracts: ctrs, totalAmount, totalPaid, paidThisYear, remaining: totalAmount - totalPaid }
+      return { contractor, contracts: ctrs, totalAmount, totalPaid, remaining: totalAmount - totalPaid }
     }).filter((r): r is NonNullable<typeof r> => r !== null),
-    [contractors, yearContracts, yearPayments]
+    [contractors, yearContracts]
   )
 
   const grandTotal = useMemo(() => ({
     amount:       contractorReports.reduce((s, r) => s + r.totalAmount, 0),
     paid:         contractorReports.reduce((s, r) => s + r.totalPaid, 0),
-    paidThisYear: contractorReports.reduce((s, r) => s + r.paidThisYear, 0),
     remaining:    contractorReports.reduce((s, r) => s + r.remaining, 0),
     contracts:    contractorReports.reduce((s, r) => s + r.contracts.length, 0),
   }), [contractorReports])
@@ -98,12 +87,11 @@ export default function ReportsPage() {
       </div>
 
       {/* Итоговая строка */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
         {[
-          { label: 'Контрактов', value: grandTotal.contracts, color: undefined },
+          { label: 'Контрактов', value: String(grandTotal.contracts), color: undefined },
           { label: 'Общая сумма', value: formatMoney(grandTotal.amount), color: undefined },
-          { label: `Оплачено в ${selectedYear}`, value: formatMoney(grandTotal.paidThisYear), color: 'var(--ok)' },
-          { label: 'Оплачено всего', value: formatMoney(grandTotal.paid), color: 'var(--ok)' },
+          { label: 'Оплачено', value: formatMoney(grandTotal.paid), color: 'var(--ok)' },
           { label: 'Остаток', value: formatMoney(grandTotal.remaining), color: 'var(--danger)' },
         ].map(({ label, value, color }) => (
           <div key={label} style={{ ...S.card, padding: '14px 18px' }}>
@@ -116,7 +104,7 @@ export default function ReportsPage() {
       {/* По каждому исполнителю */}
       {contractorReports.length === 0
         ? <div style={{ ...S.card, padding: 40, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Нет данных за {selectedYear} год</div>
-        : contractorReports.map(({ contractor, contracts: ctrs, totalAmount, totalPaid, paidThisYear, remaining }) => {
+        : contractorReports.map(({ contractor, contracts: ctrs, totalAmount, totalPaid, remaining }) => {
             const isOpen = expanded.has(contractor.id)
             const pct = totalAmount > 0 ? Math.round(totalPaid / totalAmount * 100) : 0
 
@@ -133,8 +121,7 @@ export default function ReportsPage() {
                   <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
                     <Stat label="Контрактов" value={String(ctrs.length)} />
                     <Stat label="Сумма" value={formatMoney(totalAmount)} />
-                    <Stat label={`Оплачено в ${selectedYear}`} value={formatMoney(paidThisYear)} color="var(--ok)" />
-                    <Stat label="Оплачено всего" value={formatMoney(totalPaid)} color="var(--ok)" />
+                    <Stat label="Оплачено" value={formatMoney(totalPaid)} color="var(--ok)" />
                     <Stat label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
                     {/* Прогресс */}
                     <div style={{ width: 80, textAlign: 'right' }}>
