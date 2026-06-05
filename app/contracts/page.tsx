@@ -20,8 +20,8 @@ const S = {
     boxShadow: primary ? '0 6px 16px -8px #2f6bdc' : 'none',
     whiteSpace: 'nowrap',
   }),
-  th: { textAlign: 'left' as const, padding: '14px 16px', color: 'var(--muted-ink)', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap' as const, borderBottom: '1px solid var(--line)', cursor: 'pointer', letterSpacing: '-0.01em' },
-  td: { padding: '13px 16px', borderBottom: '1px solid var(--line-soft)', verticalAlign: 'middle' as const, fontSize: 13.5 },
+  th: { textAlign: 'left' as const, padding: '12px 10px', color: 'var(--muted-ink)', fontWeight: 700, fontSize: 12, whiteSpace: 'nowrap' as const, borderBottom: '1px solid var(--line)', cursor: 'pointer', letterSpacing: '-0.01em' },
+  td: { padding: '10px 10px', borderBottom: '1px solid var(--line-soft)', verticalAlign: 'middle' as const, fontSize: 13 },
 }
 
 export default function ContractsPage() {
@@ -152,7 +152,7 @@ export default function ContractsPage() {
       {/* Table */}
       <div style={{ ...S.card, overflow: 'hidden' }}>
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
                 <th style={S.th} onClick={() => toggleSort('number')}>№ Контракта <SortArrow field="number" /></th>
@@ -186,11 +186,11 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
                     <td style={S.td}>{obj?.name ?? '—'}</td>
                     <td style={S.td}><DirectionBadge direction={c.direction} /></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', minWidth: 200, maxWidth: 260, whiteSpace: 'normal' }}>{customer?.name ?? '—'}</td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', minWidth: 200, maxWidth: 260, whiteSpace: 'normal' }}>{contractor?.name ?? '—'}</td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{customer?.name ?? '—'}</td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{contractor?.name ?? '—'}</td>
                     <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
                     <td style={{ ...S.td, textAlign: 'right' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', minWidth: 110 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', minWidth: 80 }}>
                         <span className="tnum" style={{ fontSize: 12.5 }}>{formatMoney(c.amountPaid)}</span>
                         <div style={{ width: '100%', height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${pct}%`, borderRadius: 999, background: progColor, transition: 'width .4s' }} />
