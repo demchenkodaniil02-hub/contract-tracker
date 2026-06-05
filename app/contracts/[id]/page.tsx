@@ -155,7 +155,7 @@ export default function ContractDetailPage() {
     <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
 
       {/* Шапка */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+      <div className="ct-contract-header" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <button onClick={() => router.push('/contracts')} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
           <ArrowLeft size={16} />
         </button>
@@ -171,9 +171,9 @@ export default function ContractDetailPage() {
       </div>
 
       {/* Детали + Финансы — в одну строку */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 16, padding: '16px 20px', boxShadow: 'var(--card-shadow)' }}>
+      <div className="ct-contract-info-wrap" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, background: '#fff', border: '1px solid var(--line)', borderRadius: 16, padding: '16px 20px', boxShadow: 'var(--card-shadow)' }}>
         {/* Детали */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px' }}>
+        <div className="ct-contract-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px 24px' }}>
           <Detail label="Объект" value={obj?.name ?? '—'} />
           <Detail label="Заказчик" value={customer?.name ?? '—'} />
           <Detail label="Исполнитель" value={contractor?.name ?? '—'} />
@@ -182,8 +182,8 @@ export default function ContractDetailPage() {
           {contract.notes && <div style={{ gridColumn: '1/-1', fontSize: 12, color: 'var(--muted-ink)', borderTop: '1px solid var(--line-soft)', paddingTop: 8, marginTop: 4 }}>{contract.notes}</div>}
         </div>
         {/* Финансы */}
-        <div style={{ paddingLeft: 24, borderLeft: '1px solid var(--line-soft)', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 280 }}>
-          <div style={{ display: 'flex', gap: 20 }}>
+        <div className="ct-contract-finance" style={{ paddingLeft: 24, borderLeft: '1px solid var(--line-soft)', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 280 }}>
+          <div className="ct-contract-finance-nums" style={{ display: 'flex', gap: 20 }}>
             <Fin label="Сумма" value={formatMoney(contract.amount)} />
             <Fin label="Оплачено" value={formatMoney(contract.amountPaid)} color="var(--ok)" />
             <Fin label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
@@ -203,7 +203,7 @@ export default function ContractDetailPage() {
       </div>
 
       {/* 2 колонки, блоки с внутренним скроллом */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
+      <div className="ct-contract-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ContractPayments contractId={id} />
           <ContractComments contractId={id} />

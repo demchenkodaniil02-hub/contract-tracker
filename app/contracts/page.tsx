@@ -125,7 +125,7 @@ export default function ContractsPage() {
       </div>
 
       {/* Filters */}
-      <div style={{ ...S.card, padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+      <div className="ct-filters-row" style={{ ...S.card, padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
         <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
           <Search size={16} style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--faint)' }} />
           <input

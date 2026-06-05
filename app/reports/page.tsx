@@ -92,7 +92,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Итоговая строка */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
+      <div className="ct-reports-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
         {[
           { label: 'Контрактов', value: String(grandTotal.contracts), color: undefined },
           { label: 'Сумма по контрактам', value: formatMoney(grandTotal.amount), color: undefined },
@@ -112,6 +112,8 @@ export default function ReportsPage() {
         ? <div style={{ ...S.card, padding: 40, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Нет данных за {activeYear} год</div>
         : (
           <div style={S.card}>
+            <div className="ct-reports-table">
+            <div className="ct-reports-table-inner">
             {/* Шапка колонок */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 160px 160px 160px 160px 90px', gap: 0, padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
@@ -216,6 +218,7 @@ export default function ReportsPage() {
               </div>
             )
           })}
+          </div></div>
           </div>
         )
       }

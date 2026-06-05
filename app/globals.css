@@ -292,4 +292,33 @@ body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", s
 
   /* Misc */
   .gap-x-8 { column-gap: 16px !important; }
+
+  /* Contract detail — header */
+  .ct-contract-header { flex-wrap: wrap; gap: 8px !important; }
+  .ct-contract-header h1 { font-size: 18px !important; }
+
+  /* Contract detail — info + finance block */
+  .ct-contract-info-wrap { grid-template-columns: 1fr !important; }
+  .ct-contract-detail-grid { grid-template-columns: 1fr 1fr !important; }
+  .ct-contract-finance { border-left: none !important; padding-left: 0 !important; min-width: 0 !important; border-top: 1px solid var(--line-soft); padding-top: 14px !important; }
+  .ct-contract-finance-nums { flex-wrap: wrap; gap: 12px !important; }
+
+  /* Contract detail — 2 column layout → 1 column */
+  .ct-contract-cols { grid-template-columns: 1fr !important; }
+
+  /* Reports — stat cards */
+  .ct-reports-stats { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .ct-reports-stats > div:last-child { grid-column: 1 / -1; }
+
+  /* Reports — table: horizontal scroll */
+  .ct-reports-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ct-reports-table-inner { min-width: 700px; }
+
+  /* Contracts — filters */
+  .ct-filters-row { flex-direction: column !important; align-items: stretch !important; }
+  .ct-filters-row select { min-width: 0 !important; width: 100% !important; }
+  .ct-filters-row > div { min-width: 0 !important; width: 100% !important; }
+
+  /* Table min-width reduce */
+  .table-scroll table { min-width: 600px; }
 }
