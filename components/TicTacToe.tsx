@@ -38,23 +38,20 @@ export function TicTacToe({ onClose }: { onClose: () => void }) {
 
       ch
         .on('presence', { event: 'sync' }, () => {
-          const state = ch.presenceState<{ role: 'X' | 'O' }>()
-          const count = Object.keys(state).length
-          setPlayerCount(count)
-          const mine = state[myId]?.[0]
-          if (mine?.role) setMyRole(mine.role)
+          const state = ch.presenceState()
+          const ids = Object.keys(state).sort()
+          setPlayerCount(ids.length)
+          const idx = ids.indexOf(myId)
+          if (idx === 0) setMyRole('X')
+          else if (idx === 1) setMyRole('O')
+          else setMyRole(null)
         })
         .on('broadcast', { event: 'state' }, ({ payload }) => {
           setGame(payload as GameState)
         })
         .subscribe(async (status) => {
           if (status !== 'SUBSCRIBED') return
-          // determine role before tracking
-          const existing = ch.presenceState()
-          const others = Object.keys(existing).filter(k => k !== myId)
-          const role: 'X' | 'O' = others.length === 0 ? 'X' : 'O'
-          setMyRole(role)
-          await ch.track({ role })
+          await ch.track({ joined_at: Date.now() })
         })
     })
 
