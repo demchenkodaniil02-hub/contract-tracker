@@ -1,15 +1,23 @@
 import { NextResponse } from 'next/server'
 import { Task } from '@/lib/types'
 
+// Конвертируем кириллицу в HTML-entities — единственный надёжный способ для Gmail
+function e(str?: string) {
+  if (!str) return ''
+  return str
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    .split('').map(c => c.charCodeAt(0) > 127 ? `&#${c.charCodeAt(0)};` : c).join('')
+}
+
 function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'reminder' = 'reminder', assignerName?: string) {
   const dueLabel = `${task.dueDate.split('-').reverse().join('.')} в ${task.dueTime}`
   const isAssigned = type === 'assigned'
-  const badge = isAssigned ? '👤 НАЗНАЧЕНА ЗАДАЧА' : '⏰ НАПОМИНАНИЕ'
+  const badge = isAssigned ? '&#128100; &#1053;&#1040;&#1047;&#1053;&#1040;&#1063;&#1045;&#1053;&#1040; &#1047;&#1040;&#1044;&#1040;&#1063;&#1040;' : '&#9200; &#1053;&#1040;&#1055;&#1054;&#1052;&#1048;&#1053;&#1040;&#1053;&#1048;&#1045;'
   const badgeColor = isAssigned ? '#1f8a5b' : '#e07a1a'
   const badgeBg = isAssigned ? '#f0fdf4' : '#fff3e0'
-  const heading = isAssigned ? `Вам назначена задача` : task.title
-  const subheading = isAssigned ? task.title : ''
-  const assignerBlock = isAssigned && assignerName ? `<p style="margin:0 0 20px;color:#5a6478;font-size:14px;">Назначил: <strong style="color:#0f1729;">${assignerName}</strong></p>` : ''
+  const heading = isAssigned ? '&#1042;&#1072;&#1084; &#1085;&#1072;&#1079;&#1085;&#1072;&#1095;&#1077;&#1085;&#1072; &#1079;&#1072;&#1076;&#1072;&#1095;&#1072;' : e(task.title)
+  const subheading = isAssigned ? e(task.title) : ''
+  const assignerBlock = isAssigned && assignerName ? `<p style="margin:0 0 20px;color:#5a6478;font-size:14px;">&#1053;&#1072;&#1079;&#1085;&#1072;&#1095;&#1080;&#1083;: <strong style="color:#0f1729;">${e(assignerName)}</strong></p>` : ''
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -47,7 +55,7 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0f1729;letter-spacing:-0.02em;">${heading}</h1>
             ${subheading ? `<p style="margin:0 0 12px;color:#5a6478;font-size:15px;font-weight:600;">${subheading}</p>` : ''}
             ${assignerBlock}
-            ${task.description ? `<p style="margin:0 0 20px;color:#5a6478;font-size:15px;line-height:1.6;">${task.description}</p>` : ''}
+            ${task.description ? `<p style="margin:0 0 20px;color:#5a6478;font-size:15px;line-height:1.6;">${e(task.description)}</p>` : ''}
 
             <!-- Due date block -->
             <table cellpadding="0" cellspacing="0" width="100%" style="background:#f0f4ff;border-radius:12px;margin-bottom:24px;">
@@ -59,7 +67,7 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
               </tr>
             </table>
 
-            ${contractNumber ? `<p style="margin:0 0 24px;color:#8a93a8;font-size:13px;">Договор: <strong style="color:#0f1729;">${contractNumber}</strong></p>` : ''}
+            ${contractNumber ? `<p style="margin:0 0 24px;color:#8a93a8;font-size:13px;">&#1044;&#1086;&#1075;&#1086;&#1074;&#1086;&#1088;: <strong style="color:#0f1729;">${e(contractNumber)}</strong></p>` : ''}
 
             <!-- CTA -->
             <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Открыть Контракт Трекер →</a>
