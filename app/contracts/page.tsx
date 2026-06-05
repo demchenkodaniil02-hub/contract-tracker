@@ -152,7 +152,20 @@ export default function ContractsPage() {
       {/* Table */}
       <div style={{ ...S.card, overflow: 'hidden' }}>
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 110 }} />{/* № */}
+              <col style={{ width: 130 }} />{/* Объект */}
+              <col style={{ width: 90 }} />{/* Направление */}
+              <col style={{ width: 130 }} />{/* Заказчик */}
+              <col style={{ width: 130 }} />{/* Исполнитель */}
+              <col style={{ width: 110 }} />{/* Сумма */}
+              <col style={{ width: 110 }} />{/* Оплачено */}
+              <col style={{ width: 90 }} />{/* Окончание */}
+              <col style={{ width: 90 }} />{/* Статус */}
+              <col style={{ width: 80 }} />{/* Оплата */}
+              <col style={{ width: 60 }} />{/* Actions */}
+            </colgroup>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
                 <th style={S.th} onClick={() => toggleSort('number')}>№ Контракта <SortArrow field="number" /></th>
@@ -186,8 +199,8 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
                     <td style={S.td}>{obj?.name ?? '—'}</td>
                     <td style={S.td}><DirectionBadge direction={c.direction} /></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150 }}><div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{customer?.name ?? '—'}</div></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', maxWidth: 150 }}><div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{contractor?.name ?? '—'}</div></td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', width: 130 }}><div className="clamp-2">{customer?.name ?? '—'}</div></td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', width: 130 }}><div className="clamp-2">{contractor?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
                     <td style={{ ...S.td, textAlign: 'right' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', minWidth: 80 }}>
