@@ -112,33 +112,46 @@ export function ContractTasks({ contractId }: { contractId: string }) {
       </div>
 
       {isAdding && (
-        <div style={{ background: 'var(--bg)', borderRadius: 12, padding: 14, marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 16, marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 12, background: '#fafbfd' }}>
+
+          {/* Название */}
           <input placeholder="Название задачи *" value={formData.title}
-            onChange={e => setFormData({ ...formData, title: e.target.value })} style={inp} />
+            onChange={e => setFormData({ ...formData, title: e.target.value })}
+            style={{ ...inp, fontSize: 14, fontWeight: 500, padding: '9px 12px', borderRadius: 9 }} />
+
+          {/* Описание */}
           <textarea placeholder="Описание (опционально)" value={formData.description}
             onChange={e => setFormData({ ...formData, description: e.target.value })}
-            style={{ ...inp, minHeight: 52, resize: 'vertical' }} />
+            style={{ ...inp, minHeight: 48, resize: 'none', borderRadius: 9, fontSize: 13, color: 'var(--muted-ink)' }} />
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {/* Срок + Время */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: 8 }}>
             <div>
-              <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 4 }}>Срок выполнения *</label>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5 }}>Срок выполнения *</div>
               <input type="date" value={formData.dueDate}
-                onChange={e => setFormData({ ...formData, dueDate: e.target.value })} style={inp} />
+                onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
+                style={{ ...inp, borderRadius: 9 }} />
             </div>
             <div>
-              <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 4 }}>Время</label>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5 }}>Время</div>
               <input type="time" value={formData.dueTime}
-                onChange={e => setFormData({ ...formData, dueTime: e.target.value })} style={inp} />
+                onChange={e => setFormData({ ...formData, dueTime: e.target.value })}
+                style={{ ...inp, borderRadius: 9 }} />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {/* Разделитель */}
+          <div style={{ borderTop: '1px solid var(--line-soft)', margin: '0 -16px', padding: '0 16px' }} />
+
+          {/* Исполнитель + Напоминание */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div>
-              <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 4 }}>
-                <UserCircle size={11} style={{ marginRight: 4, verticalAlign: 'middle' }} />Исполнитель
-              </label>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <UserCircle size={11} /> Исполнитель
+              </div>
               <select value={formData.assigneeId}
-                onChange={e => setFormData({ ...formData, assigneeId: e.target.value })} style={inp}>
+                onChange={e => setFormData({ ...formData, assigneeId: e.target.value })}
+                style={{ ...inp, borderRadius: 9 }}>
                 <option value="">— Не назначен</option>
                 {users.map(u => (
                   <option key={u.id} value={u.id}>
@@ -147,27 +160,28 @@ export function ContractTasks({ contractId }: { contractId: string }) {
                 ))}
               </select>
               {formData.assigneeId && formData.assigneeId !== profile?.id && (
-                <div style={{ fontSize: 11.5, color: 'var(--ok)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Mail size={11} /> Email будет отправлен при создании
+                <div style={{ fontSize: 11, color: 'var(--ok)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Mail size={10} /> Email отправится при создании
                 </div>
               )}
             </div>
             <div>
-              <label style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 4 }}>
-                <Bell size={11} style={{ marginRight: 4, verticalAlign: 'middle' }} />Напоминание (дата)
-              </label>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Bell size={11} /> Напоминание
+              </div>
               <input type="date" value={formData.reminderDate}
-                onChange={e => setFormData({ ...formData, reminderDate: e.target.value })} style={inp} />
+                onChange={e => setFormData({ ...formData, reminderDate: e.target.value })}
+                style={{ ...inp, borderRadius: 9 }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: 4 }}>
             <button onClick={() => setIsAdding(false)}
-              style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid var(--line)', background: '#fff', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer' }}>
+              style={{ padding: '8px 16px', borderRadius: 9, border: '1px solid var(--line)', background: '#fff', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer', color: 'var(--muted-ink)' }}>
               Отмена
             </button>
             <button onClick={handleAddTask} disabled={sending || !formData.title || !formData.dueDate}
-              style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: 'var(--maf)', color: '#fff', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: sending ? 0.7 : 1 }}>
+              style={{ padding: '8px 18px', borderRadius: 9, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: sending || !formData.title || !formData.dueDate ? 'not-allowed' : 'pointer', opacity: sending || !formData.title || !formData.dueDate ? 0.6 : 1 }}>
               {sending ? 'Создаём...' : 'Создать задачу'}
             </button>
           </div>
