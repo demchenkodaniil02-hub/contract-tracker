@@ -48,7 +48,7 @@ export function FirstLoginModal() {
               Ваше имя будет отображаться в комментариях и истории изменений контрактов.
             </div>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Имя / ФИО</label>
+              <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Имя</label>
               <input
                 autoFocus
                 value={name}
