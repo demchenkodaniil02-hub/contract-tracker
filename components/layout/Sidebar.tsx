@@ -74,6 +74,7 @@ export function Sidebar() {
         </nav>
 
         {/* Онлайн */}
+        <div style={{ marginTop: 'auto' }} />
         {onlineUsers.length > 0 && (
           <div style={{ margin: '0 16px', padding: '12px', borderRadius: 10, background: 'rgba(255,255,255,.05)' }}>
             <div style={{ fontSize: 10.5, fontWeight: 700, color: '#6b7a99', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
