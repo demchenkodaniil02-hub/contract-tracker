@@ -15,7 +15,7 @@ const navItems = [
   { href: '/profile', label: 'Профиль', icon: UserCircle },
 ]
 
-const PUBLIC = ['/login', '/reset-password', '/set-password', '/sea']
+const PUBLIC = ['/login', '/reset-password', '/set-password']
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
