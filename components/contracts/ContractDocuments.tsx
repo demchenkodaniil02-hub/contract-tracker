@@ -23,17 +23,10 @@ function getDocInfo(fileType: string, fileName: string) {
   return { isImage, isPdf, isOffice, canPreview }
 }
 
-function getPreviewUrl(fileName: string, fileUrl: string, filePath?: string) {
-  const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
-  const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
-
-  // Прокси-URL — через filePath (новые) или через публичный URL (старые)
-  const proxyUrl = filePath
+function getPdfProxyUrl(fileUrl: string, filePath?: string) {
+  return filePath
     ? `/api/preview-doc?path=${encodeURIComponent(filePath)}`
     : `/api/preview-public?url=${encodeURIComponent(fileUrl)}`
-
-  if (isOffice) return `https://docs.google.com/viewer?url=${encodeURIComponent(`${window.location.origin}${proxyUrl}`)}&embedded=true`
-  return proxyUrl
 }
 
 export function ContractDocuments({ contractId }: { contractId: string }) {
@@ -161,11 +154,20 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
             const { canPreview } = getDocInfo(doc.fileType, doc.fileName)
-            const openDoc = () => {
-              if (canPreview)
-                setPreview({ url: getPreviewUrl(doc.fileName, doc.fileUrl, doc.filePath), name: doc.fileName, type: doc.fileType })
-              else
-                window.open(doc.fileUrl, '_blank')
+            const openDoc = async () => {
+              if (!canPreview) { window.open(doc.fileUrl, '_blank'); return }
+              if (isOffice) {
+                // Office: получаем прямую ссылку, потом Office Online viewer
+                const params = doc.filePath
+                  ? `path=${encodeURIComponent(doc.filePath)}`
+                  : `url=${encodeURIComponent(doc.fileUrl)}`
+                const res = await fetch(`/api/office-url?${params}`)
+                const { href } = await res.json()
+                const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(href)}`
+                setPreview({ url: viewerUrl, name: doc.fileName, type: doc.fileType })
+              } else {
+                setPreview({ url: getPdfProxyUrl(doc.fileUrl, doc.filePath), name: doc.fileName, type: doc.fileType })
+              }
             }
             return (
               <div key={doc.id} onClick={openDoc}
