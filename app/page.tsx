@@ -10,6 +10,31 @@ import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { AlertCircle, Clock, XCircle } from 'lucide-react'
 
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number }[]; label?: string }) {
+  if (!active || !payload?.length) return null
+  const items = payload.filter(p => p.value > 0).sort((a, b) => b.value - a.value)
+  const total = items.reduce((s, p) => s + p.value, 0)
+  return (
+    <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 14px', fontSize: 12, boxShadow: '0 4px 20px -4px rgba(0,0,0,.15)', maxWidth: 280 }}>
+      <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 13 }}>{label}</div>
+      <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {items.map(p => (
+          <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+            <span style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatMoney(p.value * 1000000)}</span>
+          </div>
+        ))}
+      </div>
+      {items.length > 1 && (
+        <div style={{ borderTop: '1px solid var(--line-soft)', marginTop: 6, paddingTop: 6, display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: 13 }}>
+          <span>Итого</span>
+          <span>{formatMoney(total * 1000000)}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function formatAmountLabel(value: number) {
   if (value < 1) {
     return `${Math.round(value * 1000).toLocaleString('ru-RU')} тыс. ₽`
@@ -193,12 +218,7 @@ export default function DashboardPage() {
               <BarChart data={paymentChartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
-                <Tooltip
-                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-                  formatter={(v: unknown, name: unknown) => [formatMoney(Number(v) * 1000000), String(name)]}
-                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
-                  contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--line)' }}
-                />
+                <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} content={<ChartTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-ink)' }} />
                 {paymentContractKeys.map((k, i) => {
                   const colors = ['#2f6bdc','#e07a1a','#1f8a5b','#e0325f','#9b5de5','#0891b2','#f59e0b','#10b981','#ec4899','#6366f1','#14b8a6','#f97316','#84cc16','#8b5cf6','#ef4444','#06b6d4','#a855f7','#22c55e','#fb923c','#3b82f6']
