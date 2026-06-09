@@ -11,6 +11,7 @@ const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; color: string }> =
   ks3:      { bg: '#f0fdf4', color: '#1f8a5b' },
   estimate: { bg: '#fff7ed', color: '#e07a1a' },
   act:      { bg: '#fdf4ff', color: '#9b5de5' },
+  project:  { bg: '#fff1f2', color: '#e11d48' },
   other:    { bg: '#f9fafb', color: '#6b7280' },
 }
 
