@@ -124,9 +124,8 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
     <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 20 }}>
 
       {/* Шапка */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontWeight: 700, fontSize: 15 }}>📎 Документы ({allDocs.length})</div>
-        {syncing && <span style={{ fontSize: 12, color: 'var(--maf)' }}>Синхронизация...</span>}
       </div>
 
       {/* Фильтр по категориям */}
@@ -223,8 +222,19 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           style={{ flex: 1, padding: '9px 14px', border: `1.5px dashed ${syncing ? '#f59e0b' : '#d4dae2'}`, borderRadius: 10, background: syncing ? '#fffbeb' : 'none', fontFamily: 'inherit', fontSize: 13, color: syncing ? '#d97706' : 'var(--faint)', cursor: uploading || syncing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
           onMouseEnter={e => { if (!uploading && !syncing) { (e.currentTarget as HTMLElement).style.borderColor = '#2f6bdc'; (e.currentTarget as HTMLElement).style.color = 'var(--maf)' } }}
           onMouseLeave={e => { if (!syncing) { (e.currentTarget as HTMLElement).style.borderColor = '#d4dae2'; (e.currentTarget as HTMLElement).style.color = 'var(--faint)' } }}>
-          <Upload size={14} />
-          {uploading ? 'Загрузка...' : syncing ? 'Подождите, идёт синхронизация...' : 'Загрузить'}
+          {syncing ? (
+            <>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid #f59e0b', borderTopColor: 'transparent', display: 'inline-block', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+              Подождите, идёт синхронизация...
+            </>
+          ) : uploading ? (
+            <>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid #2f6bdc', borderTopColor: 'transparent', display: 'inline-block', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+              Загрузка...
+            </>
+          ) : (
+            <><Upload size={14} /> Загрузить</>
+          )}
         </button>
       </div>
 
