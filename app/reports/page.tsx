@@ -44,9 +44,12 @@ export default function ReportsPage() {
     contractors.map(contractor => {
       // Контракты этого исполнителя у которых были оплаты в выбранном году
       const contractorContracts = contracts.filter(c => c.contractorId === contractor.id)
-      const ctrs = contractorContracts.filter(c =>
-        yearPayments.some(p => p.contractId === c.id)
-      )
+      const ctrs = contractorContracts.filter(c => {
+        const hadPaymentThisYear = yearPayments.some(p => p.contractId === c.id)
+        const contractStartYear = c.startDate ? new Date(c.startDate).getFullYear() : activeYear
+        const hasUnpaidBalance = c.amountPaid < c.amount && contractStartYear <= activeYear
+        return hadPaymentThisYear || hasUnpaidBalance
+      })
       if (!ctrs.length) return null
 
       const totalAmount = ctrs.reduce((s, c) => s + c.amount, 0)
