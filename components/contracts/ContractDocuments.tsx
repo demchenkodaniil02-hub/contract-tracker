@@ -219,11 +219,12 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           {DOCUMENT_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
         </select>
         <button onClick={() => fileInputRef.current?.click()} disabled={uploading || syncing}
-          style={{ flex: 1, padding: '9px 14px', border: '1.5px dashed #d4dae2', borderRadius: 10, background: 'none', fontFamily: 'inherit', fontSize: 13, color: 'var(--faint)', cursor: uploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
-          onMouseEnter={e => { if (!uploading) { (e.currentTarget as HTMLElement).style.borderColor = '#2f6bdc'; (e.currentTarget as HTMLElement).style.color = 'var(--maf)' } }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#d4dae2'; (e.currentTarget as HTMLElement).style.color = 'var(--faint)' }}>
+          title={syncing ? 'Дождитесь окончания синхронизации' : ''}
+          style={{ flex: 1, padding: '9px 14px', border: `1.5px dashed ${syncing ? '#f59e0b' : '#d4dae2'}`, borderRadius: 10, background: syncing ? '#fffbeb' : 'none', fontFamily: 'inherit', fontSize: 13, color: syncing ? '#d97706' : 'var(--faint)', cursor: uploading || syncing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
+          onMouseEnter={e => { if (!uploading && !syncing) { (e.currentTarget as HTMLElement).style.borderColor = '#2f6bdc'; (e.currentTarget as HTMLElement).style.color = 'var(--maf)' } }}
+          onMouseLeave={e => { if (!syncing) { (e.currentTarget as HTMLElement).style.borderColor = '#d4dae2'; (e.currentTarget as HTMLElement).style.color = 'var(--faint)' } }}>
           <Upload size={14} />
-          {uploading ? 'Загрузка...' : 'Загрузить (можно несколько)'}
+          {uploading ? 'Загрузка...' : syncing ? 'Подождите, идёт синхронизация...' : 'Загрузить'}
         </button>
       </div>
 
