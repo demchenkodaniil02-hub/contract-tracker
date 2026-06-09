@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useProfile } from '@/lib/useProfile'
-import { Save, UserPlus, Mail } from 'lucide-react'
+import { Save, UserPlus, Mail, Download } from 'lucide-react'
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
@@ -125,6 +125,24 @@ export default function ProfilePage() {
         {inviteStatus === 'error' && (
           <div style={{ marginTop: 10, fontSize: 13, color: 'var(--danger)' }}>{inviteError}</div>
         )}
+      </div>
+
+      {/* Скачать программу */}
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+          <Download size={18} color="#2f6bdc" />
+          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Рабочая программа</span>
+        </div>
+        <p style={{ margin: '0 0 18px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
+          Скачайте рабочую программу с Яндекс Диска для работы на компьютере.
+        </p>
+        <a
+          href="https://disk.yandex.ru/d/FyB9cgJMVl4VHg"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
+          <Download size={16} /> Скачать с Яндекс Диска
+        </a>
       </div>
     </div>
   )
