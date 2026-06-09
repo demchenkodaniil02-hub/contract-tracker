@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle, BarChart3 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { usePresence } from '@/lib/usePresence'
+import { GlobalSearch } from '@/components/GlobalSearch'
 
 const navItems = [
   { href: '/', label: 'Главная', icon: LayoutDashboard },
@@ -52,6 +53,9 @@ export function Sidebar() {
             <div style={{ fontSize: 11.5, color: '#93a0bb', marginTop: 2 }}>Управление заказами</div>
           </div>
         </div>
+
+        {/* Поиск */}
+        <GlobalSearch />
 
         {/* Nav */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
