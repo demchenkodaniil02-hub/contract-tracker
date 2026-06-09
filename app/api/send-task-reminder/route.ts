@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { Task } from '@/lib/types'
 
-// Конвертируем кириллицу в HTML-entities — единственный надёжный способ для Gmail
+// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РєРёСЂРёР»Р»РёС†Сѓ РІ HTML-entities вЂ” РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ РЅР°РґС‘Р¶РЅС‹Р№ СЃРїРѕСЃРѕР± РґР»СЏ Gmail
 function e(str?: string) {
   if (!str) return ''
   return str
@@ -10,7 +10,7 @@ function e(str?: string) {
 }
 
 function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'reminder' = 'reminder', assignerName?: string) {
-  const dueLabel = `${task.dueDate.split('-').reverse().join('.')} · ${task.dueTime}`
+  const dueLabel = `${task.dueDate.split('-').reverse().join('.')} В· ${task.dueTime}`
   const isAssigned = type === 'assigned'
   const badge = isAssigned ? '&#128100; &#1053;&#1040;&#1047;&#1053;&#1040;&#1063;&#1045;&#1053;&#1040; &#1047;&#1040;&#1044;&#1040;&#1063;&#1040;' : '&#9200; &#1053;&#1040;&#1055;&#1054;&#1052;&#1048;&#1053;&#1040;&#1053;&#1048;&#1045;'
   const badgeColor = isAssigned ? '#1f8a5b' : '#e07a1a'
@@ -36,11 +36,11 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td style="width:40px;height:40px;background:linear-gradient(160deg,#2f6bdc,#1f4ba8);border-radius:10px;text-align:center;vertical-align:middle;">
-                  <span style="font-size:20px;">🏗</span>
+                  <span style="font-size:20px;">рџЏ—</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">Контракт Трекер</div>
-                  <div style="color:#93a0bb;font-size:12px;margin-top:2px;">Напоминание о задаче</div>
+                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ</div>
+                  <div style="color:#93a0bb;font-size:12px;margin-top:2px;">РќР°РїРѕРјРёРЅР°РЅРёРµ Рѕ Р·Р°РґР°С‡Рµ</div>
                 </td>
               </tr>
             </table>
@@ -70,7 +70,7 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             ${contractNumber ? `<p style="margin:0 0 24px;color:#8a93a8;font-size:13px;">&#1044;&#1086;&#1075;&#1086;&#1074;&#1086;&#1088;: <strong style="color:#0f1729;">${e(contractNumber)}</strong></p>` : ''}
 
             <!-- CTA -->
-            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Открыть Контракт Трекер →</a>
+            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">РћС‚РєСЂС‹С‚СЊ РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ в†’</a>
           </td>
         </tr>
 
@@ -78,8 +78,8 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
         <tr>
           <td style="background:#f8f9fb;padding:16px 32px;border-top:1px solid #eef0f4;">
             <p style="margin:0;color:#b0b8c8;font-size:12px;text-align:center;">
-              Автоматическое уведомление · Контракт Трекер<br>
-              Не отвечайте на это письмо
+              РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СѓРІРµРґРѕРјР»РµРЅРёРµ В· РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ<br>
+              РќРµ РѕС‚РІРµС‡Р°Р№С‚Рµ РЅР° СЌС‚Рѕ РїРёСЃСЊРјРѕ
             </p>
           </td>
         </tr>
@@ -110,9 +110,9 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
-        from: 'Контракт Трекер <onboarding@resend.dev>',
+        from: 'РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ <onboarding@resend.dev>',
         to: email,
-        subject: type === 'assigned' ? `👤 Вам назначена задача: ${task.title}` : `⏰ Напоминание: ${task.title}`,
+        subject: type === 'assigned' ? `рџ‘¤ Р’Р°Рј РЅР°Р·РЅР°С‡РµРЅР° Р·Р°РґР°С‡Р°: ${task.title}` : `вЏ° РќР°РїРѕРјРёРЅР°РЅРёРµ: ${task.title}`,
         html: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
       }),
     })
@@ -127,3 +127,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
+

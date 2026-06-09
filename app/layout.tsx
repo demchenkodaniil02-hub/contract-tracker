@@ -9,7 +9,7 @@ const ibmPlexSans = IBM_Plex_Sans({ variable: '--font-ibm-plex-sans', subsets: [
 const ibmPlexMono = IBM_Plex_Mono({ variable: '--font-ibm-plex-mono', subsets: ['latin', 'cyrillic'], weight: ['400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
-  title: 'Контракт Трекер',
+  title: 'Система контрактов',
   description: 'Управление заказами и контрактами',
   viewport: 'width=device-width, initial-scale=1',
 }
