@@ -70,7 +70,7 @@ export interface Comment {
   createdAt: string
 }
 
-export type DocumentCategory = 'contract' | 'ks2' | 'ks3' | 'estimate' | 'act' | 'other'
+export type DocumentCategory = 'contract' | 'ks2' | 'ks3' | 'estimate' | 'act' | 'project' | 'other'
 
 export const DOCUMENT_CATEGORIES: { value: DocumentCategory; label: string }[] = [
   { value: 'contract', label: 'Договор' },
@@ -78,6 +78,7 @@ export const DOCUMENT_CATEGORIES: { value: DocumentCategory; label: string }[] =
   { value: 'ks3',      label: 'КС-3' },
   { value: 'estimate', label: 'Смета' },
   { value: 'act',      label: 'Акт' },
+  { value: 'project',  label: 'Проект' },
   { value: 'other',    label: 'Другое' },
 ]
 
