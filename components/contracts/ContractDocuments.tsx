@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useStore } from '@/lib/store'
 import { formatDate } from '@/lib/utils'
-import { Upload, Trash2, Download, FileText, X, ExternalLink } from 'lucide-react'
+import { Upload, Trash2, Download, FileText, X, ExternalLink, Archive } from 'lucide-react'
 import { DOCUMENT_CATEGORIES, DocumentCategory } from '@/lib/types'
 
 const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; color: string }> = {
@@ -20,8 +20,9 @@ function getDocInfo(fileType: string, fileName: string) {
   const isImage = fileType.startsWith('image/')
   const isPdf = fileType === 'application/pdf' || ext === 'pdf'
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
+  const isArchive = ['zip','rar','7z','tar','gz','bz2'].includes(ext)
   const canPreview = isImage || isPdf || isOffice
-  return { isImage, isPdf, isOffice, canPreview }
+  return { isImage, isPdf, isOffice, isArchive, canPreview }
 }
 
 function getPdfProxyUrl(fileUrl: string, filePath?: string) {
@@ -154,7 +155,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
           {contractDocs.map(doc => {
             const cat = (catOverrides[doc.id] ?? doc.category ?? 'other') as DocumentCategory
             const col = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.other
-            const { canPreview, isOffice } = getDocInfo(doc.fileType, doc.fileName)
+            const { canPreview, isOffice, isArchive } = getDocInfo(doc.fileType, doc.fileName)
             const openDoc = async () => {
               if (!canPreview) { window.open(doc.fileUrl, '_blank'); return }
               if (isOffice) {
@@ -175,8 +176,8 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, transition: 'background .12s, border-color .12s', cursor: 'pointer' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#fafbfc'; (e.currentTarget as HTMLElement).style.borderColor = '#c5ccd6' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)' }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: col.bg, color: col.color, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                  <FileText size={16} />
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: isArchive ? '#fef3c7' : col.bg, color: isArchive ? '#d97706' : col.color, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                  {isArchive ? <Archive size={16} /> : <FileText size={16} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.fileName}</div>
@@ -227,7 +228,7 @@ export function ContractDocuments({ contractId }: { contractId: string }) {
       </div>
 
       <input ref={fileInputRef} type="file" multiple onChange={handleFileSelect}
-        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.dwg" style={{ display: 'none' }} />
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.dwg,.zip,.rar,.7z,.tar,.gz,.bz2" style={{ display: 'none' }} />
 
       {/* Модал просмотра */}
       {preview && (
