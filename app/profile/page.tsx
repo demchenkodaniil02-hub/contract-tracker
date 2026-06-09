@@ -131,10 +131,10 @@ export default function ProfilePage() {
       <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <Download size={18} color="#2f6bdc" />
-          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Рабочая программа</span>
+          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Калькулятор расчетов</span>
         </div>
         <p style={{ margin: '0 0 18px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
-          Скачайте рабочую программу с Яндекс Диска для работы на компьютере.
+          Скачайте калькулятор расчетов с Яндекс Диска для работы на компьютере.
         </p>
         <a
           href="https://disk.yandex.ru/d/FyB9cgJMVl4VHg"
