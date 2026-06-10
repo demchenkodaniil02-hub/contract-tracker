@@ -96,9 +96,9 @@ export async function POST(req: Request) {
     }
 
     const transporter = nodemailer.createTransport({
-      host: 'smtp.mail.ru',
-      port: 465,
-      secure: true,
+      host: 'smtp-mail.outlook.com',
+      port: 587,
+      secure: false,
       auth: { user: mailUser, pass: mailPassword },
     })
 
