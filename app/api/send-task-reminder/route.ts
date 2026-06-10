@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server'
 import { Task } from '@/lib/types'
 
-// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РєРёСЂРёР»Р»РёС†Сѓ РІ HTML-entities вЂ” РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ РЅР°РґС‘Р¶РЅС‹Р№ СЃРїРѕСЃРѕР± РґР»СЏ Gmail
+// Конвертируем кириллицу в HTML-entities — единственный надёжный способ для Gmail
 function e(str?: string) {
   if (!str) return ''
   return str
@@ -36,11 +36,11 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td style="width:40px;height:40px;background:linear-gradient(160deg,#2f6bdc,#1f4ba8);border-radius:10px;text-align:center;vertical-align:middle;">
-                  <span style="font-size:20px;">рџЏ—</span>
+                  <span style="font-size:20px;">&#127959;</span>
                 </td>
                 <td style="padding-left:12px;">
-                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ</div>
-                  <div style="color:#93a0bb;font-size:12px;margin-top:2px;">РќР°РїРѕРјРёРЅР°РЅРёРµ Рѕ Р·Р°РґР°С‡Рµ</div>
+                  <div style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.01em;">&#1050;&#1086;&#1085;&#1090;&#1088;&#1072;&#1082;&#1090; &#1058;&#1088;&#1077;&#1082;&#1077;&#1088;</div>
+                  <div style="color:#93a0bb;font-size:12px;margin-top:2px;">&#1053;&#1072;&#1087;&#1086;&#1084;&#1080;&#1085;&#1072;&#1085;&#1080;&#1077; &#1086; &#1079;&#1072;&#1076;&#1072;&#1095;&#1077;</div>
                 </td>
               </tr>
             </table>
@@ -70,7 +70,7 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
             ${contractNumber ? `<p style="margin:0 0 24px;color:#8a93a8;font-size:13px;">&#1044;&#1086;&#1075;&#1086;&#1074;&#1086;&#1088;: <strong style="color:#0f1729;">${e(contractNumber)}</strong></p>` : ''}
 
             <!-- CTA -->
-            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">РћС‚РєСЂС‹С‚СЊ РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ в†’</a>
+            <a href="https://contract-tracker-peach.vercel.app/contracts" style="display:inline-block;background:#2f6bdc;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">&#1054;&#1090;&#1082;&#1088;&#1099;&#1090;&#1100; &#1050;&#1086;&#1085;&#1090;&#1088;&#1072;&#1082;&#1090; &#1058;&#1088;&#1077;&#1082;&#1077;&#1088; &rarr;</a>
           </td>
         </tr>
 
@@ -78,8 +78,8 @@ function emailHtml(task: Task, contractNumber?: string, type: 'assigned' | 'remi
         <tr>
           <td style="background:#f8f9fb;padding:16px 32px;border-top:1px solid #eef0f4;">
             <p style="margin:0;color:#b0b8c8;font-size:12px;text-align:center;">
-              РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СѓРІРµРґРѕРјР»РµРЅРёРµ В· РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ<br>
-              РќРµ РѕС‚РІРµС‡Р°Р№С‚Рµ РЅР° СЌС‚Рѕ РїРёСЃСЊРјРѕ
+              &#1040;&#1074;&#1090;&#1086;&#1084;&#1072;&#1090;&#1080;&#1095;&#1077;&#1089;&#1082;&#1086;&#1077; &#1091;&#1074;&#1077;&#1076;&#1086;&#1084;&#1083;&#1077;&#1085;&#1080;&#1077; &middot; &#1050;&#1086;&#1085;&#1090;&#1088;&#1072;&#1082;&#1090; &#1058;&#1088;&#1077;&#1082;&#1077;&#1088;<br>
+              &#1053;&#1077; &#1086;&#1090;&#1074;&#1077;&#1095;&#1072;&#1081;&#1090;&#1077; &#1085;&#1072; &#1101;&#1090;&#1086; &#1087;&#1080;&#1089;&#1100;&#1084;&#1086;
             </p>
           </td>
         </tr>
@@ -110,9 +110,9 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
-        from: 'РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ <onboarding@resend.dev>',
+        from: ‘&#1050;&#1086;&#1085;&#1090;&#1088;&#1072;&#1082;&#1090; &#1058;&#1088;&#1077;&#1082;&#1077;&#1088; <onboarding@resend.dev>’,
         to: email,
-        subject: type === 'assigned' ? `рџ‘¤ Р’Р°Рј РЅР°Р·РЅР°С‡РµРЅР° Р·Р°РґР°С‡Р°: ${task.title}` : `вЏ° РќР°РїРѕРјРёРЅР°РЅРёРµ: ${task.title}`,
+        subject: type === ‘assigned’ ? `👤 Вам назначена задача: ${task.title}` : `⏰ Напоминание: ${task.title}`,
         html: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
       }),
     })
