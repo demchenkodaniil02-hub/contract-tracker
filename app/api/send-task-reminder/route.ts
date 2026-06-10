@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
 import { Task } from '@/lib/types'
 
 function e(str?: string) {
@@ -88,26 +87,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing email or task' }, { status: 400 })
     }
 
-    const mailUser = process.env.MAIL_USER
-    const mailPassword = process.env.MAIL_PASSWORD
-    if (!mailUser || !mailPassword) {
-      console.warn('MAIL_USER or MAIL_PASSWORD not configured, taskId:', taskId)
+    const apiKey = process.env.BREVO_API_KEY
+    if (!apiKey) {
+      console.warn('BREVO_API_KEY not configured, taskId:', taskId)
       return NextResponse.json({ success: true, warning: 'Email service not configured' })
     }
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp-mail.outlook.com',
-      port: 587,
-      secure: false,
-      auth: { user: mailUser, pass: mailPassword },
+    const subject = type === 'assigned'
+      ? `Вам назначена задача: ${task.title}`
+      : `Напоминание: ${task.title}`
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'Контракт Трекер', email: 'contracttracker.notify@outlook.com' },
+        to: [{ email }],
+        subject,
+        htmlContent: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
+      }),
     })
 
-    await transporter.sendMail({
-      from: `"Контракт Трекер" <${mailUser}>`,
-      to: email,
-      subject: type === 'assigned' ? `Вам назначена задача: ${task.title}` : `Напоминание: ${task.title}`,
-      html: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
-    })
+    if (!response.ok) {
+      const error = await response.text()
+      return NextResponse.json({ error }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
