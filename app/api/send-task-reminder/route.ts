@@ -99,7 +99,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         from: 'Contract Tracker <onboarding@resend.dev>',
         to: email,
-        subject: type === 'assigned' ? `[Contract Tracker] Вам назначена задача: ${task.title}` : `[Contract Tracker] Напоминание: ${task.title}`,
+        subject: type === 'assigned' ? `Вам назначена задача: ${task.title}` : `Напоминание: ${task.title}`,
         html: emailHtml(task, contractNumber, type ?? 'reminder', assignerName),
       }),
     })
