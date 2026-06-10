@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -27,12 +27,12 @@ export default function ResetPasswordPage() {
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirm) { setError('РџР°СЂРѕР»Рё РЅРµ СЃРѕРІРїР°РґР°СЋС‚'); return }
-    if (password.length < 6) { setError('РџР°СЂРѕР»СЊ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РЅРµ РјРµРЅРµРµ 6 СЃРёРјРІРѕР»РѕРІ'); return }
+    if (password !== confirm) { setError('Пароли не совпадают'); return }
+    if (password.length < 6) { setError('Пароль должен быть не менее 6 символов'); return }
     setError(''); setLoading(true)
     const { error } = await supabase.auth.updateUser({ password })
     setLoading(false)
-    if (error) setError('РћС€РёР±РєР° СЃР±СЂРѕСЃР° РїР°СЂРѕР»СЏ. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°.')
+    if (error) setError('Ошибка сброса пароля. Попробуйте снова.')
     else { setSuccess(true); setTimeout(() => router.push('/'), 2000) }
   }
 
@@ -44,34 +44,34 @@ export default function ResetPasswordPage() {
             <Landmark size={24} color="#fff" />
           </div>
           <div>
-            <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>РљРѕРЅС‚СЂР°РєС‚ РўСЂРµРєРµСЂ</div>
-            <div style={{ color: '#93a0bb', fontSize: 12, marginTop: 2 }}>РЈРїСЂР°РІР»РµРЅРёРµ Р·Р°РєР°Р·Р°РјРё</div>
+            <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>Контракт Трекер</div>
+            <div style={{ color: '#93a0bb', fontSize: 12, marginTop: 2 }}>Управление заказами</div>
           </div>
         </div>
 
         <div style={{ padding: '32px' }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ</div>
-          <div style={{ fontSize: 13, color: 'var(--faint)', marginBottom: 24 }}>Р’РІРµРґРёС‚Рµ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ РґР»СЏ РІР°С€РµРіРѕ Р°РєРєР°СѓРЅС‚Р°</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>Новый пароль</div>
+          <div style={{ fontSize: 13, color: 'var(--faint)', marginBottom: 24 }}>Введите новый пароль для вашего аккаунта</div>
 
           {success ? (
             <div style={{ background: 'var(--ok-soft)', color: 'var(--ok)', padding: '16px', borderRadius: 10, fontSize: 14, fontWeight: 500, textAlign: 'center' }}>
-              вњ… РџР°СЂРѕР»СЊ СѓСЃРїРµС€РЅРѕ РёР·РјРµРЅС‘РЅ! РџРµСЂРµРЅР°РїСЂР°РІР»СЏРµРј...
+              ✅ Пароль успешно изменён! Перенаправляем...
             </div>
           ) : (
             <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="вЂўвЂўвЂўвЂўвЂўвЂўвЂўвЂў" required minLength={6} style={inp} />
+                <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Новый пароль</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} style={inp} />
               </div>
               <div>
-                <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>РџРѕРІС‚РѕСЂРёС‚Рµ РїР°СЂРѕР»СЊ</label>
-                <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="вЂўвЂўвЂўвЂўвЂўвЂўвЂўвЂў" required style={inp} />
+                <label style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-ink)', display: 'block', marginBottom: 6 }}>Повторите пароль</label>
+                <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="••••••••" required style={inp} />
               </div>
 
               {error && <div style={{ background: 'var(--danger-soft)', color: 'var(--danger)', padding: '10px 14px', borderRadius: 9, fontSize: 13, fontWeight: 500 }}>{error}</div>}
 
               <button type="submit" disabled={loading} style={{ padding: '12px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 4 }}>
-                <KeyRound size={17} /> {loading ? 'РЎРѕС…СЂР°РЅРµРЅРёРµ...' : 'РЎРѕС…СЂР°РЅРёС‚СЊ РїР°СЂРѕР»СЊ'}
+                <KeyRound size={17} /> {loading ? 'Сохранение...' : 'Сохранить пароль'}
               </button>
             </form>
           )}
@@ -80,4 +80,3 @@ export default function ResetPasswordPage() {
     </div>
   )
 }
-
