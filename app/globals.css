@@ -182,6 +182,17 @@ body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", s
 
 .tnum { font-feature-settings: "tnum"; }
 
+/* ── Cross-browser select normalization (Safari fix) ── */
+select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  padding-right: 32px !important;
+  cursor: pointer;
+}
+
 /* ── Sidebar (base styles in CSS so media queries can override) ── */
 .ct-sidebar {
   width: 236px;
