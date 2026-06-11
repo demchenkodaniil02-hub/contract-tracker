@@ -143,7 +143,7 @@ export default function ContractsPage() {
           { value: filterContractor, onChange: (v: string) => setFilterContractor(v), placeholder: 'Исполнитель', options: [{ v: 'all', l: 'Все исполнители' }, ...contractors.map(c => ({ v: c.id, l: c.name }))] },
         ].map((sel, i) => (
           <select key={i} value={sel.value} onChange={(e) => sel.onChange(e.target.value)}
-            style={{ padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 11, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', cursor: 'pointer', minWidth: 150 }}>
+            style={{ padding: '10px 36px 10px 12px', border: '1px solid var(--line)', borderRadius: 11, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', cursor: 'pointer', minWidth: 150, appearance: 'none', WebkitAppearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}>
             {sel.options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
           </select>
         ))}
