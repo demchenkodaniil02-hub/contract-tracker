@@ -154,17 +154,18 @@ export default function ContractsPage() {
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: 110 }} />{/* № */}
-              <col style={{ width: 130 }} />{/* Объект */}
-              <col style={{ width: 90 }} />{/* Направление */}
-              <col style={{ width: 130 }} />{/* Заказчик */}
-              <col style={{ width: 130 }} />{/* Исполнитель */}
-              <col style={{ width: 110 }} />{/* Сумма */}
-              <col style={{ width: 110 }} />{/* Оплачено */}
-              <col style={{ width: 90 }} />{/* Окончание */}
-              <col style={{ width: 90 }} />{/* Статус */}
-              <col style={{ width: 80 }} />{/* Оплата */}
-              <col style={{ width: 60 }} />{/* Actions */}
+              <col style={{ width: 105 }} />{/* № */}
+              <col style={{ width: 120 }} />{/* Объект */}
+              <col style={{ width: 85 }} />{/* Направление */}
+              <col style={{ width: 115 }} />{/* Заказчик */}
+              <col style={{ width: 115 }} />{/* Исполнитель */}
+              <col style={{ width: 105 }} />{/* Сумма */}
+              <col style={{ width: 100 }} />{/* Оплачено */}
+              <col style={{ width: 100 }} />{/* Остаток */}
+              <col style={{ width: 85 }} />{/* Окончание */}
+              <col style={{ width: 85 }} />{/* Статус */}
+              <col style={{ width: 75 }} />{/* Оплата */}
+              <col style={{ width: 55 }} />{/* Actions */}
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
@@ -175,6 +176,7 @@ export default function ContractsPage() {
                 <th style={S.th}>Исполнитель</th>
                 <th style={{ ...S.th, textAlign: 'right' }} onClick={() => toggleSort('amount')}>Сумма <SortArrow field="amount" /></th>
                 <th style={{ ...S.th, textAlign: 'right' }}>Оплачено</th>
+                <th style={{ ...S.th, textAlign: 'right' }}>Остаток</th>
                 <th style={{ ...S.th }} onClick={() => toggleSort('endDate')}>Окончание <SortArrow field="endDate" /></th>
                 <th style={S.th}>Статус</th>
                 <th style={S.th}>Оплата</th>
@@ -183,7 +185,7 @@ export default function ContractsPage() {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={11} style={{ textAlign: 'center', padding: '36px 0', color: 'var(--faint)', fontSize: 14 }}>Ничего не найдено</td></tr>
+                <tr><td colSpan={12} style={{ textAlign: 'center', padding: '36px 0', color: 'var(--faint)', fontSize: 14 }}>Ничего не найдено</td></tr>
               )}
               {paginated.map((c) => {
                 const obj        = objects.find((o) => o.id === c.objectId)
@@ -199,16 +201,19 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
                     <td style={S.td}>{obj?.name ?? '—'}</td>
                     <td style={S.td}><DirectionBadge direction={c.direction} /></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', width: 130 }}><div className="clamp-2">{customer?.name ?? '—'}</div></td>
-                    <td style={{ ...S.td, color: 'var(--muted-ink)', width: 130 }}><div className="clamp-2">{contractor?.name ?? '—'}</div></td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{customer?.name ?? '—'}</div></td>
+                    <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
                     <td style={{ ...S.td, textAlign: 'right' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', minWidth: 80 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end' }}>
                         <span className="tnum" style={{ fontSize: 12.5 }}>{formatMoney(c.amountPaid)}</span>
                         <div style={{ width: '100%', height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${pct}%`, borderRadius: 999, background: progColor, transition: 'width .4s' }} />
                         </div>
                       </div>
+                    </td>
+                    <td style={{ ...S.td, textAlign: 'right', fontWeight: 600, color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)' }} className="tnum">
+                      {formatMoney(c.amount - c.amountPaid)}
                     </td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', whiteSpace: 'nowrap' }}>{formatDate(c.endDate)}</td>
                     <td style={S.td}><StatusBadge status={c.status} /></td>
@@ -237,6 +242,9 @@ export default function ContractsPage() {
                 </td>
                 <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--ok)' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amountPaid, 0))}
+                </td>
+                <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--danger)' }} className="tnum">
+                  {formatMoney(filtered.reduce((s, c) => s + (c.amount - c.amountPaid), 0))}
                 </td>
                 <td colSpan={4} style={{ borderTop: '1px solid var(--line)', padding: '13px 14px' }}>
                   {totalPages > 1 && (
