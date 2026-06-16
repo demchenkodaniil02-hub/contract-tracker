@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const SITE_URL = 'https://contract-tracker-peach.vercel.app'
+const SITE_URL = 'https://app.feram.pro'
 
 export async function POST(req: Request) {
   try {
