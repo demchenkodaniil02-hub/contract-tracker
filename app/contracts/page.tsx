@@ -163,9 +163,9 @@ export default function ContractsPage() {
               <col style={{ width: 100 }} />{/* Оплачено */}
               <col style={{ width: 100 }} />{/* Остаток */}
               <col style={{ width: 85 }} />{/* Окончание */}
-              <col style={{ width: 85 }} />{/* Статус */}
-              <col style={{ width: 75 }} />{/* Оплата */}
-              <col style={{ width: 55 }} />{/* Actions */}
+              <col style={{ width: 115 }} />{/* Статус */}
+              <col style={{ width: 100 }} />{/* Оплата */}
+              <col style={{ width: 50 }} />{/* Actions */}
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
@@ -216,8 +216,8 @@ export default function ContractsPage() {
                       {formatMoney(c.amount - c.amountPaid)}
                     </td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', whiteSpace: 'nowrap' }}>{formatDate(c.endDate)}</td>
-                    <td style={S.td}><StatusBadge status={c.status} /></td>
-                    <td style={S.td}><PaymentBadge status={c.paymentStatus} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden' }}><StatusBadge status={c.status} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden' }}><PaymentBadge status={c.paymentStatus} /></td>
                     <td style={S.td} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                         <button onClick={() => { setEditing(c); setFormOpen(true) }} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Редактировать"><Pencil size={15} /></button>
