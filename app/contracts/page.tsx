@@ -156,7 +156,7 @@ export default function ContractsPage() {
             <colgroup>
               <col style={{ width: 105 }} />{/* № */}
               <col style={{ width: 120 }} />{/* Объект */}
-              <col style={{ width: 85 }} />{/* Направление */}
+              <col style={{ width: 110 }} />{/* Направление */}
               <col style={{ width: 115 }} />{/* Заказчик */}
               <col style={{ width: 115 }} />{/* Исполнитель */}
               <col style={{ width: 105 }} />{/* Сумма */}
@@ -200,7 +200,7 @@ export default function ContractsPage() {
                     onMouseLeave={e => (e.currentTarget.style.background = '')}>
                     <td style={{ ...S.td, fontFamily: 'var(--font-ibm-plex-mono)', fontWeight: 600 }}>{c.number}</td>
                     <td style={S.td}>{obj?.name ?? '—'}</td>
-                    <td style={S.td}><DirectionBadge direction={c.direction} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden' }}><DirectionBadge direction={c.direction} /></td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{customer?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
