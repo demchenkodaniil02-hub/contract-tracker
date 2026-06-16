@@ -237,13 +237,13 @@ export default function ContractsPage() {
                 <td colSpan={5} style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', fontSize: 13, color: 'var(--muted-ink)' }}>
                   Найдено: <b>{filtered.length}</b> контрактов
                 </td>
-                <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14 }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amount, 0))}
                 </td>
-                <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--ok)' }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, color: 'var(--ok)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amountPaid, 0))}
                 </td>
-                <td style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 14, color: 'var(--danger)' }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, color: 'var(--danger)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + (c.amount - c.amountPaid), 0))}
                 </td>
                 <td colSpan={4} style={{ borderTop: '1px solid var(--line)', padding: '13px 14px' }}>
