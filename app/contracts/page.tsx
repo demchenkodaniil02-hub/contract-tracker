@@ -178,8 +178,8 @@ export default function ContractsPage() {
                 <th style={S.th}>Оплачено</th>
                 <th style={S.th}>Остаток</th>
                 <th style={{ ...S.th }} onClick={() => toggleSort('endDate')}>Окончание <SortArrow field="endDate" /></th>
-                <th style={S.th}>Статус</th>
-                <th style={S.th}>Оплата</th>
+                <th style={{ ...S.th, textAlign: 'center' }}>Статус</th>
+                <th style={{ ...S.th, textAlign: 'center' }}>Оплата</th>
                 <th style={S.th}></th>
               </tr>
             </thead>
@@ -216,8 +216,8 @@ export default function ContractsPage() {
                       {formatMoney(c.amount - c.amountPaid)}
                     </td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', whiteSpace: 'nowrap' }}>{formatDate(c.endDate)}</td>
-                    <td style={{ ...S.td, overflow: 'hidden' }}><StatusBadge status={c.status} /></td>
-                    <td style={{ ...S.td, overflow: 'hidden' }}><PaymentBadge status={c.paymentStatus} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden', textAlign: 'center' }}><StatusBadge status={c.status} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden', textAlign: 'center' }}><PaymentBadge status={c.paymentStatus} /></td>
                     <td style={S.td} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                         <button onClick={() => { setEditing(c); setFormOpen(true) }} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Редактировать"><Pencil size={15} /></button>
