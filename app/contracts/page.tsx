@@ -154,18 +154,18 @@ export default function ContractsPage() {
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: 105 }} />{/* № */}
-              <col style={{ width: 120 }} />{/* Объект */}
-              <col style={{ width: 110 }} />{/* Направление */}
-              <col style={{ width: 115 }} />{/* Заказчик */}
-              <col style={{ width: 115 }} />{/* Исполнитель */}
-              <col style={{ width: 105 }} />{/* Сумма */}
-              <col style={{ width: 100 }} />{/* Оплачено */}
-              <col style={{ width: 100 }} />{/* Остаток */}
-              <col style={{ width: 85 }} />{/* Окончание */}
-              <col style={{ width: 115 }} />{/* Статус */}
-              <col style={{ width: 100 }} />{/* Оплата */}
-              <col style={{ width: 50 }} />{/* Actions */}
+              <col style={{ width: 95 }} />{/* № */}
+              <col style={{ width: 145 }} />{/* Объект */}
+              <col style={{ width: 100 }} />{/* Направление */}
+              <col style={{ width: 145 }} />{/* Заказчик */}
+              <col style={{ width: 145 }} />{/* Исполнитель */}
+              <col style={{ width: 100 }} />{/* Сумма */}
+              <col style={{ width: 105 }} />{/* Оплачено */}
+              <col style={{ width: 90 }} />{/* Остаток */}
+              <col style={{ width: 80 }} />{/* Окончание */}
+              <col style={{ width: 105 }} />{/* Статус */}
+              <col style={{ width: 88 }} />{/* Оплата */}
+              <col style={{ width: 42 }} />{/* Actions */}
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
