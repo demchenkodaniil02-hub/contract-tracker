@@ -111,8 +111,12 @@ export const useStore = create<AppState>()((set, get) => ({
       clearTimeout(timer)
       if (!res.ok) throw new Error('load-all failed: ' + res.status)
       const data = await res.json()
+      const contracts = (data.contracts ?? []).map((c: any) => ({
+        ...c,
+        paymentStatus: c.amountPaid <= 0 ? 'not_paid' : c.amountPaid >= c.amount ? 'paid' : 'partial',
+      }))
       set({
-        contracts: data.contracts ?? [],
+        contracts,
         objects: data.objects ?? [],
         counterparties: data.counterparties ?? [],
         stages: data.stages ?? [],
