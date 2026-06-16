@@ -150,7 +150,6 @@ export function GlobalSearch() {
       >
         <Search size={16} style={{ opacity: 0.7, flexShrink: 0 }} />
         <span style={{ flex: 1, textAlign: 'left' }}>Поиск</span>
-        <kbd style={{ fontSize: 10, background: 'rgba(255,255,255,.1)', borderRadius: 4, padding: '2px 5px', color: '#6b7a99', letterSpacing: 0 }}>Ctrl K</kbd>
       </button>
 
       {open && (
