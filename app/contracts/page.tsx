@@ -174,12 +174,12 @@ export default function ContractsPage() {
                 <th style={S.th}>Направление</th>
                 <th style={S.th}>Заказчик</th>
                 <th style={S.th}>Исполнитель</th>
-                <th style={{ ...S.th, textAlign: 'right' }} onClick={() => toggleSort('amount')}>Сумма <SortArrow field="amount" /></th>
-                <th style={{ ...S.th, textAlign: 'right' }}>Оплачено</th>
-                <th style={{ ...S.th, textAlign: 'right' }}>Остаток</th>
+                <th style={S.th} onClick={() => toggleSort('amount')}>Сумма <SortArrow field="amount" /></th>
+                <th style={S.th}>Оплачено</th>
+                <th style={S.th}>Остаток</th>
                 <th style={{ ...S.th }} onClick={() => toggleSort('endDate')}>Окончание <SortArrow field="endDate" /></th>
-                <th style={{ ...S.th, textAlign: 'center' }}>Статус</th>
-                <th style={{ ...S.th, textAlign: 'center' }}>Оплата</th>
+                <th style={S.th}>Статус</th>
+                <th style={S.th}>Оплата</th>
                 <th style={S.th}></th>
               </tr>
             </thead>
