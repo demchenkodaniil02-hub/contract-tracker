@@ -137,7 +137,7 @@ export default function ProfilePage() {
           Скачайте калькулятор расчетов с Яндекс Диска для работы на компьютере.
         </p>
         <a
-          href="https://disk.yandex.ru/d/FyB9cgJMVl4VHg"
+          href="https://disk.yandex.ru/d/ZGdUJR92Ca4GkQ"
           target="_blank"
           rel="noopener noreferrer"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
