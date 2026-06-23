@@ -286,7 +286,15 @@ export const useStore = create<AppState>()((set, get) => ({
 
   addKsForm: async (f) => {
     set((s) => ({ ksForms: [f, ...s.ksForms] }))
-    await mutate('ks_forms', 'insert', { ...f, contract_id: f.contractId, created_at: f.createdAt })
+    await mutate('ks_forms', 'insert', {
+      id: f.id,
+      contract_id: f.contractId,
+      number: f.number,
+      date: f.date,
+      amount: f.amount,
+      notes: f.notes,
+      created_at: f.createdAt,
+    })
   },
   deleteKsForm: async (id) => {
     set((s) => ({ ksForms: s.ksForms.filter(f => f.id !== id) }))
