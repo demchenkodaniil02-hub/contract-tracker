@@ -122,7 +122,7 @@ export default function ContractDetailPage() {
   const paidPct = contract.amount > 0 ? Math.round((contract.amountPaid / contract.amount) * 100) : 0
   const remaining = contract.amount - contract.amountPaid
   const ksTotal = ksForms.filter(f => f.contractId === id).reduce((s, f) => s + f.amount, 0)
-  const ksRemaining = ksTotal - contract.amountPaid
+  const ksRemaining = Math.max(0, ksTotal - contract.amountPaid)
   const stagesTotal = contractStages.reduce((s, x) => s + x.amount, 0)
   const stagePct = stagesTotal > 0
     ? Math.round(contractStages.reduce((s, x) => s + x.amount * x.progressPercent / 100, 0) / stagesTotal * 100)
