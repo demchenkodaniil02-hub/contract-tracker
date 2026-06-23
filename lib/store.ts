@@ -1,6 +1,6 @@
 'use client'
 import { create } from 'zustand'
-import { Contract, Counterparty, WorkObject, WorkStage, Comment, Document, ContractHistory, Task, Payment } from './types'
+import { Contract, Counterparty, WorkObject, WorkStage, Comment, Document, ContractHistory, Task, Payment, KsForm } from './types'
 import { supabase } from './supabase'
 
 // Все записи идут через сервер (обходит блокировку Supabase у пользователей)
@@ -37,6 +37,7 @@ interface AppState {
   history: ContractHistory[]
   tasks: Task[]
   payments: Payment[]
+  ksForms: KsForm[]
   loading: boolean
   seeded: boolean
 
@@ -81,6 +82,10 @@ interface AppState {
   addPayment: (p: Payment) => Promise<void>
   deletePayment: (id: string, contractId: string) => Promise<void>
 
+  // KS form actions
+  addKsForm: (f: KsForm) => Promise<void>
+  deleteKsForm: (id: string) => Promise<void>
+
   // History actions
   addHistory: (h: ContractHistory) => Promise<void>
   loadHistory: (contractId: string) => Promise<void>
@@ -94,6 +99,7 @@ export const useStore = create<AppState>()((set, get) => ({
   objects: [],
   stages: [],
   counterparties: [],
+  ksForms: [],
   comments: [],
   documents: [],
   history: [],
@@ -124,6 +130,7 @@ export const useStore = create<AppState>()((set, get) => ({
         documents: data.documents ?? [],
         tasks: data.tasks ?? [],
         payments: data.payments ?? [],
+        ksForms: data.ksForms ?? [],
       })
     } catch (err) {
       console.error('loadAll failed', err)
@@ -275,6 +282,15 @@ export const useStore = create<AppState>()((set, get) => ({
     }))
     await mutate('payments', 'delete', undefined, id)
     await mutate('contracts', 'update', { amountPaid: newPaid, paymentStatus: newStatus }, contractId)
+  },
+
+  addKsForm: async (f) => {
+    set((s) => ({ ksForms: [f, ...s.ksForms] }))
+    await mutate('ks_forms', 'insert', { ...f, contract_id: f.contractId, created_at: f.createdAt })
+  },
+  deleteKsForm: async (id) => {
+    set((s) => ({ ksForms: s.ksForms.filter(f => f.id !== id) }))
+    await mutate('ks_forms', 'delete', undefined, id)
   },
 
   initSeed: async () => {

@@ -11,6 +11,7 @@ import { ContractDocuments } from '@/components/contracts/ContractDocuments'
 import { ContractTasks } from '@/components/contracts/ContractTasks'
 import { ContractHistory } from '@/components/contracts/ContractHistory'
 import { ContractPayments } from '@/components/contracts/ContractPayments'
+import { ContractKSForms } from '@/components/contracts/ContractKSForms'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, Pencil, Plus, Trash2, CheckCircle2 } from 'lucide-react'
@@ -82,7 +83,7 @@ function StageRow({ stage, onUpdate, onDelete }: { stage: WorkStage; onUpdate: (
 export default function ContractDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { contracts, objects, counterparties, stages, addStage, updateStage, deleteStage, addContract, initSeed } = useStore()
+  const { contracts, objects, counterparties, stages, ksForms, addStage, updateStage, deleteStage, addContract, initSeed } = useStore()
   const [pageLoading, setPageLoading] = useState(true)
   useEffect(() => {
     initSeed().finally(() => setPageLoading(false))
@@ -120,6 +121,8 @@ export default function ContractDetailPage() {
 
   const paidPct = contract.amount > 0 ? Math.round((contract.amountPaid / contract.amount) * 100) : 0
   const remaining = contract.amount - contract.amountPaid
+  const ksTotal = ksForms.filter(f => f.contractId === id).reduce((s, f) => s + f.amount, 0)
+  const ksRemaining = ksTotal - contract.amountPaid
   const stagesTotal = contractStages.reduce((s, x) => s + x.amount, 0)
   const stagePct = stagesTotal > 0
     ? Math.round(contractStages.reduce((s, x) => s + x.amount * x.progressPercent / 100, 0) / stagesTotal * 100)
@@ -188,6 +191,12 @@ export default function ContractDetailPage() {
             <Fin label="Оплачено" value={formatMoney(contract.amountPaid)} color="var(--ok)" />
             <Fin label="Остаток" value={formatMoney(remaining)} color="var(--danger)" />
           </div>
+          {ksTotal > 0 && (
+            <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, display: 'flex', gap: 20 }}>
+              <Fin label="Закрыто КС" value={formatMoney(ksTotal)} color="var(--maf)" />
+              <Fin label="Остаток по КС" value={formatMoney(ksRemaining)} color={ksRemaining > 0 ? 'var(--warn)' : 'var(--ok)'} />
+            </div>
+          )}
           {/* Прогресс-бар на всю ширину под цифрами */}
           <div>
             <div style={{ height: 8, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
@@ -206,6 +215,7 @@ export default function ContractDetailPage() {
       <div className="ct-contract-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <ContractPayments contractId={id} />
+          <ContractKSForms contractId={id} />
           <ContractComments contractId={id} />
           <ContractHistory contractId={id} />
         </div>

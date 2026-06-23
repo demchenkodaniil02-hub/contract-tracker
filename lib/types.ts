@@ -123,6 +123,16 @@ export interface Payment {
   createdAt: string
 }
 
+export interface KsForm {
+  id: string
+  contractId: string
+  number: string
+  date: string
+  amount: number
+  notes: string
+  createdAt: string
+}
+
 export interface Task {
   id: string
   contractId: string

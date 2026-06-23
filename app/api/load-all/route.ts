@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const [contracts, objects, counterparties, stages, comments, documents, tasks, payments, history] = await Promise.all([
+    const [contracts, objects, counterparties, stages, comments, documents, tasks, payments, history, ksForms] = await Promise.all([
       supabase.from('contracts').select('*'),
       supabase.from('objects').select('*'),
       supabase.from('counterparties').select('*'),
@@ -18,6 +18,7 @@ export async function GET() {
       supabase.from('tasks').select('*'),
       supabase.from('payments').select('*').order('paidAt', { ascending: false }),
       supabase.from('contract_history').select('*').order('createdAt', { ascending: false }),
+      supabase.from('ks_forms').select('*').order('date', { ascending: false }),
     ])
     return NextResponse.json({
       contracts: contracts.data ?? [],
@@ -29,6 +30,7 @@ export async function GET() {
       tasks: tasks.data ?? [],
       payments: payments.data ?? [],
       history: history.data ?? [],
+      ksForms: (ksForms.data ?? []).map((f: any) => ({ ...f, contractId: f.contract_id, createdAt: f.created_at })),
     })
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
