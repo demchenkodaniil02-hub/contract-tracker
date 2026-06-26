@@ -55,7 +55,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="fade-in ct-page ct-profile-page" style={{ padding: '26px 30px', maxWidth: 600 }}>
+    <div className="fade-in ct-page ct-profile-page" style={{ padding: '26px 30px' }}>
       <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 24 }}>Мой профиль</h1>
 
       <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>

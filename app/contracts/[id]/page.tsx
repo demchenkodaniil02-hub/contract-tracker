@@ -155,7 +155,7 @@ export default function ContractDetailPage() {
   }
 
   return (
-    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
       {/* Шапка */}
       <div className="ct-contract-header" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

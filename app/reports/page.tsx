@@ -91,7 +91,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1200 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
       {/* Заголовок + выбор года */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

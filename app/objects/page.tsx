@@ -122,7 +122,7 @@ export default function ObjectsPage() {
   const statusColors: Record<string, string> = { active: 'var(--ok)', completed: 'var(--maf)', archived: 'var(--faint)' }
 
   return (
-    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Объекты</h1>
         <button style={S.btn(false, true)} onClick={() => { setEditing(undefined); setFormOpen(true) }}><Plus size={16} /> Новый объект</button>
