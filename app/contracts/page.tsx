@@ -105,7 +105,7 @@ export default function ContractsPage() {
   )
 
   return (
-    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1500 }}>
+    <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Контракты</h1>
@@ -154,18 +154,18 @@ export default function ContractsPage() {
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: 95 }} />{/* № */}
-              <col style={{ width: 145 }} />{/* Объект */}
-              <col style={{ width: 100 }} />{/* Направление */}
-              <col style={{ width: 145 }} />{/* Заказчик */}
-              <col style={{ width: 145 }} />{/* Исполнитель */}
-              <col style={{ width: 100 }} />{/* Сумма */}
-              <col style={{ width: 105 }} />{/* Оплачено */}
-              <col style={{ width: 90 }} />{/* Остаток */}
-              <col style={{ width: 80 }} />{/* Окончание */}
-              <col style={{ width: 105 }} />{/* Статус */}
-              <col style={{ width: 88 }} />{/* Оплата */}
-              <col style={{ width: 42 }} />{/* Actions */}
+              <col style={{ width: '7%' }} />{/* № */}
+              <col style={{ width: '12%' }} />{/* Объект */}
+              <col style={{ width: '8%' }} />{/* Направление */}
+              <col style={{ width: '11%' }} />{/* Заказчик */}
+              <col style={{ width: '11%' }} />{/* Исполнитель */}
+              <col style={{ width: '9%' }} />{/* Сумма */}
+              <col style={{ width: '9%' }} />{/* Оплачено */}
+              <col style={{ width: '8%' }} />{/* Остаток */}
+              <col style={{ width: '7%' }} />{/* Окончание */}
+              <col style={{ width: '9%' }} />{/* Статус */}
+              <col style={{ width: '6%' }} />{/* Оплата */}
+              <col style={{ width: '3%' }} />{/* Actions */}
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--bg)' }}>
