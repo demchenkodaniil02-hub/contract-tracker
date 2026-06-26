@@ -131,7 +131,7 @@ export default function ReportsPage() {
         {turnoverReports.length === 0
           ? <div style={{ ...S.card, padding: 32, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Платежей за {activeYear} год не найдено</div>
           : (
-            <div style={S.card}>
+            <div style={{ ...S.card, maxWidth: 1100 }}>
               {/* Шапка */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
@@ -226,7 +226,7 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          <div style={S.card}>
+          <div style={{ ...S.card, maxWidth: 1100 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Контрактов</div>
