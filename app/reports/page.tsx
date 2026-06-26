@@ -114,7 +114,7 @@ export default function ReportsPage() {
         </div>
 
         {/* KPI */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(180px, 380px))', gap: 12, justifyContent: 'start' }}>
           {[
             { label: 'Общий оборот', value: formatMoney(totalTurnover), color: 'var(--ok)' },
             { label: 'Исполнителей', value: String(turnoverReports.length) },
@@ -214,7 +214,7 @@ export default function ReportsPage() {
             <span style={{ fontSize: 13, color: 'var(--faint)' }}>контракты с неоплаченным остатком на {activeYear} год</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(180px, 380px))', gap: 12, justifyContent: 'start' }}>
             {[
               { label: 'Общий долг', value: formatMoney(totalDebt), color: 'var(--danger)' },
               { label: 'Контрактов с долгом', value: String(debtReports.reduce((s, r) => s + r.contracts.length, 0)) },

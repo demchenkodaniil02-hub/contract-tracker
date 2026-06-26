@@ -58,7 +58,7 @@ export default function ProfilePage() {
     <div className="fade-in ct-page ct-profile-page" style={{ padding: '26px 30px' }}>
       <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 24 }}>Мой профиль</h1>
 
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, maxWidth: 700 }}>
         {/* Аватар */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--line-soft)' }}>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: profile?.avatarColor || '#2f6bdc', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 26, flexShrink: 0 }}>

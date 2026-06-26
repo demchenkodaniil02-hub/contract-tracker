@@ -152,7 +152,7 @@ export default function ObjectsPage() {
         <div style={{ textAlign: 'center', color: 'var(--faint)', padding: '56px 0', fontSize: 14 }}>Объектов не найдено</div>
       )}
 
-      <div className="ct-objects-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="ct-objects-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
         {filtered.map((obj) => {
           const customer    = counterparties.find((c) => c.id === obj.customerId)
           const objContracts = contracts.filter((c) => c.objectId === obj.id)
