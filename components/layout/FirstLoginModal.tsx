@@ -6,13 +6,13 @@ import { HardHat, Save } from 'lucide-react'
 import { Portal } from '@/components/ui/Portal'
 
 export function FirstLoginModal() {
-  const { profile, allProfiles, updateProfile } = useProfile()
+  const { profile, allProfiles, updateProfile, loading } = useProfile()
   const pathname = usePathname()
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  const needsSetup = profile && !profile.name
+  const needsSetup = !loading && profile && !profile.name?.trim()
 
   if (!needsSetup || pathname === '/set-password') return null
 
