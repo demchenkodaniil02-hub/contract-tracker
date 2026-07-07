@@ -61,7 +61,7 @@ export function FirstLoginModal() {
                 value={name}
                 onChange={e => { setName(e.target.value); setError('') }}
                 onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
-                placeholder="Иванов Иван"
+                placeholder="Иван Иванов"
                 style={{ ...inp, borderColor: error ? 'var(--danger)' : undefined }}
               />
               {error && <div style={{ marginTop: 8, fontSize: 12.5, color: 'var(--danger)', fontWeight: 500 }}>{error}</div>}
