@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useStore } from '@/lib/store'
 import { format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { History, Plus, Pencil, Trash2, Search } from 'lucide-react'
+import { History, Plus, Pencil, Trash2, Search, Undo2, Check } from 'lucide-react'
 import Link from 'next/link'
 
 const S = {
@@ -31,13 +31,25 @@ function formatDateTime(dateStr: string): string {
 }
 
 export default function ActivityPage() {
-  const { history, contracts, initSeed } = useStore()
+  const { history, contracts, initSeed, restoreEntity } = useStore()
   const [pageLoading, setPageLoading] = useState(true)
   useEffect(() => { initSeed().finally(() => setPageLoading(false)) }, [initSeed])
 
   const [filterKind, setFilterKind] = useState<Kind | 'all'>('all')
   const [search, setSearch] = useState('')
   const [visible, setVisible] = useState(50)
+  const [restoreState, setRestoreState] = useState<Record<string, 'busy' | 'done' | 'error'>>({})
+
+  const handleRestore = async (historyId: string) => {
+    setRestoreState(s => ({ ...s, [historyId]: 'busy' }))
+    try {
+      await restoreEntity(historyId)
+      setRestoreState(s => ({ ...s, [historyId]: 'done' }))
+    } catch (err) {
+      console.error(err)
+      setRestoreState(s => ({ ...s, [historyId]: 'error' }))
+    }
+  }
 
   const enriched = useMemo(() => history.map(h => ({ ...h, kind: classify(h.action) })), [history])
 
@@ -114,7 +126,7 @@ export default function ActivityPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13.5, color: 'var(--ink)', lineHeight: 1.45 }}>
                       {h.action}
-                      {h.field && (
+                      {h.field && h.field !== '__restore__' && (
                         <span style={{ color: 'var(--muted-ink)' }}>
                           {' '}— <b>{h.field}</b>:{' '}
                           <span style={{ color: 'var(--danger)', textDecoration: 'line-through' }}>{h.oldValue}</span>
@@ -135,6 +147,24 @@ export default function ActivityPage() {
                       {h.author} · {formatDateTime(h.createdAt)}
                     </div>
                   </div>
+                  {h.field === '__restore__' && (
+                    restoreState[h.id] === 'done' ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 600, color: 'var(--ok)', flexShrink: 0, padding: '6px 4px' }}>
+                        <Check size={14} /> Восстановлено
+                      </span>
+                    ) : (
+                      <button onClick={() => handleRestore(h.id)} disabled={restoreState[h.id] === 'busy'}
+                        title={restoreState[h.id] === 'error' ? 'Ошибка восстановления, попробуйте снова' : 'Восстановить'}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0,
+                          padding: '6px 12px', borderRadius: 8, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                          border: `1px solid ${restoreState[h.id] === 'error' ? 'var(--danger)' : 'var(--line)'}`,
+                          background: '#fff', color: restoreState[h.id] === 'error' ? 'var(--danger)' : 'var(--ink)',
+                        }}>
+                        <Undo2 size={13} /> {restoreState[h.id] === 'busy' ? 'Восстановление...' : restoreState[h.id] === 'error' ? 'Ошибка, повторить' : 'Восстановить'}
+                      </button>
+                    )
+                  )}
                 </div>
               )
             })}
