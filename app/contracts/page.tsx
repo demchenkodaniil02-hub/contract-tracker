@@ -152,7 +152,7 @@ export default function ContractsPage() {
       {/* Table */}
       <div style={{ ...S.card, overflow: 'hidden' }}>
         <div className="table-scroll" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
+          <table style={{ width: '100%', minWidth: 1300, borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: '7%' }} />{/* № */}
               <col style={{ width: '12%' }} />{/* Объект */}
