@@ -163,8 +163,8 @@ export default function ContractsPage() {
               <col style={{ width: '9%' }} />{/* Оплачено */}
               <col style={{ width: '8%' }} />{/* Остаток */}
               <col style={{ width: '7%' }} />{/* Окончание */}
-              <col style={{ width: '8%' }} />{/* Статус */}
-              <col style={{ width: '5%' }} />{/* Оплата */}
+              <col style={{ width: '6%' }} />{/* Статус */}
+              <col style={{ width: '7%' }} />{/* Оплата */}
               <col style={{ width: '3%' }} />{/* Actions */}
             </colgroup>
             <thead>
