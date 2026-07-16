@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle, BarChart3, History } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { usePresence } from '@/lib/usePresence'
 import { GlobalSearch } from '@/components/GlobalSearch'
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/objects', label: 'Объекты', icon: Building2 },
   { href: '/counterparties', label: 'Контрагенты', icon: Users },
   { href: '/reports', label: 'Отчёты', icon: BarChart3 },
+  { href: '/activity', label: 'Журнал изменений', icon: History },
   { href: '/profile', label: 'Профиль', icon: UserCircle },
 ]
 

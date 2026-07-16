@@ -89,6 +89,7 @@ interface AppState {
   // History actions
   addHistory: (h: ContractHistory) => Promise<void>
   loadHistory: (contractId: string) => Promise<void>
+  logChange: (contractId: string, action: string) => Promise<void>
 
   // Seed
   initSeed: () => Promise<void>
@@ -131,6 +132,7 @@ export const useStore = create<AppState>()((set, get) => ({
         tasks: data.tasks ?? [],
         payments: data.payments ?? [],
         ksForms: data.ksForms ?? [],
+        history: data.history ?? [],
       })
     } catch (err) {
       console.error('loadAll failed', err)
@@ -149,6 +151,14 @@ export const useStore = create<AppState>()((set, get) => ({
     const data = await res.json()
     const filtered = (data.history ?? []).filter((h: any) => h.contractId === contractId)
     set({ history: filtered })
+  },
+  logChange: async (contractId, action) => {
+    try {
+      const author = await getAuthorName()
+      await get().addHistory({ id: Math.random().toString(36).slice(2), contractId, action, author, createdAt: new Date().toISOString() })
+    } catch (err) {
+      console.error('history log failed', err)
+    }
   },
 
   // Contracts
@@ -176,50 +186,70 @@ export const useStore = create<AppState>()((set, get) => ({
     }
   },
   deleteContract: async (id) => {
+    const contract = get().contracts.find(c => c.id === id)
     set((s) => ({ contracts: s.contracts.filter((x) => x.id !== id) }))
     await mutate('contracts', 'delete', undefined, id)
+    await get().logChange(id, `Удалён контракт ${contract?.number ?? ''}`.trim())
   },
 
   // Objects
   addObject: async (o) => {
     await mutate('objects', 'insert', o)
     set((s) => ({ objects: [...s.objects, o] }))
+    await get().logChange('', `Добавлен объект: ${o.name}`)
   },
   updateObject: async (o) => {
     set((s) => ({ objects: s.objects.map((x) => (x.id === o.id ? o : x)) }))
     await mutate('objects', 'update', o, o.id)
   },
   deleteObject: async (id) => {
+    const obj = get().objects.find(x => x.id === id)
     set((s) => ({ objects: s.objects.filter((x) => x.id !== id) }))
     await mutate('objects', 'delete', undefined, id)
+    await get().logChange('', `Удалён объект: ${obj?.name ?? id}`)
   },
 
   // Stages
   addStage: async (stage) => {
     await mutate('stages', 'insert', stage)
     set((s) => ({ stages: [...s.stages, stage] }))
+    await get().logChange(stage.contractId, `Добавлен этап: ${stage.title}`)
   },
   updateStage: async (stage) => {
+    const old = get().stages.find(x => x.id === stage.id)
     set((s) => ({ stages: s.stages.map((x) => (x.id === stage.id ? stage : x)) }))
     await mutate('stages', 'update', stage, stage.id)
+    if (old) {
+      const changes: string[] = []
+      if (old.title !== stage.title) changes.push(`название «${old.title}» → «${stage.title}»`)
+      if (old.amount !== stage.amount) changes.push(`сумма ${old.amount.toLocaleString('ru-RU')} → ${stage.amount.toLocaleString('ru-RU')} ₽`)
+      if (old.status !== stage.status) changes.push(`статус ${old.status} → ${stage.status}`)
+      if (old.progressPercent !== stage.progressPercent) changes.push(`прогресс ${old.progressPercent}% → ${stage.progressPercent}%`)
+      if (changes.length) await get().logChange(stage.contractId, `Изменён этап «${stage.title}»: ${changes.join(', ')}`)
+    }
   },
   deleteStage: async (id) => {
+    const stage = get().stages.find(x => x.id === id)
     set((s) => ({ stages: s.stages.filter((x) => x.id !== id) }))
     await mutate('stages', 'delete', undefined, id)
+    if (stage) await get().logChange(stage.contractId, `Удалён этап: ${stage.title}`)
   },
 
   // Counterparties
   addCounterparty: async (cp) => {
     await mutate('counterparties', 'insert', cp)
     set((s) => ({ counterparties: [...s.counterparties, cp] }))
+    await get().logChange('', `Добавлен контрагент: ${cp.name}`)
   },
   updateCounterparty: async (cp) => {
     set((s) => ({ counterparties: s.counterparties.map((x) => (x.id === cp.id ? cp : x)) }))
     await mutate('counterparties', 'update', cp, cp.id)
   },
   deleteCounterparty: async (id) => {
+    const cp = get().counterparties.find(x => x.id === id)
     set((s) => ({ counterparties: s.counterparties.filter((x) => x.id !== id) }))
     await mutate('counterparties', 'delete', undefined, id)
+    await get().logChange('', `Удалён контрагент: ${cp?.name ?? id}`)
   },
 
   // Comments
@@ -235,9 +265,12 @@ export const useStore = create<AppState>()((set, get) => ({
   // Documents
   addDocument: async (d) => {
     set((s) => ({ documents: [d, ...s.documents] }))
+    await get().logChange(d.contractId, `Загружен документ: ${d.fileName}`)
   },
   deleteDocument: async (id) => {
+    const doc = get().documents.find(d => d.id === id)
     set((s) => ({ documents: s.documents.filter((x) => x.id !== id) }))
+    if (doc) await get().logChange(doc.contractId, `Удалён документ: ${doc.fileName}`)
   },
   syncDocuments: async () => {
     try { await fetch('/api/sync-docs') } catch {}
@@ -268,6 +301,7 @@ export const useStore = create<AppState>()((set, get) => ({
     }))
     await mutate('payments', 'insert', p)
     await mutate('contracts', 'update', { amountPaid: newPaid, paymentStatus: newStatus }, p.contractId)
+    await get().logChange(p.contractId, `Добавлен платёж: ${p.amount.toLocaleString('ru-RU')} ₽`)
   },
   deletePayment: async (id, contractId) => {
     const payment = get().payments.find(p => p.id === id)
@@ -282,6 +316,7 @@ export const useStore = create<AppState>()((set, get) => ({
     }))
     await mutate('payments', 'delete', undefined, id)
     await mutate('contracts', 'update', { amountPaid: newPaid, paymentStatus: newStatus }, contractId)
+    await get().logChange(contractId, `Удалён платёж: ${payment.amount.toLocaleString('ru-RU')} ₽`)
   },
 
   addKsForm: async (f) => {
@@ -295,10 +330,13 @@ export const useStore = create<AppState>()((set, get) => ({
       notes: f.notes,
       created_at: f.createdAt,
     })
+    await get().logChange(f.contractId, `Добавлена КС №${f.number}`)
   },
   deleteKsForm: async (id) => {
+    const form = get().ksForms.find(f => f.id === id)
     set((s) => ({ ksForms: s.ksForms.filter(f => f.id !== id) }))
     await mutate('ks_forms', 'delete', undefined, id)
+    if (form) await get().logChange(form.contractId, `Удалена КС №${form.number}`)
   },
 
   initSeed: async () => {
