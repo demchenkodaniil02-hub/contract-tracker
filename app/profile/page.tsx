@@ -95,7 +95,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Пригласить коллегу */}
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <UserPlus size={18} color="#2f6bdc" />
           <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Пригласить пользователя</span>
@@ -128,7 +128,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Скачать программу */}
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <Download size={18} color="#2f6bdc" />
           <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Калькулятор расчетов</span>
