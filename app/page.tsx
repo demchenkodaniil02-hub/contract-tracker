@@ -144,7 +144,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 420px))', gap: 16, justifyContent: 'start' }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 420px))', gap: 16, justifyContent: 'start' }}>
         {/* Контрактов всего + Активных + Завершённых в одной карточке */}
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
           <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
           Ожидается получить за 3 месяца: <b className="tnum" style={{ color: 'var(--ink)' }}>{formatMoney(totalExpected)}</b>
           {totalDebt > 0 && <> · Дебиторка: <b className="tnum" style={{ color: 'var(--danger)' }}>{formatMoney(totalDebt)}</b></>}
         </div>
-        <div className="ct-grid-forecast" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(180px, 420px))', gap: 12, justifyContent: 'start' }}>
+        <div className="ct-grid-forecast" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 420px))', gap: 12, justifyContent: 'start' }}>
           {forecastData.map((m, i) => (
             <div key={i} style={{ background: 'var(--bg)', borderRadius: 12, padding: '14px 18px', borderLeft: `4px solid ${i === 0 ? 'var(--maf)' : i === 1 ? 'var(--ok)' : 'var(--warn)'}` }}>
               <div style={{ fontSize: 12, color: 'var(--muted-ink)', textTransform: 'capitalize', marginBottom: 6 }}>{m.month}</div>
