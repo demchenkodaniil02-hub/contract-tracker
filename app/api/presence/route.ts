@@ -6,14 +6,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-// POST — обновить lastSeen для текущего пользователя
+// POST — обновить lastSeen для текущего пользователя (или сразу очистить при выходе)
 export async function POST(req: Request) {
   try {
-    const { userId } = await req.json()
+    const { userId, leaving } = await req.json()
     if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
 
     await supabase.from('profiles')
-      .update({ lastSeen: new Date().toISOString() })
+      .update({ lastSeen: leaving ? null : new Date().toISOString() })
       .eq('id', userId)
 
     return NextResponse.json({ success: true })

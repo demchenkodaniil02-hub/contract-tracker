@@ -15,6 +15,7 @@ export function usePresence() {
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>
+    let leave: () => void = () => {}
 
     async function init() {
       const { data } = await supabase.auth.getSession()
@@ -37,12 +38,22 @@ export function usePresence() {
         setOnlineUsers(data.users ?? [])
       }
 
+      // Сразу очищаем lastSeen при закрытии вкладки/выходе, не дожидаясь протухания за 2 минуты
+      leave = () => {
+        const blob = new Blob([JSON.stringify({ userId, leaving: true })], { type: 'application/json' })
+        navigator.sendBeacon('/api/presence', blob)
+      }
+      window.addEventListener('pagehide', leave)
+
       await ping()
       interval = setInterval(ping, 30000)
     }
 
     init()
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('pagehide', leave)
+    }
   }, [])
 
   return { onlineUsers, currentUserId }
