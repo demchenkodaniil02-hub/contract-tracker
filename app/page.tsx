@@ -139,7 +139,7 @@ export default function DashboardPage() {
             <AlertCircle size={18} />
           </div>
           <span><b>Просрочено {overdueCount} контракт{overdueCount === 1 ? '' : overdueCount < 5 ? 'а' : 'ов'}</b> — требуется внимание</span>
-          <Link href="/contracts" style={{ marginLeft: 'auto', fontWeight: 600, fontSize: 13, color: '#b23232', textDecoration: 'none', opacity: 0.75 }}>Смотреть →</Link>
+          <Link href="/contracts?status=overdue" style={{ marginLeft: 'auto', fontWeight: 600, fontSize: 13, color: '#b23232', textDecoration: 'none', opacity: 0.75 }}>Смотреть →</Link>
         </div>
       )}
 
