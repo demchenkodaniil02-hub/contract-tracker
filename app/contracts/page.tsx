@@ -203,21 +203,21 @@ export default function ContractsPage() {
                     <td style={{ ...S.td, overflow: 'hidden' }}><DirectionBadge direction={c.direction} /></td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{customer?.name ?? '—'}</div></td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', overflow: 'hidden' }}><div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor?.name ?? '—'}</div></td>
-                    <td style={{ ...S.td, textAlign: 'right', fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
-                    <td style={{ ...S.td, textAlign: 'right' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end' }}>
+                    <td style={{ ...S.td, fontWeight: 600 }} className="tnum">{formatMoney(c.amount)}</td>
+                    <td style={S.td}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-start' }}>
                         <span className="tnum" style={{ fontSize: 12.5 }}>{formatMoney(c.amountPaid)}</span>
                         <div style={{ width: '100%', height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${pct}%`, borderRadius: 999, background: progColor, transition: 'width .4s' }} />
                         </div>
                       </div>
                     </td>
-                    <td style={{ ...S.td, textAlign: 'right', fontWeight: 600, color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)' }} className="tnum">
+                    <td style={{ ...S.td, fontWeight: 600, color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)' }} className="tnum">
                       {formatMoney(c.amount - c.amountPaid)}
                     </td>
                     <td style={{ ...S.td, color: 'var(--muted-ink)', whiteSpace: 'nowrap' }}>{formatDate(c.endDate)}</td>
-                    <td style={{ ...S.td, overflow: 'hidden', textAlign: 'center' }}><StatusBadge status={c.status} /></td>
-                    <td style={{ ...S.td, overflow: 'hidden', textAlign: 'center' }}><PaymentBadge status={c.paymentStatus} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden' }}><StatusBadge status={c.status} /></td>
+                    <td style={{ ...S.td, overflow: 'hidden' }}><PaymentBadge status={c.paymentStatus} /></td>
                     <td style={S.td} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                         <button onClick={() => { setEditing(c); setFormOpen(true) }} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', background: 'none', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center' }} title="Редактировать"><Pencil size={15} /></button>
@@ -237,13 +237,13 @@ export default function ContractsPage() {
                 <td colSpan={5} style={{ padding: '13px 14px', borderTop: '1px solid var(--line)', fontSize: 13, color: 'var(--muted-ink)' }}>
                   Найдено: <b>{filtered.length}</b> контрактов
                 </td>
-                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', fontWeight: 700, fontSize: 12, overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amount, 0))}
                 </td>
-                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, color: 'var(--ok)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', fontWeight: 700, fontSize: 12, color: 'var(--ok)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + c.amountPaid, 0))}
                 </td>
-                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', textAlign: 'right', fontWeight: 700, fontSize: 12, color: 'var(--danger)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
+                <td style={{ padding: '13px 6px', borderTop: '1px solid var(--line)', fontWeight: 700, fontSize: 12, color: 'var(--danger)', overflow: 'hidden', whiteSpace: 'nowrap' }} className="tnum">
                   {formatMoney(filtered.reduce((s, c) => s + (c.amount - c.amountPaid), 0))}
                 </td>
                 <td colSpan={4} style={{ borderTop: '1px solid var(--line)', padding: '13px 14px' }}>
