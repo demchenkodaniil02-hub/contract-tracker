@@ -229,6 +229,13 @@ select {
 @keyframes spin { to { transform: rotate(360deg); } }
 .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
 
+/* Окно уже, чем полный десктоп, но ещё не мобильное — сетки KPI/прогноза
+   переносятся в 2 колонки вместо неровного 3+1 разрыва или обрезки */
+@media (max-width: 1180px) and (min-width: 769px) {
+  .ct-grid-kpi { grid-template-columns: 1fr 1fr !important; }
+  .ct-grid-forecast { grid-template-columns: 1fr 1fr !important; }
+}
+
 @media (max-width: 768px) {
   /* Base */
   * { box-sizing: border-box; }
