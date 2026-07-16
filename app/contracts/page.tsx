@@ -157,14 +157,14 @@ export default function ContractsPage() {
               <col style={{ width: '7%' }} />{/* № */}
               <col style={{ width: '12%' }} />{/* Объект */}
               <col style={{ width: '8%' }} />{/* Направление */}
-              <col style={{ width: '11%' }} />{/* Заказчик */}
-              <col style={{ width: '11%' }} />{/* Исполнитель */}
+              <col style={{ width: '12%' }} />{/* Заказчик */}
+              <col style={{ width: '12%' }} />{/* Исполнитель */}
               <col style={{ width: '9%' }} />{/* Сумма */}
               <col style={{ width: '9%' }} />{/* Оплачено */}
               <col style={{ width: '8%' }} />{/* Остаток */}
               <col style={{ width: '7%' }} />{/* Окончание */}
-              <col style={{ width: '9%' }} />{/* Статус */}
-              <col style={{ width: '6%' }} />{/* Оплата */}
+              <col style={{ width: '8%' }} />{/* Статус */}
+              <col style={{ width: '5%' }} />{/* Оплата */}
               <col style={{ width: '3%' }} />{/* Actions */}
             </colgroup>
             <thead>
