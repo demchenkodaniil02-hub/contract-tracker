@@ -233,7 +233,9 @@ select {
    переносятся в 2 колонки вместо неровного 3+1 разрыва или обрезки */
 @media (max-width: 1180px) and (min-width: 769px) {
   .ct-grid-kpi { grid-template-columns: 1fr 1fr !important; }
+  .ct-grid-kpi .tnum { font-size: 24px !important; word-break: break-word; }
   .ct-grid-forecast { grid-template-columns: 1fr 1fr !important; }
+  .ct-grid-direction .tnum { font-size: 20px !important; word-break: break-word; }
 }
 
 @media (max-width: 768px) {

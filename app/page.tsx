@@ -6,7 +6,7 @@ import { DirectionBadge } from '@/components/contracts/StatusBadge'
 import { ContractStatus } from '@/lib/types'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { AlertCircle, Clock, XCircle, X } from 'lucide-react'
@@ -267,7 +267,6 @@ export default function DashboardPage() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
                 {!pinned && <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} content={<ChartTooltip />} />}
-                <Legend verticalAlign="top" wrapperStyle={{ fontSize: 11, color: 'var(--muted-ink)', paddingBottom: 12 }} />
                 {paymentContractKeys.map((k, i) => {
                   const colors = ['#2f6bdc','#e07a1a','#1f8a5b','#e0325f','#9b5de5','#0891b2','#f59e0b','#10b981','#ec4899','#6366f1','#14b8a6','#f97316','#84cc16','#8b5cf6','#ef4444','#06b6d4','#a855f7','#22c55e','#fb923c','#3b82f6']
                   return <Bar key={k.id} dataKey={k.label} name={k.label} stackId="a" fill={colors[i % colors.length]} radius={i === paymentContractKeys.length - 1 ? [4,4,0,0] : [0,0,0,0]} style={{ cursor: 'pointer' }} />
