@@ -29,15 +29,27 @@ export default function ContractsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const objectParam = searchParams.get('object') ?? 'all'
-  const statusParam    = searchParams.get('status') ?? 'all'
-  const directionParam = searchParams.get('direction') ?? 'all'
+  const statusParam      = searchParams.get('status') ?? 'all'
+  const directionParam   = searchParams.get('direction') ?? 'all'
+  const customerParam    = searchParams.get('customer') ?? 'all'
+  const contractorParam  = searchParams.get('contractor') ?? 'all'
+  const searchParam      = searchParams.get('q') ?? ''
   useEffect(() => { initSeed() }, [])
 
-  const [search, setSearch] = useState('')
-  const [filterDirection, setFilterDirection] = useState<Direction | 'all'>(directionParam as Direction | 'all')
-  const [filterStatus, setFilterStatus] = useState<ContractStatus | 'all'>(statusParam as ContractStatus | 'all')
-  const [filterCustomer, setFilterCustomer] = useState('all')
-  const [filterContractor, setFilterContractor] = useState('all')
+  // Фильтры живут в URL — так они переживают переход на карточку контракта и кнопку "Назад"
+  function updateFilter(key: string, value: string) {
+    const params = new URLSearchParams(searchParams.toString())
+    if (!value || value === 'all') params.delete(key)
+    else params.set(key, value)
+    const qs = params.toString()
+    router.replace(`/contracts${qs ? '?' + qs : ''}`)
+  }
+
+  const filterDirection = directionParam as Direction | 'all'
+  const filterStatus = statusParam as ContractStatus | 'all'
+  const filterCustomer = customerParam
+  const filterContractor = contractorParam
+  const search = searchParam
   const [sortField, setSortField] = useState<keyof Contract>('createdAt')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [formOpen, setFormOpen] = useState(false)
@@ -132,15 +144,15 @@ export default function ContractsPage() {
           <Search size={16} style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--faint)' }} />
           <input
             placeholder="Поиск по №, объекту, контрагенту..."
-            value={search} onChange={(e) => setSearch(e.target.value)}
+            value={search} onChange={(e) => updateFilter('q', e.target.value)}
             style={{ width: '100%', padding: '10px 14px 10px 38px', border: '1px solid var(--line)', borderRadius: 11, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', boxSizing: 'border-box' }}
           />
         </div>
         {[
-          { value: filterDirection, onChange: (v: string) => setFilterDirection(v as Direction | 'all'), placeholder: 'Направление', options: [{ v: 'all', l: 'Все направления' }, { v: 'maf', l: 'МАФ / Металл' }, { v: 'finishing', l: 'Отделка' }] },
-          { value: filterStatus, onChange: (v: string) => setFilterStatus(v as ContractStatus | 'all'), placeholder: 'Статус', options: [{ v: 'all', l: 'Все статусы' }, { v: 'planning', l: 'Планируется' }, { v: 'active', l: 'Активный' }, { v: 'completed', l: 'Завершён' }, { v: 'paused', l: 'Приостановлен' }, { v: 'overdue', l: 'Просрочен' }, { v: 'cancelled', l: 'Отменён' }] },
-          { value: filterCustomer, onChange: (v: string) => setFilterCustomer(v), placeholder: 'Заказчик', options: [{ v: 'all', l: 'Все заказчики' }, ...customers.map(c => ({ v: c.id, l: c.name }))] },
-          { value: filterContractor, onChange: (v: string) => setFilterContractor(v), placeholder: 'Исполнитель', options: [{ v: 'all', l: 'Все исполнители' }, ...contractors.map(c => ({ v: c.id, l: c.name }))] },
+          { value: filterDirection, onChange: (v: string) => updateFilter('direction', v), placeholder: 'Направление', options: [{ v: 'all', l: 'Все направления' }, { v: 'maf', l: 'МАФ / Металл' }, { v: 'finishing', l: 'Отделка' }] },
+          { value: filterStatus, onChange: (v: string) => updateFilter('status', v), placeholder: 'Статус', options: [{ v: 'all', l: 'Все статусы' }, { v: 'planning', l: 'Планируется' }, { v: 'active', l: 'Активный' }, { v: 'completed', l: 'Завершён' }, { v: 'paused', l: 'Приостановлен' }, { v: 'overdue', l: 'Просрочен' }, { v: 'cancelled', l: 'Отменён' }] },
+          { value: filterCustomer, onChange: (v: string) => updateFilter('customer', v), placeholder: 'Заказчик', options: [{ v: 'all', l: 'Все заказчики' }, ...customers.map(c => ({ v: c.id, l: c.name }))] },
+          { value: filterContractor, onChange: (v: string) => updateFilter('contractor', v), placeholder: 'Исполнитель', options: [{ v: 'all', l: 'Все исполнители' }, ...contractors.map(c => ({ v: c.id, l: c.name }))] },
         ].map((sel, i) => (
           <select key={i} value={sel.value} onChange={(e) => sel.onChange(e.target.value)}
             style={{ padding: '10px 36px 10px 12px', border: '1px solid var(--line)', borderRadius: 11, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', minWidth: 150 }}>
