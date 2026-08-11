@@ -135,9 +135,9 @@ export default function ReportsPage() {
               {/* Шапка */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Контрактов</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Оборот {activeYear}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Доля</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Доля</div>
               </div>
 
               {turnoverReports.map(({ contractor, turnover, contractsWithPayments }) => {
@@ -151,9 +151,9 @@ export default function ReportsPage() {
                         {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
                         <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
                       </div>
-                      <div style={{ textAlign: 'right', fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{contractsWithPayments.length}</div>
-                      <div className="tnum" style={{ textAlign: 'right', fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(turnover)}</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{contractsWithPayments.length}</div>
+                      <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(turnover)}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
                         <span style={{ fontSize: 12, color: 'var(--faint)' }}>{share}%</span>
                         <div style={{ width: 50, height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${share}%`, background: 'var(--ok)' }} />
@@ -168,8 +168,8 @@ export default function ReportsPage() {
                             <tr>
                               <th style={S.th}>№ Контракта</th>
                               <th style={S.th}>Объект</th>
-                              <th style={{ ...S.th, textAlign: 'right' }}>Оплачено в {activeYear}</th>
-                              <th style={{ ...S.th, textAlign: 'right' }}>Остаток</th>
+                              <th style={S.th}>Оплачено в {activeYear}</th>
+                              <th style={S.th}>Остаток</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -180,8 +180,8 @@ export default function ReportsPage() {
                                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
                                 <td style={S.td}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
                                 <td style={S.td}>{obj?.name ?? '—'}</td>
-                                <td style={{ ...S.td, textAlign: 'right', fontWeight: 700, color: 'var(--ok)' }} className="tnum">{formatMoney(paidThisYear)}</td>
-                                <td style={{ ...S.td, textAlign: 'right', color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amount - c.amountPaid)}</td>
+                                <td style={{ ...S.td, fontWeight: 700, color: 'var(--ok)' }} className="tnum">{formatMoney(paidThisYear)}</td>
+                                <td style={{ ...S.td, color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amount - c.amountPaid)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -195,8 +195,8 @@ export default function ReportsPage() {
               {/* Итог */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-                <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
-                <div className="tnum" style={{ textAlign: 'right', fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
+                <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
                 <div />
               </div>
             </div>
@@ -227,8 +227,8 @@ export default function ReportsPage() {
           <div style={{ ...S.card, maxWidth: 1100 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Контрактов</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'right' }}>Остаток долга</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Остаток долга</div>
             </div>
 
             {debtReports.map(({ contractor, totalDebt: debt, contracts: ctrs }) => {
@@ -241,8 +241,8 @@ export default function ReportsPage() {
                       {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
                       <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
                     </div>
-                    <div style={{ textAlign: 'right', fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{ctrs.length}</div>
-                    <div className="tnum" style={{ textAlign: 'right', fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(debt)}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{ctrs.length}</div>
+                    <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(debt)}</div>
                   </button>
 
                   {isOpen && (
@@ -252,9 +252,9 @@ export default function ReportsPage() {
                           <tr>
                             <th style={S.th}>№ Контракта</th>
                             <th style={S.th}>Объект</th>
-                            <th style={{ ...S.th, textAlign: 'right' }}>Сумма</th>
-                            <th style={{ ...S.th, textAlign: 'right' }}>Оплачено</th>
-                            <th style={{ ...S.th, textAlign: 'right' }}>Остаток</th>
+                            <th style={S.th}>Сумма</th>
+                            <th style={S.th}>Оплачено</th>
+                            <th style={S.th}>Остаток</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -265,9 +265,9 @@ export default function ReportsPage() {
                               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
                               <td style={S.td}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
                               <td style={S.td}>{obj?.name ?? '—'}</td>
-                              <td style={{ ...S.td, textAlign: 'right' }} className="tnum">{formatMoney(c.amount)}</td>
-                              <td style={{ ...S.td, textAlign: 'right', color: 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amountPaid)}</td>
-                              <td style={{ ...S.td, textAlign: 'right', color: 'var(--danger)', fontWeight: 700 }} className="tnum">{formatMoney(remaining)}</td>
+                              <td style={S.td} className="tnum">{formatMoney(c.amount)}</td>
+                              <td style={{ ...S.td, color: 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amountPaid)}</td>
+                              <td style={{ ...S.td, color: 'var(--danger)', fontWeight: 700 }} className="tnum">{formatMoney(remaining)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -280,8 +280,8 @@ export default function ReportsPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-              <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
-              <div className="tnum" style={{ textAlign: 'right', fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
+              <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
             </div>
           </div>
         </div>
