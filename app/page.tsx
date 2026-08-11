@@ -5,6 +5,7 @@ import { formatMoney, formatDate, isOverdue, isDueSoon, statusLabel } from '@/li
 import { DirectionBadge } from '@/components/contracts/StatusBadge'
 import { ContractStatus } from '@/lib/types'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -36,7 +37,8 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 }
 
 // Закреплённая по клику версия — не исчезает при наведении курсора, остаётся открытой пока не закроют крестиком
-function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: { name: string; value: number }[]; onClose: () => void }) {
+function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: { id: string; name: string; value: number }[]; onClose: () => void }) {
+  const router = useRouter()
   const items = payload.filter(p => p.value > 0).sort((a, b) => b.value - a.value)
   const total = items.reduce((s, p) => s + p.value, 0)
   return (
@@ -49,8 +51,11 @@ function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: 
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {items.map(p => (
-          <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-            <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+          <div key={p.id} onClick={() => router.push(`/contracts/${p.id}`)}
+            style={{ display: 'flex', justifyContent: 'space-between', gap: 12, cursor: 'pointer', borderRadius: 5, padding: '2px 4px', margin: '0 -4px' }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
+            <span style={{ color: 'var(--maf)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
             <span style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatMoney(p.value * 1000000)}</span>
           </div>
         ))}
@@ -87,7 +92,7 @@ export default function DashboardPage() {
   const { contracts, objects, counterparties, payments, initSeed } = useStore()
   useEffect(() => { initSeed() }, [])
 
-  const [pinned, setPinned] = useState<{ label: string; payload: { name: string; value: number }[] } | null>(null)
+  const [pinned, setPinned] = useState<{ label: string; payload: { id: string; name: string; value: number }[] } | null>(null)
 
   const enriched = useMemo(() => contracts.map((c) => ({
     ...c,
@@ -254,7 +259,7 @@ export default function DashboardPage() {
                   const row = idx != null ? paymentChartData[idx as any] : undefined
                   if (!row) return
                   const payload = paymentContractKeys
-                    .map(k => ({ name: k.label, value: Number((row as any)[k.label]) || 0 }))
+                    .map(k => ({ id: k.id, name: k.label, value: Number((row as any)[k.label]) || 0 }))
                     .filter(p => p.value > 0)
                   if (!payload.length) return
                   setPinned({ label: String((row as any).month ?? state.activeLabel ?? ''), payload })
