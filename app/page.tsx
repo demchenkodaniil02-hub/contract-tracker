@@ -249,9 +249,15 @@ export default function DashboardPage() {
           : <ResponsiveContainer width="100%" height={240} style={{ marginTop: 16 }}>
               <BarChart data={paymentChartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}
                 onClick={(state: any) => {
-                  if (state?.activeLabel && state?.activePayload?.length) {
-                    setPinned({ label: state.activeLabel, payload: state.activePayload.map((p: any) => ({ name: p.name, value: p.value })) })
-                  }
+                  // Recharts 3.x убрал activePayload из onClick и отдаёт activeTooltipIndex строкой ("0"), не числом
+                  const idx = state?.activeTooltipIndex
+                  const row = idx != null ? paymentChartData[idx as any] : undefined
+                  if (!row) return
+                  const payload = paymentContractKeys
+                    .map(k => ({ name: k.label, value: Number((row as any)[k.label]) || 0 }))
+                    .filter(p => p.value > 0)
+                  if (!payload.length) return
+                  setPinned({ label: String((row as any).month ?? state.activeLabel ?? ''), payload })
                 }}>
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
