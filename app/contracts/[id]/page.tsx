@@ -122,7 +122,9 @@ export default function ContractDetailPage() {
   const paidPct = contract.amount > 0 ? Math.round((contract.amountPaid / contract.amount) * 100) : 0
   const remaining = contract.amount - contract.amountPaid
   const ksTotal = ksForms.filter(f => f.contractId === id).reduce((s, f) => s + f.amount, 0)
-  const ksRemaining = Math.abs(ksTotal - contract.amountPaid)
+  const ksDiff = ksTotal - contract.amountPaid
+  const ksOverpaid = ksDiff < 0
+  const ksRemaining = Math.abs(ksDiff)
   const stagesTotal = contractStages.reduce((s, x) => s + x.amount, 0)
   const stagePct = stagesTotal > 0
     ? Math.round(contractStages.reduce((s, x) => s + x.amount * x.progressPercent / 100, 0) / stagesTotal * 100)
@@ -194,7 +196,7 @@ export default function ContractDetailPage() {
           {ksTotal > 0 && (
             <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, display: 'flex', gap: 20 }}>
               <Fin label="Закрыто КС" value={formatMoney(ksTotal)} color="var(--maf)" />
-              <Fin label="Остаток по КС" value={formatMoney(ksRemaining)} color={ksRemaining > 0 ? 'var(--warn)' : 'var(--ok)'} />
+              <Fin label={ksOverpaid ? 'Переплата по КС' : 'Остаток по КС'} value={formatMoney(ksRemaining)} color={ksOverpaid ? 'var(--maf)' : ksRemaining > 0 ? 'var(--warn)' : 'var(--ok)'} />
             </div>
           )}
           {/* Прогресс-бар на всю ширину под цифрами */}
