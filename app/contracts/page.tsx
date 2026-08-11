@@ -122,13 +122,10 @@ export default function ContractsPage() {
         <div>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em' }}>Контракты</h1>
           {objectParam !== 'all' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+            <div style={{ marginTop: 4 }}>
               <span style={{ fontSize: 13, color: 'var(--muted-ink)' }}>
                 Объект: <b>{objects.find(o => o.id === objectParam)?.name ?? objectParam}</b>
               </span>
-              <button onClick={() => router.push('/contracts')} style={{ fontSize: 12, color: 'var(--maf)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
-                Сбросить фильтр
-              </button>
             </div>
           )}
         </div>
