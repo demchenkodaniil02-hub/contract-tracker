@@ -167,17 +167,33 @@ export default function DashboardPage() {
       </div>
 
       {overdueCount > 0 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-          background: 'var(--danger-soft)', border: '1px solid #f3d3d3',
-          borderRadius: 14, padding: '14px 18px', color: '#b23232', fontSize: 14,
-        }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: '#fff', display: 'grid', placeItems: 'center', color: 'var(--danger)', flexShrink: 0 }}>
+        <Link href="/contracts?status=overdue" className="ct-alert-banner" style={{
+          display: 'flex', alignItems: 'center', gap: 14,
+          background: 'linear-gradient(90deg, var(--danger-soft), #fff)',
+          borderLeft: '4px solid var(--danger)',
+          borderRadius: 14, padding: '14px 20px', color: '#8a2424', fontSize: 14,
+          textDecoration: 'none', boxShadow: 'var(--card-shadow)',
+          transition: 'transform .15s, box-shadow .15s',
+        }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 8px rgba(214,69,69,.06), 0 18px 40px -22px rgba(214,69,69,.4)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--card-shadow)' }}>
+          <div className="ct-alert-pulse" style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--danger)', display: 'grid', placeItems: 'center', color: '#fff', flexShrink: 0 }}>
             <AlertCircle size={18} />
           </div>
-          <span><b>Просрочено {overdueCount} контракт{overdueCount === 1 ? '' : overdueCount < 5 ? 'а' : 'ов'}</b> — требуется внимание</span>
-          <Link href="/contracts?status=overdue" style={{ marginLeft: 'auto', fontWeight: 600, fontSize: 13, color: '#b23232', textDecoration: 'none', opacity: 0.75 }}>Смотреть →</Link>
-        </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--danger)' }}>
+              Просрочено {overdueCount} контракт{overdueCount === 1 ? '' : overdueCount < 5 ? 'а' : 'ов'}
+            </div>
+            <div style={{ fontSize: 12.5, color: '#a35555', marginTop: 1 }}>Требуется внимание — проверьте дедлайны и оплаты</div>
+          </div>
+          <span style={{
+            marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontWeight: 600, fontSize: 13, color: '#fff', background: 'var(--danger)',
+            padding: '8px 16px', borderRadius: 10, whiteSpace: 'nowrap', flexShrink: 0,
+          }}>
+            Смотреть <span className="ct-alert-arrow" style={{ transition: 'transform .15s', display: 'inline-block' }}>→</span>
+          </span>
+        </Link>
       )}
 
       {/* KPI */}
