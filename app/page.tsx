@@ -17,7 +17,7 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
   return (
     <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 14px', fontSize: 12, boxShadow: '0 4px 20px -4px rgba(0,0,0,.15)', maxWidth: 280 }}>
       <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 13 }}>{label}</div>
-      <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {items.map(p => (
           <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
             <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
@@ -35,7 +35,7 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
   )
 }
 
-// Закреплённая по клику версия — не исчезает при наведении курсора, поэтому список внутри можно проскроллить
+// Закреплённая по клику версия — не исчезает при наведении курсора, остаётся открытой пока не закроют крестиком
 function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: { name: string; value: number }[]; onClose: () => void }) {
   const items = payload.filter(p => p.value > 0).sort((a, b) => b.value - a.value)
   const total = items.reduce((s, p) => s + p.value, 0)
@@ -47,7 +47,7 @@ function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: 
           <X size={13} />
         </button>
       </div>
-      <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {items.map(p => (
           <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
             <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
