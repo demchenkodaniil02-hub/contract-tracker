@@ -88,6 +88,9 @@ export default function ReportsPage() {
     card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
     th: { padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'left', borderBottom: '1px solid var(--line)', whiteSpace: 'nowrap' } as React.CSSProperties,
     td: { padding: '10px 14px', fontSize: 13.5, borderBottom: '1px solid var(--line-soft)', verticalAlign: 'middle' } as React.CSSProperties,
+    // Ячейка CSS-грида по умолчанию не сжимается меньше своего контента и наезжает на соседей —
+    // overflow:hidden убирает этот "grid blowout", minWidth:0 подстраховывает
+    cell: { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as React.CSSProperties,
   }
 
   return (
@@ -134,10 +137,10 @@ export default function ReportsPage() {
             <div style={S.card}>
               {/* Шапка */}
               <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Доля</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Доля</div>
               </div>
 
               {turnoverReports.map(({ contractor, turnover, contractsWithPayments }) => {
@@ -147,15 +150,15 @@ export default function ReportsPage() {
                   <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                     <button onClick={() => toggle(contractor.id)}
                       style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
-                        <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
+                      <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
+                        <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{contractsWithPayments.length}</div>
-                      <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(turnover)}</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                      <div style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{contractsWithPayments.length}</div>
+                      <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(turnover)}</div>
+                      <div style={{ ...S.cell, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
                         <span style={{ fontSize: 12, color: 'var(--faint)' }}>{share}%</span>
-                        <div style={{ width: 50, height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
+                        <div style={{ width: 50, maxWidth: '100%', height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${share}%`, background: 'var(--ok)' }} />
                         </div>
                       </div>
@@ -200,9 +203,9 @@ export default function ReportsPage() {
 
               {/* Итог */}
               <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
-                <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
+                <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
+                <div style={{ ...S.cell, fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
+                <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
                 <div />
               </div>
             </div>
@@ -232,9 +235,9 @@ export default function ReportsPage() {
 
           <div style={S.card}>
             <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Остаток долга</div>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Остаток долга</div>
             </div>
 
             {debtReports.map(({ contractor, totalDebt: debt, contracts: ctrs }) => {
@@ -243,12 +246,12 @@ export default function ReportsPage() {
                 <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                   <button onClick={() => toggleDebt(contractor.id)}
                     style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
-                      <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
+                    <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
+                      <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{ctrs.length}</div>
-                    <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(debt)}</div>
+                    <div style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{ctrs.length}</div>
+                    <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(debt)}</div>
                   </button>
 
                   {isOpen && (
@@ -292,9 +295,9 @@ export default function ReportsPage() {
             })}
 
             <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
-              <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
+              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
+              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
+              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
             </div>
           </div>
         </div>
