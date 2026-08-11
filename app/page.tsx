@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useStore } from '@/lib/store'
 import { formatMoney, formatDate, isOverdue, isDueSoon, statusLabel } from '@/lib/utils'
 import { DirectionBadge } from '@/components/contracts/StatusBadge'
@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { AlertCircle, Clock, XCircle } from 'lucide-react'
+import { AlertCircle, Clock, XCircle, X } from 'lucide-react'
 
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null
@@ -18,6 +18,36 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
     <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 14px', fontSize: 12, boxShadow: '0 4px 20px -4px rgba(0,0,0,.15)', maxWidth: 280 }}>
       <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 13 }}>{label}</div>
       <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {items.map(p => (
+          <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+            <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+            <span style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatMoney(p.value * 1000000)}</span>
+          </div>
+        ))}
+      </div>
+      {items.length > 1 && (
+        <div style={{ borderTop: '1px solid var(--line-soft)', marginTop: 6, paddingTop: 6, display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: 13 }}>
+          <span>Итого</span>
+          <span>{formatMoney(total * 1000000)}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Закреплённая по клику версия — не исчезает при наведении курсора, поэтому список внутри можно проскроллить
+function PinnedBreakdown({ label, payload, onClose }: { label: string; payload: { name: string; value: number }[]; onClose: () => void }) {
+  const items = payload.filter(p => p.value > 0).sort((a, b) => b.value - a.value)
+  const total = items.reduce((s, p) => s + p.value, 0)
+  return (
+    <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 14px', fontSize: 12, boxShadow: '0 8px 28px -6px rgba(0,0,0,.22)', width: 280 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <span style={{ fontWeight: 700, fontSize: 13 }}>{label}</span>
+        <button onClick={onClose} style={{ width: 22, height: 22, borderRadius: 6, border: 'none', background: 'var(--bg)', color: 'var(--muted-ink)', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          <X size={13} />
+        </button>
+      </div>
+      <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
         {items.map(p => (
           <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
             <span style={{ color: 'var(--muted-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
@@ -56,6 +86,8 @@ function KpiCard({ label, value, sub, valueColor }: { label: string; value: stri
 export default function DashboardPage() {
   const { contracts, objects, counterparties, payments, initSeed } = useStore()
   useEffect(() => { initSeed() }, [])
+
+  const [pinned, setPinned] = useState<{ label: string; payload: { name: string; value: number }[] } | null>(null)
 
   const enriched = useMemo(() => contracts.map((c) => ({
     ...c,
@@ -209,24 +241,34 @@ export default function DashboardPage() {
       </div>
 
       {/* График истории оплат */}
-      <div className="ct-card" style={{ padding: '20px 22px' }}>
+      <div className="ct-card" style={{ padding: '20px 22px', position: 'relative' }}>
         <div style={{ fontWeight: 600, fontSize: 15 }}>История оплат по договорам</div>
-        <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 2 }}>млн. ₽ · по дате внесения оплаты</div>
+        <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 2 }}>млн. ₽ · по дате внесения оплаты · клик по столбцу закрепляет список</div>
         {paymentChartData.length === 0
           ? <div style={{ color: 'var(--faint)', fontSize: 13, padding: '32px 0', textAlign: 'center' }}>Оплат пока нет — добавьте их в карточках контрактов</div>
           : <ResponsiveContainer width="100%" height={240} style={{ marginTop: 16 }}>
-              <BarChart data={paymentChartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+              <BarChart data={paymentChartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}
+                onClick={(state: any) => {
+                  if (state?.activeLabel && state?.activePayload?.length) {
+                    setPinned({ label: state.activeLabel, payload: state.activePayload.map((p: any) => ({ name: p.name, value: p.value })) })
+                  }
+                }}>
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--faint)' }} />
                 <YAxis tick={{ fontSize: 11, fill: 'var(--faint)' }} tickFormatter={v => `${v.toFixed(1)}М`} />
-                <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} content={<ChartTooltip />} />
+                {!pinned && <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} content={<ChartTooltip />} />}
                 <Legend verticalAlign="top" wrapperStyle={{ fontSize: 11, color: 'var(--muted-ink)', paddingBottom: 12 }} />
                 {paymentContractKeys.map((k, i) => {
                   const colors = ['#2f6bdc','#e07a1a','#1f8a5b','#e0325f','#9b5de5','#0891b2','#f59e0b','#10b981','#ec4899','#6366f1','#14b8a6','#f97316','#84cc16','#8b5cf6','#ef4444','#06b6d4','#a855f7','#22c55e','#fb923c','#3b82f6']
-                  return <Bar key={k.id} dataKey={k.label} name={k.label} stackId="a" fill={colors[i % colors.length]} radius={i === paymentContractKeys.length - 1 ? [4,4,0,0] : [0,0,0,0]} />
+                  return <Bar key={k.id} dataKey={k.label} name={k.label} stackId="a" fill={colors[i % colors.length]} radius={i === paymentContractKeys.length - 1 ? [4,4,0,0] : [0,0,0,0]} style={{ cursor: 'pointer' }} />
                 })}
               </BarChart>
             </ResponsiveContainer>
         }
+        {pinned && (
+          <div style={{ position: 'absolute', top: 56, right: 24, zIndex: 10 }}>
+            <PinnedBreakdown label={pinned.label} payload={pinned.payload} onClose={() => setPinned(null)} />
+          </div>
+        )}
       </div>
 
       {/* Прогноз поступлений */}
