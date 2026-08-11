@@ -169,7 +169,6 @@ export default function ReportsPage() {
                               <th style={S.th}>№ Контракта</th>
                               <th style={S.th}>Объект</th>
                               <th style={{ ...S.th, textAlign: 'right' }}>Оплачено в {activeYear}</th>
-                              <th style={{ ...S.th, textAlign: 'right' }}>Всего по контракту</th>
                               <th style={{ ...S.th, textAlign: 'right' }}>Остаток</th>
                             </tr>
                           </thead>
@@ -182,7 +181,6 @@ export default function ReportsPage() {
                                 <td style={S.td}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
                                 <td style={S.td}>{obj?.name ?? '—'}</td>
                                 <td style={{ ...S.td, textAlign: 'right', fontWeight: 700, color: 'var(--ok)' }} className="tnum">{formatMoney(paidThisYear)}</td>
-                                <td style={{ ...S.td, textAlign: 'right' }} className="tnum">{formatMoney(c.amountPaid)}</td>
                                 <td style={{ ...S.td, textAlign: 'right', color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amount - c.amountPaid)}</td>
                               </tr>
                             ))}
