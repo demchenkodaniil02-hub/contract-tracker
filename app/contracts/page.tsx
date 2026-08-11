@@ -5,7 +5,7 @@ import { Contract, Direction, ContractStatus } from '@/lib/types'
 import { formatMoney, formatDate, isOverdue, exportToCsv, statusLabel, paymentLabel, directionLabel } from '@/lib/utils'
 import { ContractForm } from '@/components/contracts/ContractForm'
 import { StatusBadge, PaymentBadge, DirectionBadge } from '@/components/contracts/StatusBadge'
-import { Plus, Search, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
@@ -159,6 +159,12 @@ export default function ContractsPage() {
             {sel.options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
           </select>
         ))}
+        {(search || filterDirection !== 'all' || filterStatus !== 'all' || filterCustomer !== 'all' || filterContractor !== 'all' || objectParam !== 'all') && (
+          <button onClick={() => router.replace('/contracts')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 14px', borderRadius: 11, border: '1px solid var(--line)', background: '#fff', color: 'var(--muted-ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            <X size={14} /> Сбросить фильтры
+          </button>
+        )}
       </div>
 
       {/* Table */}
