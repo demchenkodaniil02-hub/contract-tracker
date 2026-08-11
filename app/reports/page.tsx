@@ -131,9 +131,9 @@ export default function ReportsPage() {
         {turnoverReports.length === 0
           ? <div style={{ ...S.card, padding: 32, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Платежей за {activeYear} год не найдено</div>
           : (
-            <div style={{ ...S.card, maxWidth: 1100 }}>
+            <div style={S.card}>
               {/* Шапка */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px 100px', justifyContent: 'start', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
@@ -146,7 +146,7 @@ export default function ReportsPage() {
                 return (
                   <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                     <button onClick={() => toggle(contractor.id)}
-                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
+                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px 100px', justifyContent: 'start', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
                         <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
@@ -163,7 +163,7 @@ export default function ReportsPage() {
 
                     {isOpen && (
                       <div style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--bg)' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <table style={{ width: '100%', maxWidth: 1000, borderCollapse: 'collapse' }}>
                           <thead>
                             <tr>
                               <th style={S.th}>№ Контракта</th>
@@ -193,7 +193,7 @@ export default function ReportsPage() {
               })}
 
               {/* Итог */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px 80px', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px 100px', justifyContent: 'start', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
                 <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
@@ -224,8 +224,8 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          <div style={{ ...S.card, maxWidth: 1100 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+          <div style={S.card}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px', justifyContent: 'start', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Остаток долга</div>
@@ -236,7 +236,7 @@ export default function ReportsPage() {
               return (
                 <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                   <button onClick={() => toggleDebt(contractor.id)}
-                    style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 100px 180px', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
+                    style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px', justifyContent: 'start', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       {isOpen ? <ChevronDown size={15} color="var(--faint)" /> : <ChevronRight size={15} color="var(--faint)" />}
                       <span style={{ fontWeight: 700, fontSize: 14 }}>{contractor.name}</span>
@@ -247,7 +247,7 @@ export default function ReportsPage() {
 
                   {isOpen && (
                     <div style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--bg)' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <table style={{ width: '100%', maxWidth: 1000, borderCollapse: 'collapse' }}>
                         <thead>
                           <tr>
                             <th style={S.th}>№ Контракта</th>
@@ -278,7 +278,7 @@ export default function ReportsPage() {
               )
             })}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 180px', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 480px) 110px 200px', justifyContent: 'start', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
               <div style={{ fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
               <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
