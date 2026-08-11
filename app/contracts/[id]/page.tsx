@@ -159,7 +159,7 @@ export default function ContractDetailPage() {
 
       {/* Шапка */}
       <div className="ct-contract-header" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-        <button onClick={() => router.push('/contracts')} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
+        <button onClick={() => { if (window.history.length > 1) router.back(); else router.push('/contracts') }} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', color: 'var(--muted-ink)', flexShrink: 0 }}>
           <ArrowLeft size={16} />
         </button>
         <h1 style={{ margin: 0, fontWeight: 700, fontSize: 24, letterSpacing: '-0.02em' }}>{contract.number}</h1>
