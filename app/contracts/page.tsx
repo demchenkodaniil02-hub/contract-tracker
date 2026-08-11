@@ -61,7 +61,7 @@ export default function ContractsPage() {
   const contractors  = counterparties.filter((c) => c.type === 'contractor')
 
   const filtered = useMemo(() => {
-    let list = contracts.map((c) => ({ ...c, status: isOverdue(c.endDate, c.status) ? 'overdue' as ContractStatus : c.status }))
+    let list = contracts.map((c) => ({ ...c, status: isOverdue(c.endDate, c.status, c.paymentStatus) ? 'overdue' as ContractStatus : c.status }))
     if (objectParam !== 'all')       list = list.filter((c) => c.objectId === objectParam)
     if (filterDirection !== 'all')   list = list.filter((c) => c.direction === filterDirection)
     if (filterStatus !== 'all')      list = list.filter((c) => c.status === filterStatus)

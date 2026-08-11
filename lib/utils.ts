@@ -17,8 +17,9 @@ export function formatDate(dateStr: string): string {
   try { return format(parseISO(dateStr), 'dd.MM.yyyy', { locale: ru }) } catch { return dateStr }
 }
 
-export function isOverdue(endDate: string, status: ContractStatus): boolean {
+export function isOverdue(endDate: string, status: ContractStatus, paymentStatus?: PaymentStatus): boolean {
   if (status === 'completed' || status === 'cancelled') return false
+  if (paymentStatus === 'paid') return false
   if (!endDate) return false
   return isBefore(parseISO(endDate), new Date())
 }

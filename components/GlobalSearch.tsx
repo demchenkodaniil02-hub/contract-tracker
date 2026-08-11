@@ -55,7 +55,7 @@ export function GlobalSearch() {
       const contractor = counterparties.find(x => x.id === c.contractorId)
       const hay = [c.number, obj?.name, customer?.name, contractor?.name].join(' ').toLowerCase()
       if (!hay.includes(q)) return
-      const status = isOverdue(c.endDate, c.status) ? 'overdue' as ContractStatus : c.status
+      const status = isOverdue(c.endDate, c.status, c.paymentStatus) ? 'overdue' as ContractStatus : c.status
       out.push({
         type: 'contract', id: c.id,
         title: c.number,

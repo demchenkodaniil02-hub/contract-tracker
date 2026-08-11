@@ -96,7 +96,7 @@ export default function DashboardPage() {
 
   const enriched = useMemo(() => contracts.map((c) => ({
     ...c,
-    status: isOverdue(c.endDate, c.status) ? 'overdue' as ContractStatus : c.status,
+    status: isOverdue(c.endDate, c.status, c.paymentStatus) ? 'overdue' as ContractStatus : c.status,
   })), [contracts])
 
   const totalAmount = enriched.reduce((s, c) => s + c.amount, 0)

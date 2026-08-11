@@ -117,7 +117,7 @@ export default function ContractDetailPage() {
   const obj = objects.find((o) => o.id === contract.objectId)
   const customer = counterparties.find((c) => c.id === contract.customerId)
   const contractor = counterparties.find((c) => c.id === contract.contractorId)
-  const effectiveStatus = isOverdue(contract.endDate, contract.status) ? 'overdue' as const : contract.status
+  const effectiveStatus = isOverdue(contract.endDate, contract.status, contract.paymentStatus) ? 'overdue' as const : contract.status
 
   const paidPct = contract.amount > 0 ? Math.round((contract.amountPaid / contract.amount) * 100) : 0
   const remaining = contract.amount - contract.amountPaid
