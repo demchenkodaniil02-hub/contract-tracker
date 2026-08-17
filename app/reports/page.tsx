@@ -84,6 +84,17 @@ export default function ReportsPage() {
 
   const totalDebt = debtReports.reduce((s, r) => s + r.totalDebt, 0)
 
+  // Сводка по исполнителям — оборот и долг рядом, чтобы понять, можно ли ещё заключаться
+  const contractorSummary = useMemo(() =>
+    contractors.map(contractor => ({
+      contractor,
+      turnover: turnoverReports.find(r => r.contractor.id === contractor.id)?.turnover ?? 0,
+      debt: debtReports.find(r => r.contractor.id === contractor.id)?.totalDebt ?? 0,
+    })).filter(r => r.turnover > 0 || r.debt > 0)
+      .sort((a, b) => b.turnover - a.turnover),
+    [contractors, turnoverReports, debtReports]
+  )
+
   const S = {
     card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
     th: { padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'left', borderBottom: '1px solid var(--line)', whiteSpace: 'nowrap' } as React.CSSProperties,
@@ -108,6 +119,30 @@ export default function ReportsPage() {
           ))}
         </div>
       </div>
+
+      {/* ───── СВОДКА ПО ИСПОЛНИТЕЛЯМ ───── */}
+      {contractorSummary.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Сводка по исполнителям</h2>
+            <span style={{ fontSize: 13, color: 'var(--faint)' }}>оборот {activeYear} и текущий долг рядом — оценить, можно ли ещё заключаться</span>
+          </div>
+          <div style={S.card}>
+            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
+              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
+            </div>
+            {contractorSummary.map(({ contractor, turnover, debt }, i) => (
+              <div key={contractor.id} style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '14px 20px', alignItems: 'center', borderBottom: i < contractorSummary.length - 1 ? '1px solid var(--line-soft)' : 'none' }}>
+                <div style={{ ...S.cell, fontWeight: 700, fontSize: 14 }}>{contractor.name}</div>
+                <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: turnover > 0 ? 'var(--ok)' : 'var(--faint)' }}>{turnover > 0 ? formatMoney(turnover) : '—'}</div>
+                <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: debt > 0 ? 'var(--danger)' : 'var(--faint)' }}>{debt > 0 ? formatMoney(debt) : '—'}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ───── ОБОРОТ ───── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
