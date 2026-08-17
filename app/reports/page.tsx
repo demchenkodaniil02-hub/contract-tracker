@@ -118,10 +118,11 @@ export default function ReportsPage() {
           : (
             <div style={S.card}>
               {/* Шапка */}
-              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Всего</div>
               </div>
 
               {contractorReports.map(({ contractor, turnover, debt, rows }) => {
@@ -129,13 +130,14 @@ export default function ReportsPage() {
                 return (
                   <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                     <button onClick={() => toggle(contractor.id)}
-                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
+                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr 1.5fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
                       <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
                         {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
                         <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
                       </div>
                       <div className="tnum" style={{ ...S.cell, fontSize: 15, fontWeight: 700, color: turnover > 0 ? 'var(--ok)' : 'var(--faint)' }}>{turnover > 0 ? formatMoney(turnover) : '—'}</div>
                       <div className="tnum" style={{ ...S.cell, fontSize: 15, fontWeight: 700, color: debt > 0 ? 'var(--danger)' : 'var(--faint)' }}>{debt > 0 ? formatMoney(debt) : '—'}</div>
+                      <div className="tnum" style={{ ...S.cell, fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>{formatMoney(turnover + debt)}</div>
                     </button>
 
                     {isOpen && (
@@ -176,10 +178,11 @@ export default function ReportsPage() {
               })}
 
               {/* Итог */}
-              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '12px 20px', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr 1.5fr', padding: '12px 20px', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
                 <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
+                <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{formatMoney(totalTurnover + totalDebt)}</div>
               </div>
             </div>
           )
