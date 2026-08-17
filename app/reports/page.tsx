@@ -23,10 +23,8 @@ export default function ReportsPage() {
 
   const activeYear = selectedYear ?? years[0] ?? new Date().getFullYear()
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
-  const [debtExpanded, setDebtExpanded] = useState<Set<string>>(new Set())
 
   const toggle = (id: string) => setExpanded(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
-  const toggleDebt = (id: string) => setDebtExpanded(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
 
   // Платежи за выбранный год
   const yearPayments = useMemo(() =>
@@ -34,66 +32,38 @@ export default function ReportsPage() {
     [payments, activeYear]
   )
 
-  // Оборот по исполнителям — только платежи этого года
-  const turnoverReports = useMemo(() =>
+  // Оборот и задолженность по исполнителям в одной сводке — раскрытие показывает
+  // по каждому контракту сразу и оплату за год, и остаток
+  const contractorReports = useMemo(() =>
     contractors.map(contractor => {
       const myContracts = contracts.filter(c => c.contractorId === contractor.id)
-      const myPayments = yearPayments.filter(p => myContracts.some(c => c.id === p.contractId))
-      if (!myPayments.length) return null
-      const turnover = myPayments.reduce((s, p) => s + p.amount, 0)
-      // Контракты в которых были платежи в этом году
-      const activeContracts = myContracts.filter(c => myPayments.some(p => p.contractId === c.id))
-      // Платежи по каждому контракту
-      const contractsWithPayments = activeContracts.map(c => ({
-        contract: c,
-        paidThisYear: myPayments.filter(p => p.contractId === c.id).reduce((s, p) => s + p.amount, 0),
-        obj: objects.find(o => o.id === c.objectId),
-      })).sort((a, b) => b.paidThisYear - a.paidThisYear)
-      return { contractor, turnover, contractsWithPayments }
-    }).filter((r): r is NonNullable<typeof r> => r !== null)
-      .sort((a, b) => b.turnover - a.turnover),
-    [contractors, contracts, yearPayments, objects]
-  )
+      const myYearPayments = yearPayments.filter(p => myContracts.some(c => c.id === p.contractId))
+      const turnover = myYearPayments.reduce((s, p) => s + p.amount, 0)
 
-  const totalTurnover = turnoverReports.reduce((s, r) => s + r.turnover, 0)
-
-  // Задолженность — контракты с остатком, начатые до конца выбранного года
-  const debtReports = useMemo(() =>
-    contractors.map(contractor => {
-      const myContracts = contracts.filter(c =>
-        c.contractorId === contractor.id &&
+      const debtEligible = myContracts.filter(c =>
         c.amountPaid < c.amount &&
         c.status !== 'cancelled' &&
         (!c.startDate || new Date(c.startDate).getFullYear() <= activeYear)
       )
-      if (!myContracts.length) return null
-      const totalDebt = myContracts.reduce((s, c) => s + (c.amount - c.amountPaid), 0)
-      return {
-        contractor,
-        totalDebt,
-        contracts: myContracts.map(c => ({
-          contract: c,
-          remaining: c.amount - c.amountPaid,
-          obj: objects.find(o => o.id === c.objectId),
-        })).sort((a, b) => b.remaining - a.remaining),
-      }
-    }).filter((r): r is NonNullable<typeof r> => r !== null)
-      .sort((a, b) => b.totalDebt - a.totalDebt),
-    [contractors, contracts, activeYear, objects]
-  )
+      const debt = debtEligible.reduce((s, c) => s + (c.amount - c.amountPaid), 0)
 
-  const totalDebt = debtReports.reduce((s, r) => s + r.totalDebt, 0)
+      const relevantIds = new Set<string>([...myYearPayments.map(p => p.contractId), ...debtEligible.map(c => c.id)])
+      const rows = myContracts.filter(c => relevantIds.has(c.id)).map(c => ({
+        contract: c,
+        paidThisYear: myYearPayments.filter(p => p.contractId === c.id).reduce((s, p) => s + p.amount, 0),
+        remaining: c.amount - c.amountPaid,
+        obj: objects.find(o => o.id === c.objectId),
+      })).sort((a, b) => b.remaining - a.remaining || b.paidThisYear - a.paidThisYear)
 
-  // Сводка по исполнителям — оборот и долг рядом, чтобы понять, можно ли ещё заключаться
-  const contractorSummary = useMemo(() =>
-    contractors.map(contractor => ({
-      contractor,
-      turnover: turnoverReports.find(r => r.contractor.id === contractor.id)?.turnover ?? 0,
-      debt: debtReports.find(r => r.contractor.id === contractor.id)?.totalDebt ?? 0,
-    })).filter(r => r.turnover > 0 || r.debt > 0)
+      return { contractor, turnover, debt, rows }
+    }).filter(r => r.turnover > 0 || r.debt > 0)
       .sort((a, b) => b.turnover - a.turnover),
-    [contractors, turnoverReports, debtReports]
+    [contractors, contracts, yearPayments, activeYear, objects]
   )
+
+  const totalTurnover = contractorReports.reduce((s, r) => s + r.turnover, 0)
+  const totalDebt = contractorReports.reduce((s, r) => s + r.debt, 0)
+  const totalContractsCount = contractorReports.reduce((s, r) => s + r.rows.length, 0)
 
   const S = {
     card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
@@ -120,48 +90,20 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ───── СВОДКА ПО ИСПОЛНИТЕЛЯМ ───── */}
-      {contractorSummary.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Сводка по исполнителям</h2>
-            <span style={{ fontSize: 13, color: 'var(--faint)' }}>оборот {activeYear} и текущий долг рядом — оценить, можно ли ещё заключаться</span>
-          </div>
-          <div style={S.card}>
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
-            </div>
-            {contractorSummary.map(({ contractor, turnover, debt }) => (
-              <div key={contractor.id} style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '14px 20px', alignItems: 'center', borderBottom: '1px solid var(--line-soft)' }}>
-                <div style={{ ...S.cell, fontWeight: 700, fontSize: 14 }}>{contractor.name}</div>
-                <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: turnover > 0 ? 'var(--ok)' : 'var(--faint)' }}>{turnover > 0 ? formatMoney(turnover) : '—'}</div>
-                <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: debt > 0 ? 'var(--danger)' : 'var(--faint)' }}>{debt > 0 ? formatMoney(debt) : '—'}</div>
-              </div>
-            ))}
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '12px 20px', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
-              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
-              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ───── ОБОРОТ ───── */}
+      {/* ───── ИСПОЛНИТЕЛИ: ОБОРОТ И ЗАДОЛЖЕННОСТЬ ───── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Оборот {activeYear}</h2>
-          <span style={{ fontSize: 13, color: 'var(--faint)' }}>сколько реально оплачено исполнителям в этом году</span>
+          <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Исполнители</h2>
+          <span style={{ fontSize: 13, color: 'var(--faint)' }}>оборот {activeYear} и текущая задолженность рядом — раскрой строку, чтобы увидеть контракты</span>
         </div>
 
         {/* KPI */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(180px, 380px))', gap: 12, justifyContent: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(180px, 320px))', gap: 12, justifyContent: 'start' }}>
           {[
             { label: 'Общий оборот', value: formatMoney(totalTurnover), color: 'var(--ok)' },
-            { label: 'Исполнителей', value: String(turnoverReports.length) },
-            { label: 'Контрактов с платежами', value: String(turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)) },
+            { label: 'Общий долг', value: formatMoney(totalDebt), color: 'var(--danger)' },
+            { label: 'Исполнителей', value: String(contractorReports.length) },
+            { label: 'Контрактов', value: String(totalContractsCount) },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ ...S.card, padding: '14px 18px' }}>
               <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>{label}</div>
@@ -170,38 +112,30 @@ export default function ReportsPage() {
           ))}
         </div>
 
-        {/* Таблица оборота */}
-        {turnoverReports.length === 0
-          ? <div style={{ ...S.card, padding: 32, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Платежей за {activeYear} год не найдено</div>
+        {/* Таблица */}
+        {contractorReports.length === 0
+          ? <div style={{ ...S.card, padding: 32, textAlign: 'center', color: 'var(--faint)', fontSize: 15 }}>Данных за {activeYear} год не найдено</div>
           : (
             <div style={S.card}>
               {/* Шапка */}
-              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
-                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Доля</div>
+                <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
               </div>
 
-              {turnoverReports.map(({ contractor, turnover, contractsWithPayments }) => {
+              {contractorReports.map(({ contractor, turnover, debt, rows }) => {
                 const isOpen = expanded.has(contractor.id)
-                const share = totalTurnover > 0 ? Math.round(turnover / totalTurnover * 100) : 0
                 return (
                   <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                     <button onClick={() => toggle(contractor.id)}
-                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
+                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
                       <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
                         {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
                         <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
                       </div>
-                      <div style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{contractsWithPayments.length}</div>
-                      <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(turnover)}</div>
-                      <div style={{ ...S.cell, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                        <span style={{ fontSize: 12, color: 'var(--faint)' }}>{share}%</span>
-                        <div style={{ width: 50, maxWidth: '100%', height: 5, borderRadius: 999, background: '#eceff3', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${share}%`, background: 'var(--ok)' }} />
-                        </div>
-                      </div>
+                      <div className="tnum" style={{ ...S.cell, fontSize: 15, fontWeight: 700, color: turnover > 0 ? 'var(--ok)' : 'var(--faint)' }}>{turnover > 0 ? formatMoney(turnover) : '—'}</div>
+                      <div className="tnum" style={{ ...S.cell, fontSize: 15, fontWeight: 700, color: debt > 0 ? 'var(--danger)' : 'var(--faint)' }}>{debt > 0 ? formatMoney(debt) : '—'}</div>
                     </button>
 
                     {isOpen && (
@@ -222,15 +156,15 @@ export default function ReportsPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {contractsWithPayments.map(({ contract: c, paidThisYear, obj }) => (
+                            {rows.map(({ contract: c, paidThisYear, remaining, obj }) => (
                               <tr key={c.id} style={{ cursor: 'pointer' }}
                                 onClick={() => window.open(`/contracts/${c.id}`, '_blank')}
                                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fff'}
                                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
                                 <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
                                 <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{obj?.name ?? '—'}</td>
-                                <td style={{ ...S.td, fontWeight: 700, color: 'var(--ok)' }} className="tnum">{formatMoney(paidThisYear)}</td>
-                                <td style={{ ...S.td, color: c.amount - c.amountPaid > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amount - c.amountPaid)}</td>
+                                <td style={{ ...S.td, fontWeight: 700, color: paidThisYear > 0 ? 'var(--ok)' : 'var(--faint)' }} className="tnum">{paidThisYear > 0 ? formatMoney(paidThisYear) : '—'}</td>
+                                <td style={{ ...S.td, color: remaining > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(remaining)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -242,106 +176,15 @@ export default function ReportsPage() {
               })}
 
               {/* Итог */}
-              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '12px 20px', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
                 <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-                <div style={{ ...S.cell, fontSize: 13, fontWeight: 700 }}>{turnoverReports.reduce((s, r) => s + r.contractsWithPayments.length, 0)}</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
-                <div />
+                <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
               </div>
             </div>
           )
         }
       </div>
-
-      {/* ───── ЗАДОЛЖЕННОСТЬ ───── */}
-      {debtReports.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Задолженность</h2>
-            <span style={{ fontSize: 13, color: 'var(--faint)' }}>контракты с неоплаченным остатком на {activeYear} год</span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(180px, 380px))', gap: 12, justifyContent: 'start' }}>
-            {[
-              { label: 'Общий долг', value: formatMoney(totalDebt), color: 'var(--danger)' },
-              { label: 'Контрактов с долгом', value: String(debtReports.reduce((s, r) => s + r.contracts.length, 0)) },
-            ].map(({ label, value, color }) => (
-              <div key={label} style={{ ...S.card, padding: '14px 18px' }}>
-                <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 4 }}>{label}</div>
-                <div className="tnum" style={{ fontSize: 20, fontWeight: 700, color: color ?? 'var(--ink)' }}>{value}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={S.card}>
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '16px 16px 0 0' }}>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Контрактов</div>
-              <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Остаток долга</div>
-            </div>
-
-            {debtReports.map(({ contractor, totalDebt: debt, contracts: ctrs }) => {
-              const isOpen = debtExpanded.has(contractor.id)
-              return (
-                <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
-                  <button onClick={() => toggleDebt(contractor.id)}
-                    style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
-                    <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
-                      <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
-                    </div>
-                    <div style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: 'var(--muted-ink)' }}>{ctrs.length}</div>
-                    <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(debt)}</div>
-                  </button>
-
-                  {isOpen && (
-                    <div style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--bg)' }}>
-                      <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
-                        <colgroup>
-                          <col style={{ width: '16%' }} />
-                          <col style={{ width: '34%' }} />
-                          <col style={{ width: '17%' }} />
-                          <col style={{ width: '17%' }} />
-                          <col style={{ width: '16%' }} />
-                        </colgroup>
-                        <thead>
-                          <tr>
-                            <th style={S.th}>№ Контракта</th>
-                            <th style={S.th}>Объект</th>
-                            <th style={S.th}>Сумма</th>
-                            <th style={S.th}>Оплачено</th>
-                            <th style={S.th}>Остаток</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ctrs.map(({ contract: c, remaining, obj }) => (
-                            <tr key={c.id} style={{ cursor: 'pointer' }}
-                              onClick={() => window.open(`/contracts/${c.id}`, '_blank')}
-                              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fff'}
-                              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
-                              <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
-                              <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{obj?.name ?? '—'}</td>
-                              <td style={S.td} className="tnum">{formatMoney(c.amount)}</td>
-                              <td style={{ ...S.td, color: 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(c.amountPaid)}</td>
-                              <td style={{ ...S.td, color: 'var(--danger)', fontWeight: 700 }} className="tnum">{formatMoney(remaining)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr', padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
-              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
-              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700 }}>{debtReports.reduce((s, r) => s + r.contracts.length, 0)}</div>
-              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   )
