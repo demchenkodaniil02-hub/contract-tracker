@@ -133,15 +133,15 @@ export default function ProfilePage() {
 
       {/* Управление пользователями — только для админа */}
       {profile?.email === ADMIN_EMAIL && allProfiles.length > 1 && (
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <Users size={18} color="#2f6bdc" />
             <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Управление пользователями</span>
           </div>
-          <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
+          <p style={{ margin: '0 0 16px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
             Изменить имя другого пользователя — видно только тебе.
           </p>
-          <div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '4px 24px' }}>
             {allProfiles.filter(p => p.id !== profile.id).map(p => (
               <UserRow key={p.id} id={p.id} email={p.email} name={p.name} avatarColor={p.avatarColor} onSave={updateUserName} />
             ))}
