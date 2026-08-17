@@ -92,10 +92,7 @@ export default function ReportsPage() {
 
       {/* ───── ИСПОЛНИТЕЛИ: ОБОРОТ И ЗАДОЛЖЕННОСТЬ ───── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Исполнители</h2>
-          <span style={{ fontSize: 13, color: 'var(--faint)' }}>оборот {activeYear} и текущая задолженность рядом — раскрой строку, чтобы увидеть контракты</span>
-        </div>
+        <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Исполнители</h2>
 
         {/* KPI */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(180px, 320px))', gap: 12, justifyContent: 'start' }}>
