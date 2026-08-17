@@ -261,6 +261,9 @@ select {
   /* Direction cards — числа компактнее */
   .ct-grid-direction .tnum { font-size: 18px !important; word-break: break-all; }
 
+  /* Управление пользователями — по одному в столбик */
+  .ct-grid-users { grid-template-columns: 1fr !important; }
+
   /* Sidebar */
   .ct-sidebar {
     transform: translateX(-100%);

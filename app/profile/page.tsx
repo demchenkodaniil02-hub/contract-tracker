@@ -141,7 +141,7 @@ export default function ProfilePage() {
           <p style={{ margin: '0 0 16px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
             Изменить имя другого пользователя — видно только тебе.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '4px 24px' }}>
+          <div className="ct-grid-users" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px 24px' }}>
             {allProfiles.filter(p => p.id !== profile.id).map(p => (
               <UserRow key={p.id} id={p.id} email={p.email} name={p.name} avatarColor={p.avatarColor} onSave={updateUserName} />
             ))}
