@@ -68,7 +68,6 @@ export default function ReportsPage() {
   const S = {
     card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
     th: { padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--faint)', textAlign: 'left', borderBottom: '1px solid var(--line)', whiteSpace: 'nowrap' } as React.CSSProperties,
-    td: { padding: '10px 14px', fontSize: 13.5, borderBottom: '1px solid var(--line-soft)', verticalAlign: 'middle' } as React.CSSProperties,
     // Ячейка CSS-грида по умолчанию не сжимается меньше своего контента и наезжает на соседей —
     // overflow:hidden убирает этот "grid blowout", minWidth:0 подстраховывает
     cell: { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as React.CSSProperties,
@@ -115,9 +114,9 @@ export default function ReportsPage() {
           : (
             <div style={{ ...S.card, overflow: 'hidden' }}>
             <div className="table-scroll" style={{ overflowX: 'auto' }}>
-            <div style={{ minWidth: 700 }}>
+            <div style={{ minWidth: 800 }}>
               {/* Шапка */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 170px 170px 170px', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '260px 170px 170px 170px', justifyContent: 'space-between', padding: '10px 20px', borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Исполнитель</div>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
                 <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
@@ -129,7 +128,7 @@ export default function ReportsPage() {
                 return (
                   <div key={contractor.id} style={{ borderBottom: '1px solid var(--line-soft)' }}>
                     <button onClick={() => toggle(contractor.id)}
-                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 170px 170px 170px', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
+                      style={{ width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', display: 'grid', gridTemplateColumns: '260px 170px 170px 170px', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'inherit', textAlign: 'left' }}>
                       <div style={{ ...S.cell, display: 'flex', alignItems: 'center', gap: 10 }}>
                         {isOpen ? <ChevronDown size={15} color="var(--faint)" style={{ flexShrink: 0 }} /> : <ChevronRight size={15} color="var(--faint)" style={{ flexShrink: 0 }} />}
                         <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contractor.name}</span>
@@ -141,35 +140,23 @@ export default function ReportsPage() {
 
                     {isOpen && (
                       <div style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--bg)' }}>
-                        <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
-                          <colgroup>
-                            <col style={{ width: '160px' }} />
-                            <col />
-                            <col style={{ width: '170px' }} />
-                            <col style={{ width: '170px' }} />
-                          </colgroup>
-                          <thead>
-                            <tr>
-                              <th style={S.th}>№ Контракта</th>
-                              <th style={S.th}>Объект</th>
-                              <th style={S.th}>Оплачено в {activeYear}</th>
-                              <th style={S.th}>Остаток</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {rows.map(({ contract: c, paidThisYear, remaining, obj }) => (
-                              <tr key={c.id} style={{ cursor: 'pointer' }}
-                                onClick={() => window.open(`/contracts/${c.id}`, '_blank')}
-                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fff'}
-                                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
-                                <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ fontWeight: 700, color: '#2f6bdc' }}>{c.number}</span></td>
-                                <td style={{ ...S.td, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{obj?.name ?? '—'}</td>
-                                <td style={{ ...S.td, fontWeight: 700, color: paidThisYear > 0 ? 'var(--ok)' : 'var(--faint)' }} className="tnum">{paidThisYear > 0 ? formatMoney(paidThisYear) : '—'}</td>
-                                <td style={{ ...S.td, color: remaining > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }} className="tnum">{formatMoney(remaining)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        <div style={{ display: 'grid', gridTemplateColumns: '150px 260px 170px 170px', justifyContent: 'space-between', padding: '0 20px' }}>
+                          <div style={{ ...S.th, borderBottom: 'none' }}>№ Контракта</div>
+                          <div style={{ ...S.th, borderBottom: 'none' }}>Объект</div>
+                          <div style={{ ...S.th, borderBottom: 'none' }}>Оплачено в {activeYear}</div>
+                          <div style={{ ...S.th, borderBottom: 'none' }}>Остаток</div>
+                        </div>
+                        {rows.map(({ contract: c, paidThisYear, remaining, obj }) => (
+                          <div key={c.id} onClick={() => window.open(`/contracts/${c.id}`, '_blank')}
+                            style={{ display: 'grid', gridTemplateColumns: '150px 260px 170px 170px', justifyContent: 'space-between', padding: '10px 20px', cursor: 'pointer' }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#fff'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = ''}>
+                            <div style={{ ...S.cell, fontSize: 13.5, fontWeight: 700, color: '#2f6bdc' }}>{c.number}</div>
+                            <div style={{ ...S.cell, fontSize: 13.5 }}>{obj?.name ?? '—'}</div>
+                            <div className="tnum" style={{ ...S.cell, fontSize: 13.5, fontWeight: 700, color: paidThisYear > 0 ? 'var(--ok)' : 'var(--faint)' }}>{paidThisYear > 0 ? formatMoney(paidThisYear) : '—'}</div>
+                            <div className="tnum" style={{ ...S.cell, fontSize: 13.5, color: remaining > 0 ? 'var(--danger)' : 'var(--ok)', fontWeight: 600 }}>{formatMoney(remaining)}</div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -177,7 +164,7 @@ export default function ReportsPage() {
               })}
 
               {/* Итог */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 170px 170px 170px', padding: '12px 20px', background: 'var(--bg)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '260px 170px 170px 170px', justifyContent: 'space-between', padding: '12px 20px', background: 'var(--bg)' }}>
                 <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
