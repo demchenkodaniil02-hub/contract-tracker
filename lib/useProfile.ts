@@ -55,6 +55,7 @@ export function useProfile() {
   const updateProfile = async (updates: Partial<Pick<Profile, 'name' | 'role'>>) => {
     const { data: session } = await supabase.auth.getSession()
     const user = session.session?.user
+    const token = session.session?.access_token
     if (!user) return
 
     // Сразу обновляем локально
@@ -63,10 +64,26 @@ export function useProfile() {
     // Сохраняем через сервер
     await fetch('/api/profile', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify({ userId: user.id, updates }),
     })
   }
 
-  return { profile, allProfiles, loading, updateProfile }
+  // Только для админа — редактирование имени другого пользователя
+  const updateUserName = async (userId: string, name: string) => {
+    const { data: session } = await supabase.auth.getSession()
+    const token = session.session?.access_token
+    setAllProfiles(prev => prev.map(p => p.id === userId ? { ...p, name } : p))
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ userId, updates: { name } }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      throw new Error(json.error || 'Не удалось сохранить')
+    }
+  }
+
+  return { profile, allProfiles, loading, updateProfile, updateUserName }
 }

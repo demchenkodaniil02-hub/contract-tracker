@@ -1,12 +1,49 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useProfile } from '@/lib/useProfile'
-import { Save, UserPlus, Mail, Download } from 'lucide-react'
+import { Save, UserPlus, Mail, Download, Users, Check } from 'lucide-react'
+
+const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
+function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: string; email: string; name: string; avatarColor?: string; onSave: (id: string, name: string) => Promise<void> }) {
+  const [name, setName] = useState(initialName)
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  const handleSave = async () => {
+    setStatus('saving')
+    try {
+      await onSave(id, name.trim())
+      setStatus('saved')
+      setTimeout(() => setStatus('idle'), 1500)
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--line-soft)' }}>
+      <div style={{ width: 36, height: 36, borderRadius: '50%', background: avatarColor || '#2f6bdc', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
+        {initials(name || email)}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <input value={name} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
+          placeholder="Иван Иванов"
+          style={{ width: '100%', padding: '8px 11px', border: '1px solid var(--line)', borderRadius: 9, fontFamily: 'inherit', fontSize: 13.5, background: '#fff', color: 'var(--ink)', boxSizing: 'border-box' }} />
+        <div style={{ fontSize: 11.5, color: 'var(--faint)', marginTop: 3 }}>{email}</div>
+      </div>
+      <button onClick={handleSave} disabled={status === 'saving' || !name.trim()}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: `1px solid ${status === 'error' ? 'var(--danger)' : 'var(--line)'}`, background: '#fff', color: status === 'error' ? 'var(--danger)' : status === 'saved' ? 'var(--ok)' : 'var(--ink)', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: status === 'saving' || !name.trim() ? 'not-allowed' : 'pointer', flexShrink: 0 }}>
+        {status === 'saved' ? <Check size={14} /> : <Save size={14} />}
+        {status === 'saving' ? 'Сохранение...' : status === 'saved' ? 'Сохранено' : status === 'error' ? 'Ошибка' : 'Сохранить'}
+      </button>
+    </div>
+  )
+}
+
 export default function ProfilePage() {
-  const { profile, loading, updateProfile } = useProfile()
+  const { profile, allProfiles, loading, updateProfile, updateUserName } = useProfile()
   const [name, setName] = useState('')
   const [saved, setSaved] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -93,6 +130,24 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
+
+      {/* Управление пользователями — только для админа */}
+      {profile?.email === ADMIN_EMAIL && allProfiles.length > 1 && (
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <Users size={18} color="#2f6bdc" />
+            <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Управление пользователями</span>
+          </div>
+          <p style={{ margin: '0 0 14px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
+            Изменить имя другого пользователя — видно только тебе.
+          </p>
+          <div>
+            {allProfiles.filter(p => p.id !== profile.id).map(p => (
+              <UserRow key={p.id} id={p.id} email={p.email} name={p.name} avatarColor={p.avatarColor} onSave={updateUserName} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Пригласить коллегу */}
       <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
