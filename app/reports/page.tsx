@@ -133,13 +133,18 @@ export default function ReportsPage() {
               <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Оборот {activeYear}</div>
               <div style={{ ...S.cell, fontSize: 12, fontWeight: 700, color: 'var(--faint)' }}>Задолженность</div>
             </div>
-            {contractorSummary.map(({ contractor, turnover, debt }, i) => (
-              <div key={contractor.id} style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '14px 20px', alignItems: 'center', borderBottom: i < contractorSummary.length - 1 ? '1px solid var(--line-soft)' : 'none' }}>
+            {contractorSummary.map(({ contractor, turnover, debt }) => (
+              <div key={contractor.id} style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '14px 20px', alignItems: 'center', borderBottom: '1px solid var(--line-soft)' }}>
                 <div style={{ ...S.cell, fontWeight: 700, fontSize: 14 }}>{contractor.name}</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: turnover > 0 ? 'var(--ok)' : 'var(--faint)' }}>{turnover > 0 ? formatMoney(turnover) : '—'}</div>
                 <div className="tnum" style={{ ...S.cell, fontSize: 14, fontWeight: 600, color: debt > 0 ? 'var(--danger)' : 'var(--faint)' }}>{debt > 0 ? formatMoney(debt) : '—'}</div>
               </div>
             ))}
+            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.5fr 1.5fr', padding: '12px 20px', background: 'var(--bg)', borderRadius: '0 0 16px 16px' }}>
+              <div style={{ ...S.cell, fontSize: 13, fontWeight: 700, color: 'var(--muted-ink)' }}>Итого</div>
+              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--ok)' }}>{formatMoney(totalTurnover)}</div>
+              <div className="tnum" style={{ ...S.cell, fontSize: 16, fontWeight: 700, color: 'var(--danger)' }}>{formatMoney(totalDebt)}</div>
+            </div>
           </div>
         </div>
       )}
