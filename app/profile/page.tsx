@@ -95,7 +95,9 @@ export default function ProfilePage() {
     <div className="fade-in ct-page ct-profile-page" style={{ padding: '26px 30px' }}>
       <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 24 }}>Мой профиль</h1>
 
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, maxWidth: 700 }}>
+      <div className="ct-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
         {/* Аватар */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--line-soft)' }}>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: profile?.avatarColor || '#2f6bdc', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 26, flexShrink: 0 }}>
@@ -133,7 +135,7 @@ export default function ProfilePage() {
 
       {/* Управление пользователями — только для админа */}
       {profile?.email === ADMIN_EMAIL && allProfiles.length > 1 && (
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20 }}>
+        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <Users size={18} color="#2f6bdc" />
             <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Управление пользователями</span>
@@ -141,7 +143,7 @@ export default function ProfilePage() {
           <p style={{ margin: '0 0 16px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
             Изменить имя другого пользователя — видно только тебе.
           </p>
-          <div className="ct-grid-users" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px 24px' }}>
+          <div>
             {allProfiles.filter(p => p.id !== profile.id).map(p => (
               <UserRow key={p.id} id={p.id} email={p.email} name={p.name} avatarColor={p.avatarColor} onSave={updateUserName} />
             ))}
@@ -150,7 +152,7 @@ export default function ProfilePage() {
       )}
 
       {/* Пригласить коллегу */}
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <UserPlus size={18} color="#2f6bdc" />
           <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Пригласить пользователя</span>
@@ -183,7 +185,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Скачать программу */}
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28, marginTop: 20, maxWidth: 700 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <Download size={18} color="#2f6bdc" />
           <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Калькулятор расчетов</span>
@@ -198,6 +200,8 @@ export default function ProfilePage() {
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
           <Download size={16} /> Скачать с Яндекс Диска
         </a>
+      </div>
+
       </div>
     </div>
   )
