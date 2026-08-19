@@ -4,10 +4,10 @@ import { useStore } from '@/lib/store'
 import { formatDate, newId } from '@/lib/utils'
 import { useProfile } from '@/lib/useProfile'
 import { Trash2, Send } from 'lucide-react'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 const AVATAR_PALETTE = ['#2f6bdc', '#1f8a5b', '#e07a1a', '#9b5de5', '#e0325f']
 function avatarColor(name: string) { return AVATAR_PALETTE[(name.charCodeAt(0) || 0) % AVATAR_PALETTE.length] }
-function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() }
 
 export function ContractComments({ contractId }: { contractId: string }) {
   const { comments, addComment, deleteComment } = useStore()
@@ -45,9 +45,7 @@ export function ContractComments({ contractId }: { contractId: string }) {
         <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 14, maxHeight: 320, overflowY: 'auto' }}>
           {contractComments.map((c) => (
             <div key={c.id} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid var(--line-soft)' }}>
-              <div style={{ width: 30, height: 30, borderRadius: '50%', background: avatarColor(c.author), color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0 }}>
-                {initials(c.author)}
-              </div>
+              <UserAvatar id={c.author} color={avatarColor(c.author)} size={30} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{c.author}</span>
@@ -68,9 +66,7 @@ export function ContractComments({ contractId }: { contractId: string }) {
 
       {/* Форма ввода — компактная когда нет комментариев */}
       <div style={{ display: 'flex', gap: 10, alignItems: hasComments ? 'flex-start' : 'center' }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: bg, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
-          {initials(authorName)}
-        </div>
+        <UserAvatar id={profile?.id || authorName} color={bg} size={32} />
         <div style={{ flex: 1 }}>
           <textarea value={text}
             onChange={e => setText(e.target.value)}

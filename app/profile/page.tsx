@@ -2,10 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useProfile } from '@/lib/useProfile'
 import { Save, UserPlus, Mail, Download, Users, Check } from 'lucide-react'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
-
-function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
 function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: string; email: string; name: string; avatarColor?: string; onSave: (id: string, name: string) => Promise<void> }) {
   const [name, setName] = useState(initialName)
@@ -24,9 +23,7 @@ function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: st
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--line-soft)' }}>
-      <div style={{ width: 36, height: 36, borderRadius: '50%', background: avatarColor || '#2f6bdc', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
-        {initials(name || email)}
-      </div>
+      <UserAvatar id={id} color={avatarColor} size={36} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <input value={name} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
           placeholder="Иван Иванов"
@@ -100,9 +97,7 @@ export default function ProfilePage() {
       <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
         {/* Аватар */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28, paddingBottom: 24, borderBottom: '1px solid var(--line-soft)' }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: profile?.avatarColor || '#2f6bdc', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 26, flexShrink: 0 }}>
-            {initials(currentName || profile?.email || '')}
-          </div>
+          <UserAvatar id={profile?.id || ''} color={profile?.avatarColor} size={72} />
           <div>
             <div style={{ fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>{currentName || profile?.email}</div>
             <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 4 }}>{profile?.email}</div>

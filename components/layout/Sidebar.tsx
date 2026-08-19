@@ -8,6 +8,7 @@ import { usePresence } from '@/lib/usePresence'
 import { useStore } from '@/lib/store'
 import { useProfile } from '@/lib/useProfile'
 import { GlobalSearch } from '@/components/GlobalSearch'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 const navItems = [
   { href: '/', label: 'Главная', icon: LayoutDashboard },
@@ -22,8 +23,6 @@ const navItems = [
 
 const PUBLIC = ['/login', '/reset-password', '/set-password']
 const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
-
-function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -113,9 +112,7 @@ export function Sidebar() {
               {onlineUsers.map(u => (
                 <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: u.avatarColor, color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 9 }}>
-                      {initials(u.name || u.email)}
-                    </div>
+                    <UserAvatar id={u.id} color={u.avatarColor} size={24} />
                     <div style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, borderRadius: '50%', background: '#22c55e', border: '1.5px solid #0f1729' }} />
                   </div>
                   <span style={{ fontSize: 12, color: u.id === currentUserId ? '#fff' : '#aeb9cf', fontWeight: u.id === currentUserId ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

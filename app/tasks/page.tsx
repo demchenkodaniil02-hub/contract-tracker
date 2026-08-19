@@ -9,6 +9,7 @@ import { format, parseISO, differenceInCalendarDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Check, Clock, Trash2, ListChecks, X, ArrowRight, CalendarDays, UserCircle } from 'lucide-react'
 import { Portal } from '@/components/ui/Portal'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 const S = {
   card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
@@ -49,15 +50,9 @@ function dueRelative(dueDate: string): string {
   return `просрочено на ${Math.abs(days)} дн.`
 }
 
-function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
-
 function Avatar({ user }: { user?: Profile | null }) {
   if (!user) return <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--bg)', flexShrink: 0 }} />
-  return (
-    <div style={{ width: 26, height: 26, borderRadius: '50%', background: user.avatarColor || 'var(--maf)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 10.5, flexShrink: 0 }}>
-      {initials(user.name || user.email)}
-    </div>
-  )
+  return <UserAvatar id={user.id} color={user.avatarColor} size={26} />
 }
 
 const metaLabel: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5 }
