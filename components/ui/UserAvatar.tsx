@@ -1,6 +1,6 @@
-import { HardHat, Hammer, Wrench, Ruler, PaintRoller, TrafficCone, Forklift, Drill, Pickaxe, Truck } from 'lucide-react'
+import { HardHat, TrafficCone, Forklift, Truck, Container, Warehouse, Boxes, Wrench } from 'lucide-react'
 
-const AVATAR_ICONS = [HardHat, Hammer, Wrench, Ruler, PaintRoller, TrafficCone, Forklift, Drill, Pickaxe, Truck]
+const AVATAR_ICONS = [HardHat, TrafficCone, Forklift, Truck, Container, Warehouse, Boxes, Wrench]
 
 function iconForId(id: string) {
   let hash = 0
@@ -12,7 +12,7 @@ export function UserAvatar({ id, color, size = 32 }: { id: string; color?: strin
   const Icon = iconForId(id || '?')
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: color || 'var(--maf)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-      <Icon size={Math.round(size * 0.52)} color="#fff" strokeWidth={2.2} />
+      <Icon size={Math.round(size * 0.56)} color="#fff" strokeWidth={2.25} />
     </div>
   )
 }
