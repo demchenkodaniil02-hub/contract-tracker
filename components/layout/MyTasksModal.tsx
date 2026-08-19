@@ -96,9 +96,13 @@ export function MyTasksModal() {
           </div>
 
           {/* Футер */}
-          <div style={{ padding: '14px 26px', borderTop: '1px solid var(--line)', flexShrink: 0 }}>
+          <div style={{ padding: '14px 26px', borderTop: '1px solid var(--line)', flexShrink: 0, display: 'flex', gap: 8 }}>
+            <button onClick={() => { close(); router.push('/tasks') }}
+              style={{ flex: 1, padding: '11px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--ink)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              Все задачи
+            </button>
             <button onClick={close}
-              style={{ width: '100%', padding: '11px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+              style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
               Понятно
             </button>
           </div>
