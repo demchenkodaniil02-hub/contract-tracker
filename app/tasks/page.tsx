@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { useProfile } from '@/lib/useProfile'
 import { Task, Profile } from '@/lib/types'
@@ -66,7 +65,6 @@ const metaLabel: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color:
 function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => void }) {
   const { tasks, contracts, updateTask, deleteTask } = useStore()
   const { profile, allProfiles } = useProfile()
-  const router = useRouter()
 
   const task = tasks.find(t => t.id === taskId)
   if (!task) return null
@@ -79,8 +77,6 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
 
   const status = lifeStatus(task)
   const dueFull = task.dueDate ? format(parseISO(task.dueDate), 'd MMMM yyyy', { locale: ru }) : '—'
-
-  const goToContract = () => { onClose(); router.push(`/contracts/${task.contractId}`) }
 
   return (
     <Portal>
@@ -159,17 +155,18 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
             </div>
           </div>
 
-          <div style={{ padding: '14px 22px', borderTop: '1px solid var(--line)', flexShrink: 0, display: 'flex', gap: 8 }}>
-            {profile?.id === task.assigneeId && (
+          <div style={{ padding: '14px 22px', borderTop: '1px solid var(--line)', flexShrink: 0, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            {profile?.id === task.assigneeId ? (
               <button onClick={() => updateTask({ ...task, status: task.status === 'completed' ? 'pending' : 'completed' })}
                 style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: task.status === 'completed' ? 'var(--bg)' : '#2f6bdc', color: task.status === 'completed' ? 'var(--ink)' : '#fff', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 700, cursor: 'pointer' }}>
                 {task.status === 'completed' ? 'Вернуть в работу' : 'Отметить выполненной'}
               </button>
+            ) : (
+              <button onClick={onClose}
+                style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>
+                Закрыть
+              </button>
             )}
-            <button onClick={goToContract}
-              style={{ flex: profile?.id === task.assigneeId ? 'none' : 1, padding: '10px 14px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--ink)', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>
-              К договору
-            </button>
             <button onClick={() => { deleteTask(task.id); onClose() }}
               style={{ width: 40, borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--faint)', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
               <Trash2 size={15} />
