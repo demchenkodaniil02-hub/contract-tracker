@@ -72,6 +72,7 @@ export function ContractTasks({ contractId }: { contractId: string }) {
       reminderEmail: assigneeEmail || profile?.email || '',
       reminderSent: false,
       assigneeId: formData.assigneeId || undefined,
+      assignedById: profile?.id,
       reminderDate: formData.reminderDate || undefined,
       createdAt: new Date().toISOString(),
     }

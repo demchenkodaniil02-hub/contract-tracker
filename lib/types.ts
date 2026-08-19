@@ -144,6 +144,7 @@ export interface Task {
   reminderEmail: string
   reminderSent: boolean
   assigneeId?: string
+  assignedById?: string
   reminderDate?: string
   createdAt: string
 }
