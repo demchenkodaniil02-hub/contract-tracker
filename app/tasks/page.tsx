@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { useProfile } from '@/lib/useProfile'
-import { Task } from '@/lib/types'
+import { Task, Profile } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
-import { Check, Clock, Trash2, ListChecks, X, UserCircle, ArrowRight } from 'lucide-react'
+import { format, parseISO, differenceInCalendarDays } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { Check, Clock, Trash2, ListChecks, X, ArrowRight, CalendarDays, UserCircle } from 'lucide-react'
 import { Portal } from '@/components/ui/Portal'
 
 const S = {
@@ -38,6 +40,29 @@ function lifeStatus(task: Task): LifeStatus {
 const LIFE_STATUS_LABEL: Record<LifeStatus, string> = { in_progress: 'В работе', done: 'Выполнена', overdue: 'Просрочена' }
 const LIFE_STATUS_CLS: Record<LifeStatus, string> = { in_progress: 'info', done: 'success', overdue: 'danger' }
 
+function dueRelative(dueDate: string): string {
+  if (!dueDate) return ''
+  const days = differenceInCalendarDays(parseISO(dueDate), new Date())
+  if (days === 0) return 'сегодня'
+  if (days === 1) return 'завтра'
+  if (days === -1) return 'вчера'
+  if (days > 1) return `через ${days} дн.`
+  return `просрочено на ${Math.abs(days)} дн.`
+}
+
+function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
+
+function Avatar({ user }: { user?: Profile | null }) {
+  if (!user) return <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--bg)', flexShrink: 0 }} />
+  return (
+    <div style={{ width: 26, height: 26, borderRadius: '50%', background: user.avatarColor || 'var(--maf)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 10.5, flexShrink: 0 }}>
+      {initials(user.name || user.email)}
+    </div>
+  )
+}
+
+const metaLabel: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 5 }
+
 function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => void }) {
   const { tasks, contracts, updateTask, deleteTask } = useStore()
   const { profile, allProfiles } = useProfile()
@@ -48,16 +73,12 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
 
   const contract = contracts.find(c => c.id === task.contractId)
   const overdue = isOverdue(task)
-  const getName = (id?: string) => {
-    if (!id) return null
-    const u = allProfiles.find(u => u.id === id)
-    return u?.name || u?.email || null
-  }
-  const assigneeName = getName(task.assigneeId)
-  const assignerName = getName(task.assignedById)
+  const getUser = (id?: string) => (id ? allProfiles.find(u => u.id === id) : undefined)
+  const assignee = getUser(task.assigneeId)
+  const assigner = getUser(task.assignedById)
 
-  const statusLabel = task.status === 'completed' ? 'Выполнена' : task.status === 'cancelled' ? 'Отменена' : 'Активна'
-  const statusColor = task.status === 'completed' ? 'var(--ok)' : overdue ? 'var(--danger)' : 'var(--maf)'
+  const status = lifeStatus(task)
+  const dueFull = task.dueDate ? format(parseISO(task.dueDate), 'd MMMM yyyy', { locale: ru }) : '—'
 
   const goToContract = () => { onClose(); router.push(`/contracts/${task.contractId}`) }
 
@@ -71,9 +92,9 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
           <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'flex-start', gap: 12, flexShrink: 0 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.3 }}>{task.title}</div>
-              <div style={{ fontSize: 12.5, fontWeight: 700, color: statusColor, marginTop: 4 }}>
-                {statusLabel}{overdue && task.status === 'pending' ? ' · Просрочено' : ''}
-              </div>
+              <span className={`ct-badge ${LIFE_STATUS_CLS[status]}`} style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 6, marginTop: 7 }}>
+                {LIFE_STATUS_LABEL[status]}
+              </span>
             </div>
             <button onClick={onClose}
               style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'var(--bg)', color: 'var(--muted-ink)', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
@@ -81,31 +102,60 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
             </button>
           </div>
 
-          <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1 }}>
+          <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', flex: 1 }}>
             {task.description && (
               <div style={{ fontSize: 13.5, color: 'var(--ink)', lineHeight: 1.5 }}>{task.description}</div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: overdue ? 'var(--danger)' : 'var(--muted-ink)' }}>
-              <Clock size={14} /> {formatDate(task.dueDate)} {task.dueTime}
+            <div style={{ background: overdue ? '#fff5f5' : 'var(--bg)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: overdue ? '#fde2e2' : '#fff', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                <CalendarDays size={16} color={overdue ? 'var(--danger)' : 'var(--maf)'} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: overdue ? 'var(--danger)' : 'var(--ink)', textTransform: 'capitalize' }}>
+                  {dueFull}
+                </div>
+                <div style={{ fontSize: 12, color: overdue ? 'var(--danger)' : 'var(--muted-ink)', marginTop: 1 }}>
+                  к {task.dueTime} · {dueRelative(task.dueDate)}
+                </div>
+              </div>
             </div>
 
             {contract && (
-              <Link href={`/contracts/${contract.id}`} onClick={onClose}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--maf)', fontWeight: 600, textDecoration: 'none', width: 'fit-content' }}>
-                Договор {contract.number} <ArrowRight size={13} />
-              </Link>
+              <div>
+                <div style={metaLabel}>Договор</div>
+                <Link href={`/contracts/${contract.id}`} onClick={onClose}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13.5, color: 'var(--maf)', fontWeight: 600, textDecoration: 'none' }}>
+                  {contract.number} <ArrowRight size={13} />
+                </Link>
+              </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 6, borderTop: '1px solid var(--line-soft)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--muted-ink)' }}>
-                <UserCircle size={13} /> Исполнитель: <b style={{ color: 'var(--ink)' }}>{assigneeName ?? 'Не назначен'}</b>
+            <div style={{ display: 'flex', gap: 18, paddingTop: 4, borderTop: '1px solid var(--line-soft)', marginTop: 2 }}>
+              <div style={{ flex: 1, paddingTop: 12 }}>
+                <div style={metaLabel}>Исполнитель</div>
+                {assignee
+                  ? <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Avatar user={assignee} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{assignee.name || assignee.email}{assignee.id === profile?.id ? ' (вы)' : ''}</span>
+                    </div>
+                  : <span style={{ fontSize: 13, color: 'var(--faint)' }}>Не назначен</span>}
               </div>
-              {task.assignedById && assignerName && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--muted-ink)' }}>
-                  <UserCircle size={13} /> Назначил: <b style={{ color: 'var(--ink)' }}>{assignerName}{task.assignedById === profile?.id ? ' (вы)' : ''}</b>
+              {task.assignedById && (
+                <div style={{ flex: 1, paddingTop: 12 }}>
+                  <div style={metaLabel}>Назначил</div>
+                  {assigner
+                    ? <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Avatar user={assigner} />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{assigner.name || assigner.email}{assigner.id === profile?.id ? ' (вы)' : ''}</span>
+                      </div>
+                    : <span style={{ fontSize: 13, color: 'var(--faint)' }}>—</span>}
                 </div>
               )}
+            </div>
+
+            <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>
+              Создана {formatDate(task.createdAt.slice(0, 10))}
             </div>
           </div>
 
