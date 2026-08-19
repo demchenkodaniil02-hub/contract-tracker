@@ -182,7 +182,7 @@ function TaskDetailModal({ taskId, onClose }: { taskId: string; onClose: () => v
 }
 
 export default function TasksPage() {
-  const { tasks, contracts, updateTask, deleteTask, initSeed } = useStore()
+  const { tasks, contracts, deleteTask, initSeed } = useStore()
   const { profile, allProfiles } = useProfile()
   const [view, setView] = useState<typeof VIEWS[number]['key']>('assigned-to-me')
   const [tab, setTab] = useState<typeof TABS[number]['key']>('active')
@@ -210,10 +210,6 @@ export default function TasksPage() {
 
   const activeCount = base.filter(t => t.status === 'pending').length
   const completedCount = base.filter(t => t.status === 'completed').length
-
-  const handleToggle = async (task: Task) => {
-    await updateTask({ ...task, status: task.status === 'completed' ? 'pending' : 'completed' })
-  }
 
   return (
     <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -273,16 +269,14 @@ export default function TasksPage() {
                   border: `1px solid ${overdue ? '#fca5a5' : task.status === 'completed' ? 'var(--line-soft)' : 'var(--line)'}`,
                   borderRadius: 12, background: overdue ? '#fff5f5' : task.status === 'completed' ? 'var(--bg)' : '#fff',
                 }}>
-                  {view === 'assigned-to-me' ? (
-                    <button onClick={e => { e.stopPropagation(); handleToggle(task) }}
-                      style={{ width: 24, height: 24, borderRadius: 7, border: `2px solid ${task.status === 'completed' ? 'var(--ok)' : 'var(--line)'}`, background: task.status === 'completed' ? 'var(--ok)' : 'transparent', color: '#fff', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0, marginTop: 1 }}>
-                      {task.status === 'completed' && <Check size={13} />}
-                    </button>
-                  ) : (
-                    <div style={{ width: 24, height: 24, borderRadius: 7, background: 'var(--bg)', display: 'grid', placeItems: 'center', flexShrink: 0, marginTop: 1 }}>
-                      <ListChecks size={13} style={{ color: 'var(--faint)' }} />
-                    </div>
-                  )}
+                  <div style={{
+                    width: 24, height: 24, borderRadius: 7, flexShrink: 0, marginTop: 1, display: 'grid', placeItems: 'center',
+                    background: task.status === 'completed' ? 'var(--ok)' : 'var(--bg)',
+                  }}>
+                    {task.status === 'completed'
+                      ? <Check size={13} color="#fff" />
+                      : <ListChecks size={13} style={{ color: 'var(--faint)' }} />}
+                  </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 14, textDecoration: task.status === 'completed' ? 'line-through' : 'none', color: task.status === 'completed' ? 'var(--faint)' : overdue ? 'var(--danger)' : 'var(--ink)' }}>
