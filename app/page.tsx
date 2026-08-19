@@ -237,7 +237,7 @@ export default function DashboardPage() {
                 <span style={{ width: 11, height: 11, borderRadius: '50%', background: color, display: 'inline-block' }} />
                 {label}
               </div>
-              <div className="tnum" style={{ fontSize: 28, fontWeight: 700, color, margin: '12px 0 4px', letterSpacing: '-0.02em' }}>{formatMoney(total)}</div>
+              <div className="tnum" style={{ fontSize: 28, fontWeight: 700, color: 'var(--ink)', margin: '12px 0 4px', letterSpacing: '-0.02em' }}>{formatMoney(total)}</div>
               <div style={{ fontSize: 13, color: 'var(--faint)' }}>
                 {enriched.filter(c => c.direction === dir).length} контрактов · {objects.filter(o => o.direction === dir).length} объектов
               </div>
