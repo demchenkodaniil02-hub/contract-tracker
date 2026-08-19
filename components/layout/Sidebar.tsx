@@ -86,8 +86,9 @@ export function Sidebar() {
                 <Icon size={18} style={{ opacity: 0.9, flexShrink: 0 }} />
                 {label}
                 {hasTasks && (
-                  <span className={flagged ? 'ct-alert-pulse' : undefined} style={{
+                  <span className={flagged ? 'ct-task-badge-pulse' : undefined} style={{
                     marginLeft: 'auto', minWidth: 18, height: 18, padding: '0 5px', borderRadius: 999,
+                    boxSizing: 'border-box', lineHeight: 1,
                     background: active ? 'rgba(255,255,255,.25)' : 'var(--danger)', color: '#fff',
                     fontSize: 10.5, fontWeight: 700, display: 'grid', placeItems: 'center', flexShrink: 0,
                   }}>
