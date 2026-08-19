@@ -1,10 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, FileText, Building2, Users, Landmark, LogOut, Menu, X, UserCircle, BarChart3, History, ListChecks } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { usePresence } from '@/lib/usePresence'
+import { useStore } from '@/lib/store'
+import { useProfile } from '@/lib/useProfile'
 import { GlobalSearch } from '@/components/GlobalSearch'
 
 const navItems = [
@@ -25,9 +27,15 @@ function initials(name: string) { return name.split(' ').map(w => w[0]).join('')
 export function Sidebar() {
   const pathname = usePathname()
   const { onlineUsers, currentUserId } = usePresence()
+  const { tasks, initSeed } = useStore()
+  const { profile } = useProfile()
   const [mobileOpen, setMobileOpen] = useState(false)
   const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/login' }
   const close = () => setMobileOpen(false)
+
+  useEffect(() => { initSeed() }, [initSeed])
+
+  const activeTaskCount = profile ? tasks.filter(t => t.assigneeId === profile.id && t.status === 'pending').length : 0
 
 
   // Не показываем на публичных страницах
@@ -74,6 +82,15 @@ export function Sidebar() {
               }}>
                 <Icon size={18} style={{ opacity: 0.9, flexShrink: 0 }} />
                 {label}
+                {href === '/tasks' && activeTaskCount > 0 && (
+                  <span style={{
+                    marginLeft: 'auto', minWidth: 18, height: 18, padding: '0 5px', borderRadius: 999,
+                    background: active ? 'rgba(255,255,255,.25)' : 'var(--danger)', color: '#fff',
+                    fontSize: 10.5, fontWeight: 700, display: 'grid', placeItems: 'center', flexShrink: 0,
+                  }}>
+                    {activeTaskCount}
+                  </span>
+                )}
               </Link>
             )
           })}
