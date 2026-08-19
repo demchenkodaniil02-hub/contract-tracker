@@ -208,6 +208,11 @@ export default function TasksPage() {
   const activeCount = base.filter(t => t.status === 'pending').length
   const completedCount = base.filter(t => t.status === 'completed').length
 
+  const viewActiveCount: Record<typeof VIEWS[number]['key'], number> = {
+    'assigned-to-me': assignedToMe.filter(t => t.status === 'pending').length,
+    'assigned-by-me': assignedByMe.filter(t => t.status === 'pending').length,
+  }
+
   return (
     <div className="fade-in ct-page" style={{ padding: '26px 30px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -227,11 +232,21 @@ export default function TasksPage() {
         {VIEWS.map(v => (
           <button key={v.key} onClick={() => setView(v.key)}
             style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '9px 18px', borderRadius: 10, border: `1px solid ${view === v.key ? '#182033' : 'var(--line)'}`,
               background: view === v.key ? '#182033' : '#fff', color: view === v.key ? '#fff' : 'var(--muted-ink)',
               fontFamily: 'inherit', fontSize: 13.5, fontWeight: 700, cursor: 'pointer',
             }}>
             {v.label}
+            {viewActiveCount[v.key] > 0 && (
+              <span style={{
+                minWidth: 18, height: 18, padding: '0 5px', borderRadius: 999, boxSizing: 'border-box', lineHeight: 1,
+                background: view === v.key ? 'rgba(255,255,255,.2)' : 'var(--danger)', color: '#fff',
+                fontSize: 10.5, fontWeight: 700, display: 'grid', placeItems: 'center',
+              }}>
+                {viewActiveCount[v.key]}
+              </span>
+            )}
           </button>
         ))}
       </div>
