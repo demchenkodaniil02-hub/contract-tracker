@@ -1,10 +1,14 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
+import { useProfile } from '@/lib/useProfile'
 import { format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { History, Plus, Pencil, Trash2, Search, Undo2, Check } from 'lucide-react'
 import Link from 'next/link'
+
+const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
 
 const S = {
   card: { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)' } as React.CSSProperties,
@@ -31,9 +35,16 @@ function formatDateTime(dateStr: string): string {
 }
 
 export default function ActivityPage() {
+  const router = useRouter()
+  const { profile, loading: profileLoading } = useProfile()
   const { history, contracts, initSeed, restoreEntity } = useStore()
   const [pageLoading, setPageLoading] = useState(true)
   useEffect(() => { initSeed().finally(() => setPageLoading(false)) }, [initSeed])
+
+  const isAdmin = profile?.email === ADMIN_EMAIL
+  useEffect(() => {
+    if (!profileLoading && !isAdmin) router.replace('/')
+  }, [profileLoading, isAdmin, router])
 
   const [filterKind, setFilterKind] = useState<Kind | 'all'>('all')
   const [search, setSearch] = useState('')
@@ -70,7 +81,7 @@ export default function ActivityPage() {
     return list
   }, [enriched, filterKind, search])
 
-  if (pageLoading) return (
+  if (pageLoading || profileLoading || !isAdmin) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <div style={{ color: 'var(--faint)', fontSize: 14 }}>Загрузка...</div>
     </div>

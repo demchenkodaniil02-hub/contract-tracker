@@ -21,6 +21,7 @@ const navItems = [
 ]
 
 const PUBLIC = ['/login', '/reset-password', '/set-password']
+const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
 
 function initials(name: string) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?' }
 
@@ -36,6 +37,7 @@ export function Sidebar() {
   useEffect(() => { initSeed() }, [initSeed])
 
   const activeTaskCount = profile ? tasks.filter(t => t.assigneeId === profile.id && t.status === 'pending').length : 0
+  const visibleNavItems = navItems.filter(i => i.href !== '/activity' || profile?.email === ADMIN_EMAIL)
 
 
   // Не показываем на публичных страницах
@@ -68,7 +70,7 @@ export function Sidebar() {
 
         {/* Nav */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {visibleNavItems.map(({ href, label, icon: Icon }) => {
             const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
             const hasTasks = href === '/tasks' && activeTaskCount > 0
             const flagged = hasTasks && !active
