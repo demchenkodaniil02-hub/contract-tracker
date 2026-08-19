@@ -42,7 +42,7 @@ export function ContractTasks({ contractId }: { contractId: string }) {
   const sendAssignEmail = async (task: Task, assigneeEmail: string, type: 'assigned' | 'reminder') => {
     const contracts = useStore.getState().contracts
     const contract = contracts.find(c => c.id === contractId)
-    await fetch('/api/send-task-reminder', {
+    const res = await fetch('/api/send-task-reminder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -52,6 +52,9 @@ export function ContractTasks({ contractId }: { contractId: string }) {
         assignerName: profile?.name || profile?.email || 'Коллега',
       }),
     })
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(json.error || `Сервер вернул ${res.status}`)
+    if (json.warning) throw new Error(json.warning)
   }
 
   const handleAddTask = async () => {
@@ -75,7 +78,11 @@ export function ContractTasks({ contractId }: { contractId: string }) {
     await addTask(newTask)
     // Отправляем email о назначении если выбран исполнитель
     if (assigneeEmail && formData.assigneeId !== profile?.id) {
-      await sendAssignEmail(newTask, assigneeEmail, 'assigned').catch(console.error)
+      try {
+        await sendAssignEmail(newTask, assigneeEmail, 'assigned')
+      } catch (err) {
+        alert(`Задача создана, но письмо не отправилось: ${err instanceof Error ? err.message : String(err)}`)
+      }
     }
     setFormData({ title: '', description: '', dueDate: '', dueTime: '09:00', assigneeId: '', reminderDate: '' })
     setIsAdding(false)
@@ -94,7 +101,9 @@ export function ContractTasks({ contractId }: { contractId: string }) {
       await sendAssignEmail(task, email, 'reminder')
       await updateTask({ ...task, reminderSent: true })
       alert('Напоминание отправлено!')
-    } catch { alert('Ошибка отправки') }
+    } catch (err) {
+      alert(`Ошибка отправки: ${err instanceof Error ? err.message : String(err)}`)
+    }
     setSending(false)
   }
 

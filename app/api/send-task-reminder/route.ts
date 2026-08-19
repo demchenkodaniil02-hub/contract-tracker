@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.BREVO_API_KEY
     if (!apiKey) {
       console.warn('BREVO_API_KEY not configured, taskId:', taskId)
-      return NextResponse.json({ success: true, warning: 'Email service not configured' })
+      return NextResponse.json({ success: true, warning: 'BREVO_API_KEY не настроен на сервере (Vercel → Settings → Environment Variables)' })
     }
 
     const subject = type === 'assigned'
