@@ -70,20 +70,23 @@ export function Sidebar() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            const hasTasks = href === '/tasks' && activeTaskCount > 0
+            const flagged = hasTasks && !active
             return (
               <Link key={href} href={href} onClick={close} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '10px 12px', borderRadius: 9,
-                fontSize: 14, fontWeight: 500, textDecoration: 'none',
-                color: active ? '#fff' : '#aeb9cf',
-                background: active ? '#2f6bdc' : 'transparent',
+                fontSize: 14, fontWeight: flagged ? 700 : 500, textDecoration: 'none',
+                color: active ? '#fff' : flagged ? '#ff9f9f' : '#aeb9cf',
+                background: active ? '#2f6bdc' : flagged ? 'rgba(214,69,69,.14)' : 'transparent',
+                border: flagged ? '1px solid rgba(214,69,69,.3)' : '1px solid transparent',
                 boxShadow: active ? '0 6px 16px -6px #2f6bdc' : 'none',
                 transition: 'background .15s, color .15s',
               }}>
                 <Icon size={18} style={{ opacity: 0.9, flexShrink: 0 }} />
                 {label}
-                {href === '/tasks' && activeTaskCount > 0 && (
-                  <span style={{
+                {hasTasks && (
+                  <span className={flagged ? 'ct-alert-pulse' : undefined} style={{
                     marginLeft: 'auto', minWidth: 18, height: 18, padding: '0 5px', borderRadius: 999,
                     background: active ? 'rgba(255,255,255,.25)' : 'var(--danger)', color: '#fff',
                     fontSize: 10.5, fontWeight: 700, display: 'grid', placeItems: 'center', flexShrink: 0,
