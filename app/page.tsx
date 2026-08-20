@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { AlertCircle, Clock, XCircle, X } from 'lucide-react'
+import { AlertCircle, Clock, XCircle, X, Receipt } from 'lucide-react'
 
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null
@@ -132,6 +132,15 @@ export default function DashboardPage() {
 
   const totalExpected = forecastData.reduce((s, m) => s + m.expected, 0)
   const totalDebt = enriched.filter(c => c.status !== 'cancelled').reduce((s, c) => s + (c.amount - c.amountPaid), 0)
+
+  const recentPayments = useMemo(() =>
+    [...payments]
+      .filter(p => p.paidAt)
+      .sort((a, b) => b.paidAt.localeCompare(a.paidAt))
+      .slice(0, 6)
+      .map(p => ({ payment: p, contract: contracts.find(c => c.id === p.contractId) })),
+    [payments, contracts]
+  )
 
   // График истории оплат — стек по контрактам, сгруппированный по месяцам
   const { paymentChartData, paymentContractKeys } = useMemo(() => {
@@ -312,6 +321,33 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Последние поступления */}
+      <div className="ct-card" style={{ padding: '18px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, fontSize: 14.5, color: 'var(--ok)', marginBottom: 8 }}>
+          <Receipt size={18} /> Последние поступления
+        </div>
+        {recentPayments.length === 0
+          ? <div style={{ textAlign: 'center', color: 'var(--faint)', fontSize: 13, padding: '28px 0' }}>Платежей ещё нет</div>
+          : recentPayments.map(({ payment, contract }) => {
+              const obj = contract ? objects.find((o) => o.id === contract.objectId) : undefined
+              const customer = contract ? counterparties.find((x) => x.id === contract.customerId) : undefined
+              return (
+                <Link key={payment.id} href={contract ? `/contracts/${contract.id}` : '#'}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '11px 0', borderTop: '1px solid var(--line-soft)', textDecoration: 'none', cursor: contract ? 'pointer' : 'default' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{contract?.number ?? '—'}</div>
+                    <div style={{ fontSize: 12.5, color: 'var(--faint)', marginTop: 3 }}>{obj?.name}{obj && customer ? ' · ' : ''}{customer?.name}</div>
+                  </div>
+                  <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <div className="tnum" style={{ fontWeight: 700, fontSize: 14, color: 'var(--ok)' }}>+{formatMoney(payment.amount)}</div>
+                    <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 3 }}>{formatDate(payment.paidAt)}</div>
+                  </div>
+                </Link>
+              )
+            })
+        }
       </div>
 
       {/* Panels */}
