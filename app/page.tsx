@@ -330,23 +330,25 @@ export default function DashboardPage() {
         </div>
         {recentPayments.length === 0
           ? <div style={{ textAlign: 'center', color: 'var(--faint)', fontSize: 13, padding: '28px 0' }}>Платежей ещё нет</div>
-          : recentPayments.map(({ payment, contract }) => {
-              const obj = contract ? objects.find((o) => o.id === contract.objectId) : undefined
-              const customer = contract ? counterparties.find((x) => x.id === contract.customerId) : undefined
-              return (
-                <Link key={payment.id} href={contract ? `/contracts/${contract.id}` : '#'}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '11px 0', borderTop: '1px solid var(--line-soft)', textDecoration: 'none', cursor: contract ? 'pointer' : 'default' }}>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{contract?.number ?? '—'}</div>
-                    <div style={{ fontSize: 12.5, color: 'var(--faint)', marginTop: 3 }}>{obj?.name}{obj && customer ? ' · ' : ''}{customer?.name}</div>
-                  </div>
-                  <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <div className="tnum" style={{ fontWeight: 700, fontSize: 14, color: 'var(--ok)' }}>+{formatMoney(payment.amount)}</div>
-                    <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 3 }}>{formatDate(payment.paidAt)}</div>
-                  </div>
-                </Link>
-              )
-            })
+          : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
+              {recentPayments.map(({ payment, contract }) => {
+                const obj = contract ? objects.find((o) => o.id === contract.objectId) : undefined
+                const customer = contract ? counterparties.find((x) => x.id === contract.customerId) : undefined
+                return (
+                  <Link key={payment.id} href={contract ? `/contracts/${contract.id}` : '#'}
+                    style={{ display: 'flex', flexDirection: 'column', gap: 5, padding: '11px 13px', borderRadius: 10, border: '1px solid var(--line-soft)', textDecoration: 'none', cursor: contract ? 'pointer' : 'default', minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                      <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contract?.number ?? '—'}</span>
+                      <span className="tnum" style={{ fontWeight: 700, fontSize: 14, color: 'var(--ok)', whiteSpace: 'nowrap', flexShrink: 0 }}>+{formatMoney(payment.amount)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 12, color: 'var(--faint)' }}>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{obj?.name}{obj && customer ? ' · ' : ''}{customer?.name}</span>
+                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>{formatDate(payment.paidAt)}</span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
         }
       </div>
 
