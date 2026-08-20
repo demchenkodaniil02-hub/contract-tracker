@@ -137,7 +137,7 @@ export default function DashboardPage() {
     [...payments]
       .filter(p => p.paidAt)
       .sort((a, b) => b.paidAt.localeCompare(a.paidAt))
-      .slice(0, 6)
+      .slice(0, 10)
       .map(p => ({ payment: p, contract: contracts.find(c => c.id === p.contractId) })),
     [payments, contracts]
   )
