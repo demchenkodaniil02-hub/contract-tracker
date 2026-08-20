@@ -234,7 +234,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Directions */}
-      <div className="ct-grid-direction" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="ct-grid-direction" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
         {[
           { id: 'maf', label: 'МАФ / Металлоконструкции', color: 'var(--maf)', total: mafTotal },
           { id: 'finishing', label: 'Отделочные работы', color: 'var(--otd)', total: finishingTotal },
@@ -351,7 +351,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Panels */}
-      <div className="ct-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="ct-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
         {/* Overdue */}
         <div className="ct-card" style={{ padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 600, fontSize: 14.5, color: 'var(--danger)', marginBottom: 8 }}>
