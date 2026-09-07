@@ -1,31 +1,36 @@
+import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createYandexDiskClient } from '@/lib/yandex-disk'
-import { CALCULATOR_DISK_URL } from '@/lib/utils'
 
-export async function GET(req: Request) {
-  const debug = new URL(req.url).searchParams.get('debug') === '1'
+const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
+const KEY = 'calculator_version'
 
-  const client = createYandexDiskClient()
-  if (!client) return NextResponse.json({ version: null, ...(debug ? { debug: 'no token' } : {}) })
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
-  if (debug) {
-    try {
-      const res = await fetch(
-        `https://cloud-api.yandex.net/v1/disk/public/resources?public_key=${encodeURIComponent(CALCULATOR_DISK_URL)}`,
-        { headers: { Authorization: `OAuth ${process.env.YANDEX_DISK_TOKEN}` } }
-      )
-      const body = await res.text()
-      return NextResponse.json({ version: null, debug: { status: res.status, body: body.slice(0, 500) } })
-    } catch (err) {
-      return NextResponse.json({ version: null, debug: { error: String(err) } })
-    }
+// Отметка версии калькулятора хранится в БД (app_settings), а не берётся из
+// метаданных Яндекс.Диска — API Диска возвращает "ресурс не найден" для этой
+// публичной ссылки даже с валидным токеном, так что это единственный надёжный путь:
+// админ жмёт кнопку после загрузки новой версии, все остальные видят это сразу.
+
+export async function GET() {
+  const { data } = await supabase.from('app_settings').select('value').eq('key', KEY).single()
+  return NextResponse.json({ version: data?.value ?? null })
+}
+
+export async function POST(req: Request) {
+  const token = (req.headers.get('authorization') || '').replace('Bearer ', '')
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: userData, error: authError } = await supabase.auth.getUser(token)
+  if (authError || !userData.user || userData.user.email !== ADMIN_EMAIL) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const info = await client.getPublicInfo(CALCULATOR_DISK_URL)
-  if (!info) return NextResponse.json({ version: null })
+  const version = new Date().toISOString()
+  const { error } = await supabase.from('app_settings').upsert({ key: KEY, value: version, updatedAt: version })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // md5 меняется только когда реально поменялось содержимое файла — надёжнее modified
-  // (тот иногда обновляется и при чисто метаданных-операциях на Я.Диске)
-  const version = info.md5 || info.modified || null
-  return NextResponse.json({ version, modified: info.modified ?? null })
+  return NextResponse.json({ version })
 }

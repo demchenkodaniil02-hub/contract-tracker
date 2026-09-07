@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { supabase } from './supabase'
 
 const SEEN_KEY = 'ct_calculator_seen_version'
 
@@ -11,10 +12,10 @@ export function useCalculatorVersion() {
   useEffect(() => {
     fetch('/api/calculator-info')
       .then(r => r.json())
-      .then((j: { version: string | null; modified: string | null }) => {
+      .then((j: { version: string | null }) => {
         if (!j.version) return
         setVersion(j.version)
-        setModified(j.modified)
+        setModified(j.version)
 
         let seen: string | null = null
         try { seen = localStorage.getItem(SEEN_KEY) } catch {}
@@ -36,5 +37,22 @@ export function useCalculatorVersion() {
     setIsNew(false)
   }
 
-  return { isNew, modified, markSeen }
+  // Только для админа — отметить, что только что загруженная версия калькулятора новая
+  const publishNewVersion = async () => {
+    const { data: session } = await supabase.auth.getSession()
+    const token = session.session?.access_token
+    const res = await fetch('/api/calculator-info', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    })
+    const j = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(j.error || 'Не удалось отметить новую версию')
+
+    setVersion(j.version)
+    setModified(j.version)
+    try { localStorage.setItem(SEEN_KEY, j.version) } catch {}
+    setIsNew(false)
+  }
+
+  return { isNew, modified, markSeen, publishNewVersion }
 }

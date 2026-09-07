@@ -43,7 +43,19 @@ function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: st
 
 export default function ProfilePage() {
   const { profile, allProfiles, loading, updateProfile, updateUserName } = useProfile()
-  const { isNew: calcIsNew, modified: calcModified, markSeen: markCalcSeen } = useCalculatorVersion()
+  const { isNew: calcIsNew, modified: calcModified, markSeen: markCalcSeen, publishNewVersion } = useCalculatorVersion()
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
+  const handlePublish = async () => {
+    setPublishStatus('busy')
+    try {
+      await publishNewVersion()
+      setPublishStatus('done')
+      setTimeout(() => setPublishStatus('idle'), 2000)
+    } catch {
+      setPublishStatus('error')
+      setTimeout(() => setPublishStatus('idle'), 2500)
+    }
+  }
   const [name, setName] = useState('')
   const [saved, setSaved] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -203,14 +215,24 @@ export default function ProfilePage() {
             </p>
           )}
         </div>
-        <a
-          href={CALCULATOR_DISK_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={markCalcSeen}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
-          <Download size={16} /> Скачать с Яндекс Диска
-        </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <a
+            href={CALCULATOR_DISK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={markCalcSeen}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
+            <Download size={16} /> Скачать с Яндекс Диска
+          </a>
+          {profile?.email === ADMIN_EMAIL && (
+            <button onClick={handlePublish} disabled={publishStatus === 'busy'}
+              title="Нажми после того как заменишь файл на Яндекс.Диске новой версией — остальные увидят пометку «Новая версия»"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 16px', borderRadius: 10, border: `1px solid ${publishStatus === 'error' ? 'var(--danger)' : 'var(--line)'}`, background: '#fff', color: publishStatus === 'error' ? 'var(--danger)' : publishStatus === 'done' ? 'var(--ok)' : 'var(--muted-ink)', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: publishStatus === 'busy' ? 'not-allowed' : 'pointer' }}>
+              {publishStatus === 'done' ? <Check size={14} /> : <Sparkles size={14} />}
+              {publishStatus === 'busy' ? 'Отмечаем...' : publishStatus === 'done' ? 'Отмечено' : publishStatus === 'error' ? 'Ошибка' : 'Я загрузил новую версию'}
+            </button>
+          )}
+        </div>
       </div>
 
       </div>
