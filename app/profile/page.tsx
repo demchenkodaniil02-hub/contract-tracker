@@ -44,18 +44,6 @@ function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: st
 export default function ProfilePage() {
   const { profile, allProfiles, loading, updateProfile, updateUserName } = useProfile()
   const { isNew: calcIsNew, modified: calcModified, url: calcUrl, markSeen: markCalcSeen, publishNewVersion } = useCalculatorVersion()
-  const [publishStatus, setPublishStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
-  const handlePublish = async () => {
-    setPublishStatus('busy')
-    try {
-      await publishNewVersion()
-      setPublishStatus('done')
-      setTimeout(() => setPublishStatus('idle'), 2000)
-    } catch {
-      setPublishStatus('error')
-      setTimeout(() => setPublishStatus('idle'), 2500)
-    }
-  }
 
   const [urlInput, setUrlInput] = useState('')
   const [urlStatus, setUrlStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
@@ -240,29 +228,19 @@ export default function ProfilePage() {
             </p>
           )}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <a
-            href={calcUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={markCalcSeen}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
-            <Download size={16} /> Скачать с Яндекс Диска
-          </a>
-          {profile?.email === ADMIN_EMAIL && (
-            <button onClick={handlePublish} disabled={publishStatus === 'busy'}
-              title="Нажми, если заменил файл по той же ссылке — остальные увидят пометку «Новая версия»"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 16px', borderRadius: 10, border: `1px solid ${publishStatus === 'error' ? 'var(--danger)' : 'var(--line)'}`, background: '#fff', color: publishStatus === 'error' ? 'var(--danger)' : publishStatus === 'done' ? 'var(--ok)' : 'var(--muted-ink)', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: publishStatus === 'busy' ? 'not-allowed' : 'pointer' }}>
-              {publishStatus === 'done' ? <Check size={14} /> : <Sparkles size={14} />}
-              {publishStatus === 'busy' ? 'Отмечаем...' : publishStatus === 'done' ? 'Отмечено' : publishStatus === 'error' ? 'Ошибка' : 'Я загрузил новую версию'}
-            </button>
-          )}
-        </div>
+        <a
+          href={calcUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={markCalcSeen}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
+          <Download size={16} /> Скачать с Яндекс Диска
+        </a>
 
         {profile?.email === ADMIN_EMAIL && (
           <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--line-soft)' }}>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>
-              Ссылка поменялась?
+              Загрузили новую версию? Вставьте ссылку — уведомление уйдёт само
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
