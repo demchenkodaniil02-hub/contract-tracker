@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useProfile } from '@/lib/useProfile'
-import { Save, UserPlus, Mail, Download, Users, Check } from 'lucide-react'
+import { useCalculatorVersion } from '@/lib/useCalculatorVersion'
+import { Save, UserPlus, Mail, Download, Users, Check, Sparkles } from 'lucide-react'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { CALCULATOR_DISK_URL, formatDate } from '@/lib/utils'
 
 const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
 
@@ -41,6 +43,7 @@ function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: st
 
 export default function ProfilePage() {
   const { profile, allProfiles, loading, updateProfile, updateUserName } = useProfile()
+  const { isNew: calcIsNew, modified: calcModified, markSeen: markCalcSeen } = useCalculatorVersion()
   const [name, setName] = useState('')
   const [saved, setSaved] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -180,18 +183,31 @@ export default function ProfilePage() {
       </div>
 
       {/* Скачать программу */}
-      <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <Download size={18} color="#2f6bdc" />
-          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Калькулятор расчетов</span>
+      <div style={{ background: '#fff', border: `1px solid ${calcIsNew ? 'var(--maf)' : 'var(--line)'}`, borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap', rowGap: 6 }}>
+          <Download size={18} color="#2f6bdc" style={{ flexShrink: 0 }} />
+          <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)', whiteSpace: 'nowrap' }}>Калькулятор расчетов</span>
+          {calcIsNew && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--maf-soft)', color: 'var(--maf)', fontSize: 11.5, fontWeight: 700, padding: '3px 9px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <Sparkles size={11} /> Новая версия
+            </span>
+          )}
         </div>
-        <p style={{ margin: '0 0 18px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
-          Скачайте калькулятор расчетов с Яндекс Диска для работы на компьютере.
-        </p>
+        <div style={{ marginBottom: 18 }}>
+          <p style={{ margin: '0 0 6px', fontSize: 13.5, color: 'var(--faint)', lineHeight: 1.5 }}>
+            Скачайте калькулятор расчетов с Яндекс Диска для работы на компьютере.
+          </p>
+          {calcModified && (
+            <p style={{ margin: 0, fontSize: 12, color: 'var(--faint)' }}>
+              Обновлено: {formatDate(calcModified.slice(0, 10))}
+            </p>
+          )}
+        </div>
         <a
-          href="https://disk.yandex.ru/d/ZGdUJR92Ca4GkQ"
+          href={CALCULATOR_DISK_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={markCalcSeen}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', background: '#2f6bdc', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>
           <Download size={16} /> Скачать с Яндекс Диска
         </a>

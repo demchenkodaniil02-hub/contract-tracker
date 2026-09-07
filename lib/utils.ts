@@ -36,6 +36,10 @@ export function newId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
+// Публичная ссылка на калькулятор расчётов (Яндекс.Диск) — используется и в
+// профиле (кнопка скачивания), и в api/calculator-info (проверка версии)
+export const CALCULATOR_DISK_URL = 'https://disk.yandex.ru/d/ZGdUJR92Ca4GkQ'
+
 export const directionLabel: Record<Direction, string> = {
   maf: 'МАФ / Металлоконструкции',
   finishing: 'Отделочные работы',

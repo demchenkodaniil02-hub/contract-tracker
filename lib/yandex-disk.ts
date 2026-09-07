@@ -196,6 +196,23 @@ export class YandexDiskClient {
     }
   }
 
+  // Метаданные публично расшаренного файла (по ссылке вида disk.yandex.ru/d/...) —
+  // не требует, чтобы файл принадлежал владельцу токена. Используется, чтобы понять,
+  // изменился ли файл (по modified/md5), не скачивая его целиком.
+  async getPublicInfo(publicUrl: string): Promise<{ modified?: string; md5?: string; name?: string } | null> {
+    try {
+      const res = await fetch(
+        `${YANDEX_DISK_API}/public/resources?public_key=${encodeURIComponent(publicUrl)}`,
+        { method: 'GET', headers: this.getAuthHeader() }
+      )
+      if (!res.ok) return null
+      const data = await res.json()
+      return { modified: data.modified, md5: data.md5, name: data.name }
+    } catch {
+      return null
+    }
+  }
+
   async listFolder(path: string): Promise<string[] | null> {
     try {
       const encodedPath = encodeURIComponent(path)
