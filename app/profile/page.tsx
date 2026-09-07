@@ -4,7 +4,7 @@ import { useProfile } from '@/lib/useProfile'
 import { useCalculatorVersion } from '@/lib/useCalculatorVersion'
 import { Save, UserPlus, Mail, Download, Users, Check, Sparkles } from 'lucide-react'
 import { UserAvatar } from '@/components/ui/UserAvatar'
-import { CALCULATOR_DISK_URL, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 
 const ADMIN_EMAIL = 'demchenkodaniil02@gmail.com'
 
@@ -43,7 +43,7 @@ function UserRow({ id, email, name: initialName, avatarColor, onSave }: { id: st
 
 export default function ProfilePage() {
   const { profile, allProfiles, loading, updateProfile, updateUserName } = useProfile()
-  const { isNew: calcIsNew, modified: calcModified, markSeen: markCalcSeen, publishNewVersion } = useCalculatorVersion()
+  const { isNew: calcIsNew, modified: calcModified, url: calcUrl, markSeen: markCalcSeen, publishNewVersion } = useCalculatorVersion()
   const [publishStatus, setPublishStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
   const handlePublish = async () => {
     setPublishStatus('busy')
@@ -54,6 +54,31 @@ export default function ProfilePage() {
     } catch {
       setPublishStatus('error')
       setTimeout(() => setPublishStatus('idle'), 2500)
+    }
+  }
+
+  const [urlInput, setUrlInput] = useState('')
+  const [urlStatus, setUrlStatus] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
+  const [urlError, setUrlError] = useState('')
+  const isYandexLink = (s: string) => /^https?:\/\/(disk\.yandex\.\w+|yadi\.sk)\//i.test(s.trim())
+  const handleUrlPaste = async (pasted: string) => {
+    const link = pasted.trim()
+    if (!isYandexLink(link)) {
+      setUrlStatus('error')
+      setUrlError('Это не похоже на ссылку Яндекс.Диска')
+      setTimeout(() => setUrlStatus('idle'), 2500)
+      return
+    }
+    setUrlStatus('busy')
+    try {
+      await publishNewVersion(link)
+      setUrlStatus('done')
+      setUrlInput('')
+      setTimeout(() => setUrlStatus('idle'), 2000)
+    } catch (err) {
+      setUrlStatus('error')
+      setUrlError(err instanceof Error ? err.message : 'Не удалось сохранить ссылку')
+      setTimeout(() => setUrlStatus('idle'), 2500)
     }
   }
   const [name, setName] = useState('')
@@ -217,7 +242,7 @@ export default function ProfilePage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <a
-            href={CALCULATOR_DISK_URL}
+            href={calcUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={markCalcSeen}
@@ -226,13 +251,37 @@ export default function ProfilePage() {
           </a>
           {profile?.email === ADMIN_EMAIL && (
             <button onClick={handlePublish} disabled={publishStatus === 'busy'}
-              title="Нажми после того как заменишь файл на Яндекс.Диске новой версией — остальные увидят пометку «Новая версия»"
+              title="Нажми, если заменил файл по той же ссылке — остальные увидят пометку «Новая версия»"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 16px', borderRadius: 10, border: `1px solid ${publishStatus === 'error' ? 'var(--danger)' : 'var(--line)'}`, background: '#fff', color: publishStatus === 'error' ? 'var(--danger)' : publishStatus === 'done' ? 'var(--ok)' : 'var(--muted-ink)', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: publishStatus === 'busy' ? 'not-allowed' : 'pointer' }}>
               {publishStatus === 'done' ? <Check size={14} /> : <Sparkles size={14} />}
               {publishStatus === 'busy' ? 'Отмечаем...' : publishStatus === 'done' ? 'Отмечено' : publishStatus === 'error' ? 'Ошибка' : 'Я загрузил новую версию'}
             </button>
           )}
         </div>
+
+        {profile?.email === ADMIN_EMAIL && (
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--line-soft)' }}>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--faint)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>
+              Ссылка поменялась?
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+                <input
+                  value={urlInput}
+                  onChange={e => setUrlInput(e.target.value)}
+                  onPaste={e => { const pasted = e.clipboardData.getData('text'); if (pasted.trim()) { setUrlInput(pasted); handleUrlPaste(pasted) } }}
+                  placeholder="Вставьте новую ссылку — отправится само"
+                  disabled={urlStatus === 'busy'}
+                  style={{ width: '100%', padding: '9px 12px', border: `1px solid ${urlStatus === 'error' ? 'var(--danger)' : 'var(--line)'}`, borderRadius: 9, fontFamily: 'inherit', fontSize: 13, background: '#fff', color: 'var(--ink)', boxSizing: 'border-box' }} />
+              </div>
+              {urlStatus === 'busy' && <span style={{ fontSize: 12.5, color: 'var(--faint)', whiteSpace: 'nowrap' }}>Сохраняем...</span>}
+              {urlStatus === 'done' && <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12.5, color: 'var(--ok)', whiteSpace: 'nowrap' }}><Check size={13} /> Сохранено</span>}
+            </div>
+            {urlStatus === 'error' && (
+              <div style={{ marginTop: 6, fontSize: 12.5, color: 'var(--danger)' }}>{urlError}</div>
+            )}
+          </div>
+        )}
       </div>
 
       </div>
