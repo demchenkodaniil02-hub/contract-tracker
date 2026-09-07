@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { AuthGuard } from '@/components/layout/AuthGuard'
 import { FirstLoginModal } from '@/components/layout/FirstLoginModal'
 import { MyTasksModal } from '@/components/layout/MyTasksModal'
+import { CalculatorUpdateToast } from '@/components/layout/CalculatorUpdateToast'
 
 const ibmPlexSans = IBM_Plex_Sans({ variable: '--font-ibm-plex-sans', subsets: ['latin', 'cyrillic'], weight: ['400', '500', '600', '700'] })
 const ibmPlexMono = IBM_Plex_Mono({ variable: '--font-ibm-plex-mono', subsets: ['latin', 'cyrillic'], weight: ['400', '500', '600', '700'] })
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthGuard>
           <FirstLoginModal />
           <MyTasksModal />
+          <CalculatorUpdateToast />
           <div style={{ display: 'flex', minHeight: '100vh' }}>
             <Sidebar />
             <main className="ct-main" style={{ flex: 1, minWidth: 0, overflowY: 'auto', height: '100vh' }}>{children}</main>
