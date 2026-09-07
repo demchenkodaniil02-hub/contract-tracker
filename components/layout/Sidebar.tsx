@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase'
 import { usePresence } from '@/lib/usePresence'
 import { useStore } from '@/lib/store'
 import { useProfile } from '@/lib/useProfile'
-import { useCalculatorVersion } from '@/lib/useCalculatorVersion'
 import { GlobalSearch } from '@/components/GlobalSearch'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 
@@ -30,7 +29,6 @@ export function Sidebar() {
   const { onlineUsers, currentUserId } = usePresence()
   const { tasks, initSeed } = useStore()
   const { profile } = useProfile()
-  const { isNew: calcIsNew } = useCalculatorVersion()
   const [mobileOpen, setMobileOpen] = useState(false)
   const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/login' }
   const close = () => setMobileOpen(false)
@@ -97,12 +95,6 @@ export function Sidebar() {
                   }}>
                     {activeTaskCount}
                   </span>
-                )}
-                {href === '/profile' && calcIsNew && (
-                  <span title="Доступна новая версия калькулятора" style={{
-                    marginLeft: 'auto', width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
-                    background: active ? '#fff' : 'var(--maf)',
-                  }} />
                 )}
               </Link>
             )
