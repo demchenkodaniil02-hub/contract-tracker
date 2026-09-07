@@ -12,26 +12,34 @@ export function useCalculatorVersion() {
   const [url, setUrl] = useState<string>(CALCULATOR_DISK_URL)
 
   useEffect(() => {
-    fetch('/api/calculator-info')
-      .then(r => r.json())
-      .then((j: { version: string | null; url: string | null }) => {
-        if (j.url) setUrl(j.url)
-        if (!j.version) return
-        setVersion(j.version)
-        setModified(j.version)
+    const check = () => {
+      fetch('/api/calculator-info')
+        .then(r => r.json())
+        .then((j: { version: string | null; url: string | null }) => {
+          if (j.url) setUrl(j.url)
+          if (!j.version) return
+          setVersion(j.version)
+          setModified(j.version)
 
-        let seen: string | null = null
-        try { seen = localStorage.getItem(SEEN_KEY) } catch {}
+          let seen: string | null = null
+          try { seen = localStorage.getItem(SEEN_KEY) } catch {}
 
-        if (seen === null) {
-          // Первый запуск фичи в этом браузере — считаем текущую версию базовой,
-          // чтобы не показать ложное "есть обновление" всем сразу после деплоя
-          try { localStorage.setItem(SEEN_KEY, j.version) } catch {}
-        } else if (seen !== j.version) {
-          setIsNew(true)
-        }
-      })
-      .catch(() => {})
+          if (seen === null) {
+            // Первый запуск фичи в этом браузере — считаем текущую версию базовой,
+            // чтобы не показать ложное "есть обновление" всем сразу после деплоя
+            try { localStorage.setItem(SEEN_KEY, j.version) } catch {}
+          } else if (seen !== j.version) {
+            setIsNew(true)
+          }
+        })
+        .catch(() => {})
+    }
+
+    check()
+    // Периодически перепроверяем, пока вкладка открыта — иначе оповещение
+    // появится только при следующей полной загрузке страницы
+    const interval = setInterval(check, 4 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   const markSeen = () => {
