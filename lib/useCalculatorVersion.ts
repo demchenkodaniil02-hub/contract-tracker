@@ -55,8 +55,9 @@ export function useCalculatorVersion() {
     setVersion(j.version)
     setModified(j.version)
     if (j.url) setUrl(j.url)
-    try { localStorage.setItem(SEEN_KEY, j.version) } catch {}
-    setIsNew(false)
+    // Не помечаем как "просмотрено" — админ видит то же уведомление, что и все
+    // остальные, чтобы сразу убедиться, что публикация сработала
+    setIsNew(true)
   }
 
   return { isNew, modified, url, markSeen, publishNewVersion }
