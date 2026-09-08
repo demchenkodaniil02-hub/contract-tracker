@@ -206,7 +206,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 420px))', gap: 16, justifyContent: 'start', alignItems: 'start' }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 420px))', gap: 16, justifyContent: 'start' }}>
         {/* Контрактов всего + Активных + Завершённых в одной карточке */}
         <div className="ct-card" style={{ padding: '18px 20px' }}>
           <div style={{ fontSize: 13, color: 'var(--muted-ink)', fontWeight: 500 }}>Контрактов всего</div>
@@ -215,13 +215,13 @@ export default function DashboardPage() {
             <Link href="/contracts?status=active" style={{ color: 'var(--faint)', textDecoration: 'none', borderRadius: 6, padding: '1px 3px', margin: '-1px -3px', transition: 'background .15s' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-              Активных <b className="tnum" style={{ color: 'var(--muted-ink)' }}>{activeCount}</b>
+              Активных <b style={{ color: 'var(--muted-ink)' }}>{activeCount}</b>
             </Link>
             <span>·</span>
             <Link href="/contracts?status=completed" style={{ color: 'var(--faint)', textDecoration: 'none', borderRadius: 6, padding: '1px 3px', margin: '-1px -3px', transition: 'background .15s' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-              Завершённых <b className="tnum" style={{ color: 'var(--muted-ink)' }}>{completedCount}</b>
+              Завершённых <b style={{ color: 'var(--muted-ink)' }}>{completedCount}</b>
             </Link>
           </div>
         </div>
