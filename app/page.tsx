@@ -206,22 +206,22 @@ export default function DashboardPage() {
       )}
 
       {/* KPI */}
-      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 420px))', gap: 16, justifyContent: 'start' }}>
+      <div className="ct-grid-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(200px, 420px))', gap: 16, justifyContent: 'start', alignItems: 'start' }}>
         {/* Контрактов всего + Активных + Завершённых в одной карточке */}
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--card-shadow)', padding: '16px 20px' }}>
-          <div style={{ fontSize: 12.5, color: 'var(--faint)', marginBottom: 6 }}>Контрактов всего</div>
-          <div className="tnum" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>{enriched.length}</div>
-          <div style={{ borderTop: '1px solid var(--line-soft)', paddingTop: 10, fontSize: 13, color: 'var(--muted-ink)', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Link href="/contracts?status=active" style={{ color: 'var(--muted-ink)', textDecoration: 'none', borderRadius: 6, padding: '2px 4px', transition: 'background .15s' }}
+        <div className="ct-card" style={{ padding: '18px 20px' }}>
+          <div style={{ fontSize: 13, color: 'var(--muted-ink)', fontWeight: 500 }}>Контрактов всего</div>
+          <div className="tnum" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', margin: '8px 0 6px' }}>{enriched.length}</div>
+          <div style={{ fontSize: 12.5, color: 'var(--faint)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Link href="/contracts?status=active" style={{ color: 'var(--faint)', textDecoration: 'none', borderRadius: 6, padding: '1px 3px', margin: '-1px -3px', transition: 'background .15s' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-              Активных <b className="tnum" style={{ color: 'var(--ink)' }}>{activeCount}</b>
+              Активных <b className="tnum" style={{ color: 'var(--muted-ink)' }}>{activeCount}</b>
             </Link>
-            <span style={{ color: 'var(--line)' }}>·</span>
-            <Link href="/contracts?status=completed" style={{ color: 'var(--muted-ink)', textDecoration: 'none', borderRadius: 6, padding: '2px 4px', transition: 'background .15s' }}
+            <span>·</span>
+            <Link href="/contracts?status=completed" style={{ color: 'var(--faint)', textDecoration: 'none', borderRadius: 6, padding: '1px 3px', margin: '-1px -3px', transition: 'background .15s' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg)'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-              Завершённых <b className="tnum" style={{ color: 'var(--ink)' }}>{completedCount}</b>
+              Завершённых <b className="tnum" style={{ color: 'var(--muted-ink)' }}>{completedCount}</b>
             </Link>
           </div>
         </div>
