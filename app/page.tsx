@@ -229,8 +229,10 @@ export default function DashboardPage() {
         {/* Общая сумма */}
         <KpiCard label="Общая сумма" value={formatMoney(totalAmount)} sub={`${enriched.length} контрактов`} />
 
-        <KpiCard label="Оплачено" value={formatMoney(totalPaid)} valueColor="var(--ok)" />
-        <KpiCard label="Остаток"  value={formatMoney(totalAmount - totalPaid)} valueColor="var(--danger)" />
+        <KpiCard label="Оплачено" value={formatMoney(totalPaid)} valueColor="var(--ok)"
+          sub={totalAmount > 0 ? `${Math.round(totalPaid / totalAmount * 100)}% от суммы` : undefined} />
+        <KpiCard label="Остаток"  value={formatMoney(totalAmount - totalPaid)} valueColor="var(--danger)"
+          sub={totalAmount > 0 ? `${Math.round((totalAmount - totalPaid) / totalAmount * 100)}% от суммы` : undefined} />
       </div>
 
       {/* Directions */}
