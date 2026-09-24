@@ -60,7 +60,7 @@ export function Sidebar() {
             <Landmark size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15 }}>Система</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15 }}>Система контрактов</div>
           </div>
         </div>
 
